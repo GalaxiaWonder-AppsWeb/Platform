@@ -1,4 +1,5 @@
-﻿using Platform.API.IAM.Domain.Model.ValueObjects;
+﻿using Platform.API.IAM.Domain.Model.Commands;
+using Platform.API.IAM.Domain.Model.ValueObjects;
 
 namespace Platform.API.IAM.Domain.Model.Aggregates;
 
@@ -33,5 +34,12 @@ public partial class Person
     {
         Name = new PersonName(firstName, lastName);
         Email = new EmailAddress(email);
+    }
+
+    public Person(SignUpCommand command)
+    {
+        this.Name = new PersonName(command.FirstName, command.LastName);
+        this.Email = new EmailAddress(command.Email);
+        if(command.Phone != null) this.Phone = new PhoneNumber(command.Phone);
     }
 }
