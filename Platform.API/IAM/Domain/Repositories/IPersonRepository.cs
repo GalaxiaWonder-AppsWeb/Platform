@@ -6,7 +6,7 @@ namespace Platform.API.IAM.Domain.Repositories;
 
 public interface IPersonRepository : IBaseRepository<Person>
 {
-    bool existsByEmail(EmailAddress email);
+    bool ExistsByEmail(EmailAddress email);
     
-    bool existsByPhone(PhoneNumber phone);
+    bool ExistsByPhone(PhoneNumber phone);
 }
