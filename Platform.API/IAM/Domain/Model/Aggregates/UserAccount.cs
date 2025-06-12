@@ -1,4 +1,5 @@
-﻿using System.Text.Json.Serialization;
+﻿using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 using Platform.API.IAM.Domain.Model.ValueObjects;
 
 namespace Platform.API.IAM.Domain.Model.Aggregates;
@@ -20,6 +21,13 @@ public partial class UserAccount(string username, string passwordHash)
     public UserTypes UserType { get; private set; }
     
     public PersonId PersonId { get; private set; }
+
+    [NotMapped]
+    public long PersonIdValue
+    {
+        get => PersonId.personId;
+        private set => PersonId = new PersonId(value);
+    }
     /**
      * <summary>
      *  Update the username
@@ -27,6 +35,7 @@ public partial class UserAccount(string username, string passwordHash)
      * <param name="username"> The new username</param>
      * <returns> The updated user </returns>
      */
+    
     public UserAccount UpdateUsername(string username)
     {
         Username = new UserName(username);

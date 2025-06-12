@@ -30,6 +30,7 @@ public partial class Person
     
     public string PhoneNumber => Phone.Phone;
 
+    protected Person() { }
     public Person(string firstName, string lastName, string email)
     {
         Name = new PersonName(firstName, lastName);
