@@ -12,7 +12,7 @@ public class UserAccountRepository(AppDbContext context) : BaseRepository<UserAc
     public bool ExistsByUserName(UserName userName)
     {
         return Context.Set<UserAccount>()
-            .Any(userAccount => userAccount.Username.ToString().Equals(userName.ToString()));
+            .Any(userAccount => userAccount.Username.Username.Equals(userName.Username));
     }
 
     public async Task<UserAccount?> FindByUserNameAsync(UserName userName)

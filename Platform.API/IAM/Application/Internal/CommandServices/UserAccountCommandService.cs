@@ -30,21 +30,37 @@ public class UserAccountCommandService(
     public async Task Handle(SignUpCommand command)
     {
         if (userAccountRepository.ExistsByUserName(new UserName(command.Username)))
-            throw new Exception("Username {command.Username} is already taken");
-        if (personRepository.ExistsByEmail(new EmailAddress(command.Email)))
-            throw new Exception("Email {command.Email} is already taken");
+            throw new Exception($"Username {command.Username} is already taken");
 
-        var hashedPassword = hashingService.HashPassword(command.Password);
-        var userAccount = new UserAccount(command.Username, hashedPassword);
+        if (personRepository.ExistsByEmail(new EmailAddress(command.Email)))
+            throw new Exception($"Email {command.Email} is already taken");
+
+        // Inicia la transacción manualmente
+        await unitOfWork.BeginTransactionAsync(); // Asegúrate de que tu IUnitOfWork tenga esto
 
         try
         {
+            var person = new Person(command);
+            await personRepository.AddAsync(person);
+            await unitOfWork.CompleteAsync(); // Guarda el Person y genera su Id
+
+            var hashedPassword = hashingService.HashPassword(command.Password);
+            var userAccount = new UserAccount(command.Username, hashedPassword);
+
+            userAccount.AssignPersonId(person.Id);
+            userAccount.SetUserType(Enum.Parse<UserTypes>(command.UserType));
+
             await userAccountRepository.AddAsync(userAccount);
-            await unitOfWork.CompleteAsync();
+            await unitOfWork.CompleteAsync(); // Guarda el UserAccount
+
+            await unitOfWork.CommitTransactionAsync();
         }
         catch (Exception e)
         {
-            throw new Exception($"An error occurred while creating User Account: {e.Message} ");
+            await unitOfWork.RollbackTransactionAsync();
+            throw new Exception($"An error occurred during sign up: {e.Message}");
         }
     }
+
+
 }

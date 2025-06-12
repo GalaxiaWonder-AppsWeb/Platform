@@ -10,7 +10,7 @@ public class PersonRepository(AppDbContext context) : BaseRepository<Person>(con
 {
     public bool ExistsByEmail(EmailAddress email)
     {
-        return Context.Set<Person>().Any(person => person.Email.Equals(email));
+        return Context.Set<Person>().Any(person => person.Email.Address.Equals(email.Address));
     }
     
     public bool ExistsByPhone(PhoneNumber phone)

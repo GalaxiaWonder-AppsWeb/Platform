@@ -38,11 +38,21 @@ public class AuthenticationController(IUserAccountCommandService userAccountComm
         Summary = "Sign-up",
         Description = "Sign up a new user",
         OperationId = "SignUp")]
-    [SwaggerResponse(StatusCodes.Status200OK, "The user was created successfully")]
+    [SwaggerResponse(StatusCodes.Status201Created, "The user was created successfully")]
+    [SwaggerResponse(StatusCodes.Status400BadRequest, "Invalid request or user already exists")]
     public async Task<IActionResult> SignUp([FromBody] SignUpResource signUpResource)
     {
+        if (!ModelState.IsValid)
+            return BadRequest(ModelState);
         var signUpCommand = SignUpCommandFromResourceAssembler.ToCommandFromResource(signUpResource);
-        await userAccountCommandService.Handle(signUpCommand);
-        return Ok(new { message = "User created successfully" });
+        try
+        {
+            await userAccountCommandService.Handle(signUpCommand);
+            return StatusCode(StatusCodes.Status201Created, new { message = "User created successfully" });
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new { error = ex.Message });
+        }
     }
 }

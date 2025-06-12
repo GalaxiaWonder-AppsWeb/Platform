@@ -1,6 +1,7 @@
 ﻿using EntityFrameworkCore.CreatedUpdatedDate.Extensions;
 using Microsoft.EntityFrameworkCore;
 using Platform.API.IAM.Domain.Model.Aggregates;
+using Platform.API.IAM.Domain.Model.ValueObjects;
 
 namespace Platform.API.Shared.Infrastructure.Persistence.EFC.Configuration;
 
@@ -50,8 +51,7 @@ public class AppDbContext(DbContextOptions options) : DbContext(options)
             user.ToTable("user_accounts");
             user.HasKey(u => u.Id);
 
-            user.Property(u => u.Id)
-                .ValueGeneratedOnAdd();
+            user.Property(u => u.Id).ValueGeneratedOnAdd();
 
             user.OwnsOne(u => u.Username, uname =>
             {
@@ -66,18 +66,22 @@ public class AppDbContext(DbContextOptions options) : DbContext(options)
             user.Property(u => u.UserType)
                 .HasColumnName("user_type")
                 .IsRequired()
-                .HasConversion<string>(); // Enum como string
+                .HasConversion<string>();
 
-            user.Ignore(u => u.PersonId);
-
-            user.Property<long>("person_id");
+            user.OwnsOne(u => u.PersonId, pid =>
+            {
+                pid.Property(p => p.personId)
+                    .HasColumnName("person_id")
+                    .IsRequired();
+            });
 
             user.HasOne<Person>()
                 .WithOne()
-                .HasPrincipalKey<Person>(p => p.Id)
-                .HasForeignKey<UserAccount>(u => u.PersonIdValue)
+                .HasForeignKey<UserAccount>("person_id")
                 .OnDelete(DeleteBehavior.Restrict);
         });
+
+
 
         base.OnModelCreating(builder);
     }

@@ -15,7 +15,7 @@ public partial class UserAccount(string username, string passwordHash)
 {
     public UserAccount() : this(string.Empty, string.Empty) {}
     public int Id { get; }
-    public UserName Username { get; private set; }
+    public UserName Username { get; private set; } = new UserName(username);
     [JsonIgnore] public Password PasswordHash { get; private set; } = new Password(passwordHash);
     
     public UserTypes UserType { get; private set; }
@@ -64,4 +64,10 @@ public partial class UserAccount(string username, string passwordHash)
     {
         this.PersonId = new PersonId(personId);
     }
+    
+    public void SetUserType(UserTypes userType)
+    {
+        this.UserType = userType;
+    }
+
 }
