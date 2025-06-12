@@ -7,5 +7,4 @@ public interface IPersonQueryService
 {
     Task<IEnumerable<Person>> Handle(GetAllPersonsQuery query);
     
-    bool Handle(ExistsByEmailQuery query);
 }
