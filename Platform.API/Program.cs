@@ -4,6 +4,17 @@ using Platform.API.Shared.Infrastructure.Persistence.EFC.Configuration;
 using Platform.API.Shared.Infrastructure.Persistence.EFC.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
+using Platform.API.IAM.Application.Internal.CommandServices;
+using Platform.API.IAM.Application.Internal.OutboundServices;
+using Platform.API.IAM.Application.Internal.QueryServices;
+using Platform.API.IAM.Domain.Repositories;
+using Platform.API.IAM.Domain.Services;
+using Platform.API.IAM.Infrastructure.Hashing.BCrypt.Services;
+using Platform.API.IAM.Infrastructure.Persistence.EFC.Repositories;
+using Platform.API.IAM.Infrastructure.Pipeline.Middleware.Extensions;
+using Platform.API.IAM.Infrastructure.Tokens.JWT.Configuration;
+using Platform.API.IAM.Infrastructure.Tokens.JWT.Services;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -50,8 +61,49 @@ builder.Services.AddSwaggerGen(options =>
                 Url = new Uri("https://www.apache.org/licenses/LICENSE-2.0")
             },
         });
+    options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    {
+        In = ParameterLocation.Header,
+        Description = "Please enter token",
+        Name = "Authorization",
+        Type = SecuritySchemeType.Http,
+        BearerFormat = "JWT",
+        Scheme = "bearer"
+    });
+    options.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
+        {
+            new OpenApiSecurityScheme
+            {
+                Reference = new OpenApiReference
+                {
+                    Id = "Bearer",
+                    Type = ReferenceType.SecurityScheme
+                }
+            },
+            Array.Empty<string>()
+        }
+    });
     options.EnableAnnotations();
 });
+
+// Dependency Injection
+
+// Shared Bounded Context
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+
+// IAM Bounded Context Injection Configuration
+builder.Services.AddScoped<IPersonRepository, PersonRepository>();
+builder.Services.AddScoped<IPersonQueryService, PersonQueryService > ();
+
+// TokenSettings Configuration
+builder.Services.Configure<TokenSettings>(builder.Configuration.GetSection("TokenSettings"));
+
+builder.Services.AddScoped<IUserAccountRepository, UserAccountRepository>();
+builder.Services.AddScoped<IUserAccountCommandService, UserAccountCommandService>();
+builder.Services.AddScoped<IUserAccountQueryService, UserAccountQueryService>();
+builder.Services.AddScoped<ITokenService, TokenService>();
+builder.Services.AddScoped<IHashingService, HashingService>();
 
 // Add CORS Policy
 builder.Services.AddCors(options =>
@@ -60,11 +112,6 @@ builder.Services.AddCors(options =>
         policy => policy.AllowAnyOrigin()
             .AllowAnyMethod().AllowAnyHeader());
 });
-
-// Dependency Injection
-
-// Shared Bounded Context
-builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
 var app = builder.Build();
 
@@ -83,6 +130,9 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseCors("AllowAllPolicy");
+
+// Add Authorization Middleware to Pipeline
+app.UseRequestAuthorization();
 
 app.UseHttpsRedirection();
 
