@@ -21,7 +21,9 @@ public interface IBaseRepository<TEntity>
     /// </summary>
     /// <param name="id">The Entity ID to Find</param>
     /// <returns>Entity object if found</returns>
-    Task<TEntity?> FindByIdAsync(int id);
+    Task<TEntity?> FindByIdAsync(long id);
+    
+    Task<TEntity?>FindByEmailAsync(string email);
 
     /// <summary>
     ///     Update entity
