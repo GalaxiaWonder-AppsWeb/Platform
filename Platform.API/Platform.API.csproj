@@ -24,7 +24,6 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="IAM\Domain\Repositories\" />
       <Folder Include="IAM\Domain\Services\" />
     </ItemGroup>
 

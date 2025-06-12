@@ -1,0 +1,12 @@
+﻿using Platform.API.IAM.Domain.Model.Aggregates;
+using Platform.API.IAM.Domain.Model.ValueObjects;
+using Platform.API.Shared.Domain.Repositories;
+
+namespace Platform.API.IAM.Domain.Repositories;
+
+public interface IPersonRepository : IBaseRepository<Person>
+{
+    bool existsByEmail(EmailAddress email);
+    
+    bool existsByPhone(PhoneNumber phone);
+}
