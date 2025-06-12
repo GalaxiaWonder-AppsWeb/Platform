@@ -31,4 +31,18 @@ public class AuthenticationController(IUserAccountCommandService userAccountComm
                 authenticatedUser.token);
         return Ok(resource);
     }
+    
+    [HttpPost("sign-up")]
+    [AllowAnonymous]
+    [SwaggerOperation(
+        Summary = "Sign-up",
+        Description = "Sign up a new user",
+        OperationId = "SignUp")]
+    [SwaggerResponse(StatusCodes.Status200OK, "The user was created successfully")]
+    public async Task<IActionResult> SignUp([FromBody] SignUpResource signUpResource)
+    {
+        var signUpCommand = SignUpCommandFromResourceAssembler.ToCommandFromResource(signUpResource);
+        await userAccountCommandService.Handle(signUpCommand);
+        return Ok(new { message = "User created successfully" });
+    }
 }
