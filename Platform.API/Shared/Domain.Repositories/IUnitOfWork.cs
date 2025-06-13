@@ -12,4 +12,7 @@ public interface IUnitOfWork
     ///     Commit changes to the database
     /// </summary>
     Task CompleteAsync();
+    Task BeginTransactionAsync();
+    Task CommitTransactionAsync();
+    Task RollbackTransactionAsync();
 }
