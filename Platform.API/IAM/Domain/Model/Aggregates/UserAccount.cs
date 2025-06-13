@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
+using Platform.API.IAM.Domain.Model.Entities;
 using Platform.API.IAM.Domain.Model.ValueObjects;
 
 namespace Platform.API.IAM.Domain.Model.Aggregates;
@@ -18,7 +19,7 @@ public partial class UserAccount(string username, string passwordHash)
     public UserName Username { get; private set; } = new UserName(username);
     [JsonIgnore] public Password PasswordHash { get; private set; } = new Password(passwordHash);
     
-    public UserTypes UserType { get; private set; }
+    public UserType UserType { get; private set; }
     
     public PersonId PersonId { get; private set; }
 
@@ -65,9 +66,10 @@ public partial class UserAccount(string username, string passwordHash)
         this.PersonId = new PersonId(personId);
     }
     
-    public void SetUserType(UserTypes userType)
+    public void SetUserType(UserType userType)
     {
         this.UserType = userType;
     }
+
 
 }

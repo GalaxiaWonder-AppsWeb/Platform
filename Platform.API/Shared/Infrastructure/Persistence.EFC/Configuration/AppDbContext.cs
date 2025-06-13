@@ -1,6 +1,7 @@
 ﻿using EntityFrameworkCore.CreatedUpdatedDate.Extensions;
 using Microsoft.EntityFrameworkCore;
 using Platform.API.IAM.Domain.Model.Aggregates;
+using Platform.API.IAM.Domain.Model.Entities;
 using Platform.API.IAM.Domain.Model.ValueObjects;
 
 namespace Platform.API.Shared.Infrastructure.Persistence.EFC.Configuration;
@@ -63,10 +64,10 @@ public class AppDbContext(DbContextOptions options) : DbContext(options)
                 pwd.Property(p => p.HashedPassword).HasColumnName("password_hash").IsRequired();
             });
 
-            user.Property(u => u.UserType)
-                .HasColumnName("user_type")
-                .IsRequired()
-                .HasConversion<string>();
+            user.HasOne(u => u.UserType)
+                .WithMany()
+                .HasForeignKey("user_type_id")
+                .OnDelete(DeleteBehavior.Restrict);
 
             user.OwnsOne(u => u.PersonId, pid =>
             {
@@ -79,6 +80,18 @@ public class AppDbContext(DbContextOptions options) : DbContext(options)
                 .WithOne()
                 .HasForeignKey<UserAccount>("person_id")
                 .OnDelete(DeleteBehavior.Restrict);
+        });
+        
+        //USER TYPES
+        builder.Entity<UserType>(userType =>
+        {
+            userType.ToTable("user_types");
+            userType.HasKey(ut => ut.Id);
+            userType.Property(ut => ut.Id).ValueGeneratedOnAdd();
+
+            userType.Property(ut => ut.Name)
+                .HasConversion<string>()
+                .IsRequired();
         });
 
 

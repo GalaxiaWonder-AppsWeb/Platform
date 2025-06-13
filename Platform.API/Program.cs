@@ -7,6 +7,7 @@ using Microsoft.OpenApi.Models;
 using Platform.API.IAM.Application.Internal.CommandServices;
 using Platform.API.IAM.Application.Internal.OutboundServices;
 using Platform.API.IAM.Application.Internal.QueryServices;
+using Platform.API.IAM.Domain.Model.Commands;
 using Platform.API.IAM.Domain.Repositories;
 using Platform.API.IAM.Domain.Services;
 using Platform.API.IAM.Infrastructure.Hashing.BCrypt.Services;
@@ -95,6 +96,9 @@ builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 // IAM Bounded Context Injection Configuration
 builder.Services.AddScoped<IPersonRepository, PersonRepository>();
 builder.Services.AddScoped<IPersonQueryService, PersonQueryService > ();
+builder.Services.AddScoped<IUserTypeRepository, UserTypeRepository>();
+builder.Services.AddScoped<IUserTypeCommandService, UserTypeCommandService>();
+
 
 // TokenSettings Configuration
 builder.Services.Configure<TokenSettings>(builder.Configuration.GetSection("TokenSettings"));
@@ -119,8 +123,13 @@ using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
     var context = services.GetRequiredService<AppDbContext>();
-    context.Database.EnsureCreated();
+
+    await context.Database.EnsureCreatedAsync();
+
+    var commandService = services.GetRequiredService<IUserTypeCommandService>();
+    await commandService.Handle(new SeedUserTypeCommand());
 }
+
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

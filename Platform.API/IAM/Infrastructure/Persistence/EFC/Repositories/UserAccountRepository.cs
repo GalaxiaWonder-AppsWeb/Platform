@@ -5,6 +5,7 @@ using Platform.API.IAM.Domain.Repositories;
 using Platform.API.Shared.Infrastructure.Persistence.EFC.Configuration;
 using Platform.API.Shared.Infrastructure.Persistence.EFC.Repositories;
 using Platform.API.IAM.Domain.Model.Aggregates;
+using Platform.API.IAM.Domain.Model.Entities;
 
 namespace Platform.API.IAM.Infrastructure.Persistence.EFC.Repositories;
 
@@ -31,17 +32,5 @@ public class UserAccountRepository(AppDbContext context) : BaseRepository<UserAc
 
         return await context.Set<UserAccount>()
             .FirstOrDefaultAsync(u => u.PersonId.personId == person.Id);
-    }
-
-
-    public async Task<UserAccount?> FindByNameAsync(UserTypes name)
-    {
-        return await Context.Set<UserAccount>()
-            .FirstOrDefaultAsync(user => user.UserType == name);
-    }
-
-    public bool ExistsByName(UserTypes name)
-    {
-        return Context.Set<UserAccount>().Any(user => user.UserType == name);
     }
 }

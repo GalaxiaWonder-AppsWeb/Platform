@@ -1,6 +1,7 @@
 ﻿using Platform.API.IAM.Application.Internal.OutboundServices;
 using Platform.API.IAM.Domain.Model.Aggregates;
 using Platform.API.IAM.Domain.Model.Commands;
+using Platform.API.IAM.Domain.Model.Entities;
 using Platform.API.IAM.Domain.Model.ValueObjects;
 using Platform.API.IAM.Domain.Repositories;
 using Platform.API.IAM.Domain.Services;
@@ -11,6 +12,7 @@ namespace Platform.API.IAM.Application.Internal.CommandServices;
 
 public class UserAccountCommandService(
     IUserAccountRepository userAccountRepository,
+    IUserTypeRepository userTypeRepository,
     IPersonRepository personRepository,
     ITokenService tokenService,
     IHashingService hashingService,
@@ -47,10 +49,15 @@ public class UserAccountCommandService(
             var userAccount = new UserAccount(command.Username, hashedPassword);
 
             userAccount.AssignPersonId(person.Id);
-            userAccount.SetUserType(Enum.Parse<UserTypes>(command.UserType));
+            var userTypeEntity = await userTypeRepository.FindByNameAsync(command.UserType.ToString());
+
+            if (userTypeEntity == null)
+                throw new Exception($"User type {command.UserType} not found");
+
+            userAccount.SetUserType(userTypeEntity);
 
             await userAccountRepository.AddAsync(userAccount);
-            await unitOfWork.CompleteAsync(); // Guarda el UserAccount
+            await unitOfWork.CompleteAsync();
 
             await unitOfWork.CommitTransactionAsync();
         }
