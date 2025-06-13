@@ -1,3 +1,3 @@
 ﻿namespace Platform.API.IAM.Domain.Model.Queries;
 
-public record GetPersonByIdQuery();
+public record GetPersonByIdQuery(long Id);

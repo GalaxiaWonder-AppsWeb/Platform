@@ -5,6 +5,7 @@ namespace Platform.API.IAM.Domain.Services;
 
 public interface IPersonQueryService
 {
+    Task<Person?> Handle(GetPersonByIdQuery query);
     Task<IEnumerable<Person>> Handle(GetAllPersonsQuery query);
     
 }

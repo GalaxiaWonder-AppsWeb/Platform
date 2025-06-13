@@ -15,7 +15,7 @@ namespace Platform.API.IAM.Domain.Model.Aggregates;
 public partial class UserAccount(string username, string passwordHash)
 {
     public UserAccount() : this(string.Empty, string.Empty) {}
-    public int Id { get; }
+    public long Id { get; }
     public UserName Username { get; private set; } = new UserName(username);
     [JsonIgnore] public Password PasswordHash { get; private set; } = new Password(passwordHash);
     
