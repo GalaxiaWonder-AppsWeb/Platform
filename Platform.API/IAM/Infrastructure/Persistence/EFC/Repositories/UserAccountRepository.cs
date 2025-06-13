@@ -23,14 +23,17 @@ public class UserAccountRepository(AppDbContext context) : BaseRepository<UserAc
             .FirstOrDefaultAsync(userAccount => userAccount.Username.ToString().Equals(userName.ToString()));
     }
     
-    public new async Task<UserAccount?> FindByEmailAsync(string email)
+    public async Task<UserAccount?> FindByEmailAsync(string email)
     {
         var person = await context.Set<Person>()
-            .FirstOrDefaultAsync(p => p.Email.Address == email);
+            .Where(p => p.Email.Address == email)
+            .FirstOrDefaultAsync();
 
-        if (person is null) return null;
+        if (person == null) return null;
 
         return await context.Set<UserAccount>()
+            .Include(u => u.UserType)
             .FirstOrDefaultAsync(u => u.PersonId.personId == person.Id);
     }
+
 }
