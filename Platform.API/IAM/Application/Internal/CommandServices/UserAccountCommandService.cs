@@ -20,7 +20,7 @@ public class UserAccountCommandService(
     public async Task<(UserAccount userAccount, string token)> Handle(SignInCommand command)
     {
         var userAccount = await userAccountRepository.FindByEmailAsync(command.Email);
-        if (userAccount == null || !hashingService.VerifyPassword(command.Password, userAccount.PasswordHash.ToString()))
+        if (userAccount == null || !hashingService.VerifyPassword(command.Password, userAccount.PasswordHash.HashedPassword))
             throw new Exception("Invalid email or password");
         var token = tokenService.GenerateToken(userAccount);
         
@@ -34,15 +34,14 @@ public class UserAccountCommandService(
 
         if (personRepository.ExistsByEmail(new EmailAddress(command.Email)))
             throw new Exception($"Email {command.Email} is already taken");
-
-        // Inicia la transacción manualmente
-        await unitOfWork.BeginTransactionAsync(); // Asegúrate de que tu IUnitOfWork tenga esto
+        
+        await unitOfWork.BeginTransactionAsync();
 
         try
         {
             var person = new Person(command);
             await personRepository.AddAsync(person);
-            await unitOfWork.CompleteAsync(); // Guarda el Person y genera su Id
+            await unitOfWork.CompleteAsync();
 
             var hashedPassword = hashingService.HashPassword(command.Password);
             var userAccount = new UserAccount(command.Username, hashedPassword);

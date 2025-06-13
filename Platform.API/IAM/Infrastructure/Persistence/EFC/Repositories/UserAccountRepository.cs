@@ -4,6 +4,7 @@ using Platform.API.IAM.Domain.Model.ValueObjects;
 using Platform.API.IAM.Domain.Repositories;
 using Platform.API.Shared.Infrastructure.Persistence.EFC.Configuration;
 using Platform.API.Shared.Infrastructure.Persistence.EFC.Repositories;
+using Platform.API.IAM.Domain.Model.Aggregates;
 
 namespace Platform.API.IAM.Infrastructure.Persistence.EFC.Repositories;
 
@@ -21,6 +22,18 @@ public class UserAccountRepository(AppDbContext context) : BaseRepository<UserAc
             .FirstOrDefaultAsync(userAccount => userAccount.Username.ToString().Equals(userName.ToString()));
     }
     
+    public new async Task<UserAccount?> FindByEmailAsync(string email)
+    {
+        var person = await context.Set<Person>()
+            .FirstOrDefaultAsync(p => p.Email.Address == email);
+
+        if (person is null) return null;
+
+        return await context.Set<UserAccount>()
+            .FirstOrDefaultAsync(u => u.PersonId.personId == person.Id);
+    }
+
+
     public async Task<UserAccount?> FindByNameAsync(UserTypes name)
     {
         return await Context.Set<UserAccount>()
