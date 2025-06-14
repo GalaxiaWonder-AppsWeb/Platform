@@ -9,6 +9,11 @@ public class UserAccountQueryService(IUserAccountRepository userAccountRepositor
 {
     public async Task<UserAccount?> Handle(GetUserAccountByIdQuery query)
     {
-        return await userAccountRepository.FindByIdAsync(query.Id);
+        return await userAccountRepository.FindByIdWithUserTypeAsync(query.Id);
+    }
+
+    public async Task<IEnumerable<UserAccount>> Handle(GetAllUsersAccountQuery query)
+    {
+        return await userAccountRepository.ListWithUserTypeAsync();
     }
 }

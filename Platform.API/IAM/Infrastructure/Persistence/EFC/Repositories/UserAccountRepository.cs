@@ -17,23 +17,19 @@ public class UserAccountRepository(AppDbContext context) : BaseRepository<UserAc
             .Any(userAccount => userAccount.Username.Username.Equals(userName.Username));
     }
 
-    public async Task<UserAccount?> FindByUserNameAsync(UserName userName)
+    public async Task<UserAccount?> FindByIdWithUserTypeAsync(long id)
     {
-        return await Context.Set<UserAccount>()
-            .FirstOrDefaultAsync(userAccount => userAccount.Username.ToString().Equals(userName.ToString()));
-    }
-    
-    public async Task<UserAccount?> FindByEmailAsync(string email)
-    {
-        var person = await context.Set<Person>()
-            .Where(p => p.Email.Address == email)
-            .FirstOrDefaultAsync();
-
-        if (person == null) return null;
-
-        return await context.Set<UserAccount>()
+        return await context.UserAccounts
             .Include(u => u.UserType)
-            .FirstOrDefaultAsync(u => u.PersonId.personId == person.Id);
+            .FirstOrDefaultAsync(u => u.Id == id);
     }
+
+    public async Task<IEnumerable<UserAccount>> ListWithUserTypeAsync()
+    {
+        return await context.UserAccounts
+            .Include(u => u.UserType)
+            .ToListAsync();
+    }
+
 
 }

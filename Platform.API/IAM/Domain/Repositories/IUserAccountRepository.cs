@@ -9,5 +9,7 @@ public interface IUserAccountRepository : IBaseRepository<UserAccount>
 {
     bool ExistsByUserName(UserName userName);
     
-    Task<UserAccount?> FindByUserNameAsync(UserName userName);
+    Task<UserAccount?> FindByIdWithUserTypeAsync(long id);
+    Task<IEnumerable<UserAccount>> ListWithUserTypeAsync();
+
 }
