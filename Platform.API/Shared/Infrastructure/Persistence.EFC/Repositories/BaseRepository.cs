@@ -1,6 +1,6 @@
-﻿using Platform.API.Shared.Domain.Repositories;
-using Platform.API.Shared.Infrastructure.Persistence.EFC.Configuration;
+﻿using Platform.API.Shared.Infrastructure.Persistence.EFC.Configuration;
 using Microsoft.EntityFrameworkCore;
+using Platform.API.Shared.Domain.Repositories;
 
 namespace Platform.API.Shared.Infrastructure.Persistence.EFC.Repositories;
 

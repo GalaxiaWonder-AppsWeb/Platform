@@ -17,20 +17,31 @@ public class UserAccountRepository(AppDbContext context) : BaseRepository<UserAc
             .Any(userAccount => userAccount.Username.Username.Equals(userName.Username));
     }
 
-    public async Task<UserAccount?> FindByUserNameAsync(UserName userName)
+    public async Task<UserAccount?> FindByIdWithUserTypeAsync(long id)
     {
-        return await Context.Set<UserAccount>()
-            .FirstOrDefaultAsync(userAccount => userAccount.Username.ToString().Equals(userName.ToString()));
+        return await context.UserAccounts
+            .Include(u => u.UserType)
+            .FirstOrDefaultAsync(u => u.Id == id);
+    }
+
+    public async Task<IEnumerable<UserAccount>> ListWithUserTypeAsync()
+    {
+        return await context.UserAccounts
+            .Include(u => u.UserType)
+            .ToListAsync();
     }
     
-    public new async Task<UserAccount?> FindByEmailAsync(string email)
+    public async Task<UserAccount?> FindByEmailAsync(string email)
     {
-        var person = await context.Set<Person>()
-            .FirstOrDefaultAsync(p => p.Email.Address == email);
+        var person = await context.Persons.FirstOrDefaultAsync(p => p.Email.Address == email);
+        if (person == null) return null;
 
-        if (person is null) return null;
-
-        return await context.Set<UserAccount>()
-            .FirstOrDefaultAsync(u => u.PersonId.personId == person.Id);
+        return await context.UserAccounts
+            .Include(ua => ua.UserType) 
+            .FirstOrDefaultAsync(ua => ua.PersonId.personId == person.Id);
     }
+
+
+
+
 }

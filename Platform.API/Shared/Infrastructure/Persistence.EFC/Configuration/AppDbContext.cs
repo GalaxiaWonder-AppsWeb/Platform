@@ -11,6 +11,10 @@ namespace Platform.API.Shared.Infrastructure.Persistence.EFC.Configuration;
 /// </summary>
 public class AppDbContext(DbContextOptions options) : DbContext(options)
 {
+    
+    public DbSet<UserAccount> UserAccounts { get; set; } = null!;
+    public DbSet<UserType> UserTypes { get; set; } = null!;
+    public DbSet<Person> Persons { get; set; } = null!;
     protected override void OnConfiguring(DbContextOptionsBuilder builder)
     {
         // Add the created and updated interceptor

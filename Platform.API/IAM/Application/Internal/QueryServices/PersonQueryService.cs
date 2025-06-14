@@ -7,6 +7,10 @@ namespace Platform.API.IAM.Application.Internal.QueryServices;
 
 public class PersonQueryService(IPersonRepository personRepository) : IPersonQueryService
 {
+    public async Task<Person?> Handle(GetPersonByIdQuery query)
+    {
+        return await personRepository.FindByIdAsync(query.Id);
+    }
     public async Task<IEnumerable<Person>> Handle(GetAllPersonsQuery query)
     {
         return await personRepository.ListAsync();

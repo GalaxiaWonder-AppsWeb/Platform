@@ -6,4 +6,6 @@ namespace Platform.API.IAM.Domain.Services;
 public interface IUserAccountQueryService
 {
     Task<UserAccount?> Handle(GetUserAccountByIdQuery query);
+    
+    Task<IEnumerable<UserAccount>> Handle(GetAllUsersAccountQuery query);
 }
