@@ -30,6 +30,18 @@ public class UserAccountRepository(AppDbContext context) : BaseRepository<UserAc
             .Include(u => u.UserType)
             .ToListAsync();
     }
+    
+    public async Task<UserAccount?> FindByEmailAsync(string email)
+    {
+        var person = await context.Persons.FirstOrDefaultAsync(p => p.Email.Address == email);
+        if (person == null) return null;
+
+        return await context.UserAccounts
+            .Include(ua => ua.UserType) 
+            .FirstOrDefaultAsync(ua => ua.PersonId.personId == person.Id);
+    }
+
+
 
 
 }

@@ -98,6 +98,7 @@ builder.Services.AddScoped<IPersonRepository, PersonRepository>();
 builder.Services.AddScoped<IPersonQueryService, PersonQueryService > ();
 builder.Services.AddScoped<IUserTypeRepository, UserTypeRepository>();
 builder.Services.AddScoped<IUserTypeCommandService, UserTypeCommandService>();
+builder.Services.AddScoped<IUserTypeQueryService, UserTypeQueryService>();
 
 
 // TokenSettings Configuration
