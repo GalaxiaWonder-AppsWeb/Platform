@@ -1,4 +1,3 @@
-using Platform.API.Shared.Domain.Repositories;
 using Platform.API.Shared.Infrastructure.Interfaces.ASP.Configuration;
 using Platform.API.Shared.Infrastructure.Persistence.EFC.Configuration;
 using Platform.API.Shared.Infrastructure.Persistence.EFC.Repositories;
@@ -15,6 +14,7 @@ using Platform.API.IAM.Infrastructure.Persistence.EFC.Repositories;
 using Platform.API.IAM.Infrastructure.Pipeline.Middleware.Extensions;
 using Platform.API.IAM.Infrastructure.Tokens.JWT.Configuration;
 using Platform.API.IAM.Infrastructure.Tokens.JWT.Services;
+using Platform.API.Shared.Domain.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 
