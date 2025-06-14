@@ -1,4 +1,5 @@
-﻿using Platform.API.IAM.Domain.Model.ValueObjects;
+﻿using System.ComponentModel.DataAnnotations.Schema;
+using Platform.API.IAM.Domain.Model.ValueObjects;
 using Platform.API.Organizations.Domain.Model.Entities;
 using Platform.API.Organizations.Domain.Model.ValueObjects;
 
@@ -14,7 +15,10 @@ public partial class Organization
 
     public PersonId CreatedBy { get; private set; }
 
+    [NotMapped]
+    public long OrganizationStatusId { get; private set; } // auxiliary
     public OrganizationStatus Status { get; private set; }
+
 
     private readonly List<long> _organizationMemberIds = new();
     private readonly List<long> _organizationInvitationIds = new();

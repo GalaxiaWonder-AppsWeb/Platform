@@ -1,4 +1,5 @@
-﻿using Platform.API.IAM.Domain.Model.ValueObjects;
+﻿using System.ComponentModel.DataAnnotations.Schema;
+using Platform.API.IAM.Domain.Model.ValueObjects;
 using Platform.API.Shared.Domain.Repositories.Model.ValueObjects;
 
 namespace Platform.API.Organizations.Domain.Model.Entities;
@@ -11,6 +12,9 @@ public partial class OrganizationMember
     public PersonId PersonId { get; private set; }
     
     public OrganizationMemberType MemberType { get; private set; }
+    
+    [NotMapped]
+    public long MemberTypeId { get; private set; } //FK Auxiliary
 
     public OrganizationMember() { }
 

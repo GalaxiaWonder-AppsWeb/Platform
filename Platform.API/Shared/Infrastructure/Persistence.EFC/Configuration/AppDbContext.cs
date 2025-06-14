@@ -3,6 +3,9 @@ using Microsoft.EntityFrameworkCore;
 using Platform.API.IAM.Domain.Model.Aggregates;
 using Platform.API.IAM.Domain.Model.Entities;
 using Platform.API.IAM.Domain.Model.ValueObjects;
+using Platform.API.Organizations.Domain.Model.Aggregates;
+using Platform.API.Organizations.Domain.Model.Entities;
+using Platform.API.Organizations.Domain.Model.ValueObjects;
 
 namespace Platform.API.Shared.Infrastructure.Persistence.EFC.Configuration;
 
@@ -11,10 +14,14 @@ namespace Platform.API.Shared.Infrastructure.Persistence.EFC.Configuration;
 /// </summary>
 public class AppDbContext(DbContextOptions options) : DbContext(options)
 {
-    
+    //IAM CONTEXT
     public DbSet<UserAccount> UserAccounts { get; set; } = null!;
     public DbSet<UserType> UserTypes { get; set; } = null!;
     public DbSet<Person> Persons { get; set; } = null!;
+    // ORGANIZATION CONTEXT
+    public DbSet<Organization> Organizations { get; set; }
+    public DbSet<OrganizationMember> OrganizationMembers { get; set; }
+    public DbSet<OrganizationInvitation> OrganizationInvitations { get; set; }
     protected override void OnConfiguring(DbContextOptionsBuilder builder)
     {
         // Add the created and updated interceptor
@@ -97,9 +104,214 @@ public class AppDbContext(DbContextOptions options) : DbContext(options)
                 .HasConversion<string>()
                 .IsRequired();
         });
+        
+        // ORGANIZATIONS
+        builder.Entity<Organization>(entity =>
+        {
+            entity.ToTable("organizations");
+
+            entity.HasKey(o => o.Id);
+
+            entity.Property(o => o.Id)
+                .HasColumnName("id")
+                .ValueGeneratedOnAdd();
+
+            entity.OwnsOne(o => o.LegalName, ln =>
+            {
+                ln.Property(p => p.Name)
+                    .HasColumnName("legal_name")
+                    .HasMaxLength(255)
+                    .IsRequired();
+            });
+
+            entity.OwnsOne(o => o.CommercialName, cn =>
+            {
+                cn.Property(p => p.Name)
+                    .HasColumnName("commercial_name")
+                    .HasMaxLength(255)
+                    .IsRequired();
+            });
+
+            entity.OwnsOne(o => o.Ruc, r =>
+            {
+                r.Property(p => p.Number)
+                    .HasColumnName("ruc")
+                    .HasMaxLength(11)
+                    .IsRequired();
+            });
+
+            entity.OwnsOne(o => o.CreatedBy, cb =>
+            {
+                cb.Property(p => p.personId)
+                    .HasColumnName("created_by")
+                    .IsRequired();
+            });
+
+            //enum
+            builder.Entity<Organization>(org =>
+            {
+                org.Property(s=>s.OrganizationStatusId)
+                    .HasColumnName("status")
+                    .IsRequired();
+                
+                org.HasOne(o => o.Status)
+                    .WithMany()
+                    .HasForeignKey(o => o.OrganizationStatusId)
+                    .IsRequired();
+            });
 
 
+            entity.Ignore(o => o.OrganizationMemberIds);
+            entity.Ignore(o => o.OrganizationInvitationIds);
+        });
 
+        //ORGANIZATION MEMBER
+        builder.Entity<OrganizationMember>(entity =>
+        {
+            entity.ToTable("organization_members");
+
+            entity.HasKey(m => m.Id);
+
+            entity.Property(m => m.Id)
+                .HasColumnName("id")
+                .ValueGeneratedOnAdd();
+
+            entity.OwnsOne(m => m.OrganizationId, org =>
+            {
+                org.Property(p => p.organizationId)
+                    .HasColumnName("organization_id")
+                    .IsRequired();
+            });
+
+            entity.OwnsOne(m => m.PersonId, person =>
+            {
+                person.Property(p => p.personId)
+                    .HasColumnName("person_id")
+                    .IsRequired();
+            });
+
+            entity.Property(m => m.MemberTypeId)
+                .HasColumnName("type")
+                .IsRequired();
+
+            entity.HasOne(m => m.MemberType)
+                .WithMany()
+                .HasForeignKey(m => m.MemberTypeId)
+                .OnDelete(DeleteBehavior.Restrict);
+        });
+
+        //ORGANIZATION INVITATION
+        builder.Entity<OrganizationInvitation>(entity =>
+        {
+            entity.ToTable("organization_invitations");
+
+            entity.HasKey(i => i.Id);
+
+            entity.Property(i => i.Id)
+                .HasColumnName("id")
+                .ValueGeneratedOnAdd();
+
+            entity.OwnsOne(i => i.OrganizationId, org =>
+            {
+                org.Property(p => p.organizationId)
+                    .HasColumnName("organization_id")
+                    .IsRequired();
+            });
+
+            entity.OwnsOne(i => i.PersonId, person =>
+            {
+                person.Property(p => p.personId)
+                    .HasColumnName("person_id")
+                    .IsRequired();
+            });
+
+            entity.OwnsOne(i => i.InvitedBy, invited =>
+            {
+                invited.Property(p => p.personId)
+                    .HasColumnName("invited_by")
+                    .IsRequired();
+            });
+
+            entity.Property(i => i.OrganizationInvitationStatusId)
+                .HasColumnName("status")
+                .IsRequired();
+
+            entity.HasOne(i => i.Status)
+                .WithMany()
+                .HasForeignKey(i => i.OrganizationInvitationStatusId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+        });
+        
+        //ORGANIZATION STATUS
+        builder.Entity<OrganizationStatus>(entity =>
+        {
+            entity.ToTable("organization_statuses");
+
+            entity.HasKey(s => s.Id);
+
+            entity.Property(s => s.Id)
+                .HasColumnName("id")
+                .ValueGeneratedOnAdd();
+
+            entity.Property(s => s.Name)
+                .HasColumnName("name")
+                .HasConversion<string>()
+                .IsRequired();
+        });
+        
+        //ORGANIZATION MEMBER TYPE
+        builder.Entity<OrganizationMemberType>(entity =>
+        {
+            entity.ToTable("organization_member_types");
+
+            entity.HasKey(t => t.Id);
+
+            entity.Property(t => t.Id)
+                .HasColumnName("id")
+                .ValueGeneratedOnAdd();
+
+            entity.Property(t => t.Name)
+                .HasColumnName("name")
+                .HasConversion<string>()
+                .IsRequired();
+        });
+
+        //ORGANIZATION INVITATION STATUS
+        builder.Entity<OrganizationInvitationStatus>(entity =>
+        {
+            entity.ToTable("organization_invitation_statuses");
+
+            entity.HasKey(i => i.Id);
+
+            entity.Property(i => i.Id)
+                .HasColumnName("id")
+                .ValueGeneratedOnAdd();
+
+            entity.Property(i => i.Name)
+                .HasColumnName("name")
+                .HasConversion<string>()
+                .IsRequired();
+        });
+        
+        //SETTEO DE DATA
+        builder.Entity<OrganizationStatus>().HasData(
+            new { Id = 1L, Name = OrganizationStatuses.ACTIVE },
+            new { Id = 2L, Name = OrganizationStatuses.INACTIVE }
+        );
+
+        builder.Entity<OrganizationMemberType>().HasData(
+            new { Id = 1L, Name = OrganizationMemberTypes.CONTRACTOR },
+            new { Id = 2L, Name = OrganizationMemberTypes.WORKER }
+        );
+
+       builder.Entity<OrganizationInvitationStatus>().HasData(
+            new { Id = 1L, Name = OrganizationInvitationStatuses.PENDING },
+            new { Id = 2L, Name = OrganizationInvitationStatuses.ACCEPTED },
+            new { Id = 3L, Name = OrganizationInvitationStatuses.REJECTED }
+        );
+
+        
         base.OnModelCreating(builder);
     }
 

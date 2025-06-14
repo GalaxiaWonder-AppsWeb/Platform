@@ -1,4 +1,5 @@
-﻿using Platform.API.IAM.Domain.Model.ValueObjects;
+﻿using System.ComponentModel.DataAnnotations.Schema;
+using Platform.API.IAM.Domain.Model.ValueObjects;
 using Platform.API.Organizations.Domain.Model.ValueObjects;
 using Platform.API.Shared.Domain.Repositories.Model.ValueObjects;
 
@@ -12,15 +13,17 @@ public partial class OrganizationInvitation
 
     public PersonId PersonId { get; private set; }
 
-    public PersonName InvitedBy { get; private set; }
+    public PersonId InvitedBy { get; private set; }
 
     public OrganizationInvitationStatus Status { get; private set; }
 
+    [NotMapped]
+    public long OrganizationInvitationStatusId { get; private set; } //FK Auxiliary
     public OrganizationInvitation()
     {
     }
 
-    public OrganizationInvitation(OrganizationId organizationId, PersonId personId, PersonName invitedBy)
+    public OrganizationInvitation(OrganizationId organizationId, PersonId personId, PersonId invitedBy)
     {
         OrganizationId = organizationId;
         PersonId = personId;
