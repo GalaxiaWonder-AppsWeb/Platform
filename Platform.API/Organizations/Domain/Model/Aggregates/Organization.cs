@@ -35,6 +35,15 @@ public partial class Organization
         CreatedBy = createdBy;
         Status = new OrganizationStatus(OrganizationStatuses.ACTIVE);
     }
+    
+    public Organization(LegalName legalName , RUC ruc, PersonId createdBy)
+    {
+        LegalName = legalName;
+        CommercialName = new CommercialName("");
+        Ruc = ruc;
+        CreatedBy = createdBy;
+        Status = new OrganizationStatus(OrganizationStatuses.ACTIVE);
+    }
 
     public void EditNames(LegalName legalName, CommercialName commercialName)
     {
