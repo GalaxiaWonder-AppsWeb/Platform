@@ -27,22 +27,22 @@ public partial class Organization
     {
     }
 
-    public Organization(LegalName legalName, CommercialName commercialName, RUC ruc, PersonId createdBy)
+    public Organization(LegalName legalName, CommercialName commercialName, RUC ruc, PersonId createdBy, OrganizationStatus status)
     {
         LegalName = legalName;
         CommercialName = commercialName;
         Ruc = ruc;
         CreatedBy = createdBy;
-        Status = new OrganizationStatus(OrganizationStatuses.ACTIVE);
+        Status = status;
     }
     
-    public Organization(LegalName legalName , RUC ruc, PersonId createdBy)
+    public Organization(LegalName legalName , RUC ruc, PersonId createdBy, OrganizationStatus status)
     {
         LegalName = legalName;
         CommercialName = new CommercialName("");
         Ruc = ruc;
         CreatedBy = createdBy;
-        Status = new OrganizationStatus(OrganizationStatuses.ACTIVE);
+        Status = status;
     }
 
     public void EditNames(LegalName legalName, CommercialName commercialName)
