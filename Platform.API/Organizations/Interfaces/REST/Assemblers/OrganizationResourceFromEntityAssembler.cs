@@ -3,11 +3,20 @@ using Platform.API.Organizations.Interfaces.REST.Resources;
 
 namespace Platform.API.Organizations.Interfaces.REST.Assemblers;
 
-public class OrganizationResourceFromEntityAssembler
+public static class OrganizationResourceFromEntityAssembler
 {
-    public static OrganizationResource ToResourceFromEntity(Organization organization)
+    public static OrganizationResource ToResourceFromEntity(Organization org)
     {
-        return new OrganizationResource(organization.Id, organization.LegalName.Name, organization.CommercialName.Name,
-            organization.Ruc.Number, organization.CreatedBy.personId, organization.OrganizationMemberIds.ToList());
+        return new OrganizationResource(
+            org.Id,
+            org.LegalName.Name,
+            org.CommercialName.Name,
+            org.Ruc.Number,
+            org.CreatedBy.personId,
+            org.OrganizationStatusId,
+            org.Status.Name.ToString(),
+            org.OrganizationMemberIds,
+            org.OrganizationInvitationIds
+        );
     }
 }

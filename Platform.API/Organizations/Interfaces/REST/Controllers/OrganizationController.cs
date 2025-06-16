@@ -35,8 +35,8 @@ public class OrganizationController(
         var createOrganizationCommand =
             CreateOrganizationCommandFromResourceAssembler.ToCommandFromResource(createOrganizationResource);
         var organization = await organizationCommandService.Handle(createOrganizationCommand);
-        
-        return Ok(organization);
+        var resource = OrganizationResourceFromEntityAssembler.ToResourceFromEntity(organization);
+        return Ok(resource);
     }
 
     [HttpGet("{id}")]
