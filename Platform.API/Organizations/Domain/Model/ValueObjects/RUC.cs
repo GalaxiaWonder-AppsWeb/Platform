@@ -18,10 +18,6 @@ public record RUC
         {
             throw new ArgumentException("RUC number must start with 10 or 20");
         }
-        if (number.All(char.IsDigit))
-        {
-            throw new ArgumentException("RUC number must contain letters");
-        }
         Number = number;
     }
     public override string ToString() => Number;

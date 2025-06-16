@@ -22,6 +22,7 @@ public class AppDbContext(DbContextOptions options) : DbContext(options)
     public DbSet<Organization> Organizations { get; set; }
     public DbSet<OrganizationMember> OrganizationMembers { get; set; }
     public DbSet<OrganizationInvitation> OrganizationInvitations { get; set; }
+
     protected override void OnConfiguring(DbContextOptionsBuilder builder)
     {
         // Add the created and updated interceptor
