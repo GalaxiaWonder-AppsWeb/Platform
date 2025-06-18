@@ -51,12 +51,12 @@ public class OrganizationCommandService(
         return organization;
     }
 
-    public async void Handle(DeleteOrganizationCommand command)
+    public async Task Handle(DeleteOrganizationCommand command)
     {
-        if (organizationRepository.ExistsById(command.Id))
-            throw new ArgumentException("Organization with given id does not exist");
-
         var organization = await organizationRepository.FindByIdAsync(command.Id);
+        if (organization == null) 
+            throw new ArgumentException("Organization doesn't exist");
+    
         organizationRepository.Remove(organization);
         await unitOfWork.CompleteAsync();
     }

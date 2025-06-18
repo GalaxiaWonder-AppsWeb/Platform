@@ -6,6 +6,6 @@ namespace Platform.API.Organizations.Domain.Services;
 public interface IOrganizationCommandService
 {
     Task<Organization> Handle(CreateOrganizationCommand command);
-    void Handle(DeleteOrganizationCommand command);
+    Task Handle(DeleteOrganizationCommand command);
     Task<Organization> Handle(UpdateOrganizationCommand command);
 }

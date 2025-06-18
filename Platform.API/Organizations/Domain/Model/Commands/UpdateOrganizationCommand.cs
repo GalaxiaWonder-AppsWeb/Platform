@@ -8,15 +8,11 @@ public record UpdateOrganizationCommand
 
     public UpdateOrganizationCommand(long id, string legalName, string commercialName)
     {
-        if (Id == 0L)
-            throw new ArgumentNullException("id cannot be zero");
-        if(string.IsNullOrEmpty(legalName))
-            throw new ArgumentNullException("legal name cannot be null or empty");
-        if (string.IsNullOrEmpty(commercialName))
-            throw new ArgumentNullException("commercial name cannot be null or empty");
-        
-        this.Id = id;
-        this.LegalName = legalName;
-        this.CommercialName = commercialName;
+        if (id <= 0) throw new ArgumentException("Organization ID must be a positive number", nameof(id));
+        if (string.IsNullOrWhiteSpace(legalName)) throw new ArgumentException("Legal name cannot be empty", nameof(legalName));
+    
+        Id = id;
+        LegalName = legalName;
+        CommercialName = commercialName;
     }
 }
