@@ -53,9 +53,13 @@ public partial class Organization
         Status = status;
     }
 
-    public void EditNames(LegalName legalName, CommercialName commercialName)
+    public void EditLegalName(LegalName legalName)
     {
         LegalName = legalName;
+    }
+
+    public void EditCommercialName(CommercialName commercialName)
+    {
         CommercialName = commercialName;
     }
 

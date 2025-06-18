@@ -9,6 +9,8 @@ public interface IOrganizationRepository : IBaseRepository<Organization>
     
     bool ExistsByRuc(string ruc);
     
+    bool ExistsById(long id);
+    
     Task<Organization?> FindByRucAsync(string ruc);
 
     Task<Organization?> FindOrganizationByMemberId(long memberId);

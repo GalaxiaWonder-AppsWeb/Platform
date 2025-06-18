@@ -21,6 +21,11 @@ public class OrganizationRepository(AppDbContext context) : BaseRepository<Organ
         return Context.Set<Organization>().Any(organization => organization.Ruc.Number.Equals(ruc));
     }
 
+    public bool ExistsById(long id)
+    {
+        return Context.Set<Organization>().Any(organization => organization.Id.Equals(id));
+    }
+
     public async Task<Organization?> FindByRucAsync(string ruc)
     {
         return await Context.Set<Organization>()

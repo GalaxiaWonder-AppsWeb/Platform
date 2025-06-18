@@ -30,7 +30,6 @@ public class OrganizationCommandService(
             new PersonId(command.CreatedBy)
         );
         
-        // Obtener status activo desde repositorio
         var activeStatus = await organizationStatusRepository.FindByNameAsync("ACTIVE");
         organization.AssignStatus(activeStatus!);
         
@@ -51,5 +50,40 @@ public class OrganizationCommandService(
 
         return organization;
     }
+
+    public async void Handle(DeleteOrganizationCommand command)
+    {
+        if (organizationRepository.ExistsById(command.Id))
+            throw new ArgumentException("Organization with given id does not exist");
+
+        var organization = await organizationRepository.FindByIdAsync(command.Id);
+        organizationRepository.Remove(organization);
+        await unitOfWork.CompleteAsync();
+    }
+
+    public async Task<Organization> Handle(UpdateOrganizationCommand command)
+    {
+        var organization = await organizationRepository.FindByIdAsync(command.Id);
+        if (organization == null)
+            throw new ArgumentException("Organization doesn't exist");
+
+        if (organization.LegalName.Name != command.LegalName)
+            organization.EditLegalName(new LegalName(command.LegalName));
+
+        if (organization.CommercialName.Name != command.CommercialName)
+            organization.EditCommercialName(new CommercialName(command.CommercialName));
+
+        try
+        {
+            organizationRepository.Update(organization);
+            await unitOfWork.CompleteAsync();
+            return organization;
+        }
+        catch (Exception e)
+        {
+            throw new ArgumentException($"Error while updating organization: {e.Message}");
+        }
+    }
+
 
 }
