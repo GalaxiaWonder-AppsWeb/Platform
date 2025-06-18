@@ -39,7 +39,7 @@ public partial class Organization
     public Organization(LegalName legalName , CommercialName commercialName, RUC ruc, PersonId createdBy)
     {
         LegalName = legalName;
-        CommercialName = new CommercialName("");
+        CommercialName = commercialName;
         Ruc = ruc;
         CreatedBy = createdBy;
     }
