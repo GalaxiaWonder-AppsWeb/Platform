@@ -5,6 +5,8 @@ namespace Platform.API.Organizations.Domain.Repositories;
 
 public interface IOrganizationRepository : IBaseRepository<Organization>
 {
+    new Task<Organization?> FindByIdAsync(long id);
+    
     bool ExistsByRuc(string ruc);
     
     Task<Organization?> FindByRucAsync(string ruc);

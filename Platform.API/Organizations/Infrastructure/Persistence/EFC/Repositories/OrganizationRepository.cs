@@ -9,6 +9,13 @@ namespace Platform.API.Organizations.Infrastructure.Persistence.EFC.Repositories
 
 public class OrganizationRepository(AppDbContext context) : BaseRepository<Organization>(context), IOrganizationRepository
 {
+    public new async Task<Organization?> FindByIdAsync(long id)
+    {
+        return await context.Organizations
+            .Include(o => o.Status)
+            .FirstOrDefaultAsync(o => o.Id == id);
+    }
+    
     public bool ExistsByRuc(string ruc)
     {
         return Context.Set<Organization>().Any(organization => organization.Ruc.Number.Equals(ruc));
@@ -47,7 +54,7 @@ public class OrganizationRepository(AppDbContext context) : BaseRepository<Organ
     public async Task<IEnumerable<Organization>> FindOrganizationsByOrganizationMemberPersonId(long memberPersonId)
     {
         var organizationIds = await Context.Set<OrganizationMember>()
-            .Where(om => om.PersonId.Equals(memberPersonId))
+            .Where(om => om.PersonId.personId == memberPersonId)
             .Select(om => om.OrganizationId.organizationId)
             .ToListAsync();
 

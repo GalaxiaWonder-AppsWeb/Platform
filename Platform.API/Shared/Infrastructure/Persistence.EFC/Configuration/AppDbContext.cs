@@ -177,6 +177,7 @@ public class AppDbContext(DbContextOptions options) : DbContext(options)
                 .HasColumnName("id")
                 .ValueGeneratedOnAdd();
 
+            // Value Object: OrganizationId
             entity.OwnsOne(m => m.OrganizationId, org =>
             {
                 org.Property(p => p.organizationId)
@@ -184,6 +185,7 @@ public class AppDbContext(DbContextOptions options) : DbContext(options)
                     .IsRequired();
             });
 
+            // Value Object: PersonId
             entity.OwnsOne(m => m.PersonId, person =>
             {
                 person.Property(p => p.personId)
@@ -191,6 +193,7 @@ public class AppDbContext(DbContextOptions options) : DbContext(options)
                     .IsRequired();
             });
 
+            // FK: MemberType
             entity.Property(m => m.MemberTypeId)
                 .HasColumnName("type")
                 .IsRequired();
@@ -200,6 +203,7 @@ public class AppDbContext(DbContextOptions options) : DbContext(options)
                 .HasForeignKey(m => m.MemberTypeId)
                 .OnDelete(DeleteBehavior.Restrict);
         });
+
 
         //ORGANIZATION INVITATION
         builder.Entity<OrganizationInvitation>(entity =>

@@ -1,6 +1,15 @@
 ﻿namespace Platform.API.Shared.Domain.Repositories.Model.ValueObjects;
 
-public record OrganizationId(long organizationId)
+public class OrganizationId
 {
-    public OrganizationId() : this(0){}
+    public long organizationId { get; private set; }
+
+    public OrganizationId(long value)
+    {
+        organizationId = value;
+    }
+
+    public OrganizationId() : this(0L) { }
+
+    public override string ToString() => organizationId.ToString();
 }
