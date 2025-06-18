@@ -14,6 +14,11 @@ using Platform.API.IAM.Infrastructure.Persistence.EFC.Repositories;
 using Platform.API.IAM.Infrastructure.Pipeline.Middleware.Extensions;
 using Platform.API.IAM.Infrastructure.Tokens.JWT.Configuration;
 using Platform.API.IAM.Infrastructure.Tokens.JWT.Services;
+using Platform.API.Organizations.Application.Internal.CommandServices;
+using Platform.API.Organizations.Application.Internal.QueryServices;
+using Platform.API.Organizations.Domain.Repositories;
+using Platform.API.Organizations.Domain.Services;
+using Platform.API.Organizations.Infrastructure.Persistence.EFC.Repositories;
 using Platform.API.Shared.Domain.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -109,6 +114,14 @@ builder.Services.AddScoped<IUserAccountCommandService, UserAccountCommandService
 builder.Services.AddScoped<IUserAccountQueryService, UserAccountQueryService>();
 builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped<IHashingService, HashingService>();
+
+// Organization Configuration
+builder.Services.AddScoped<IOrganizationRepository, OrganizationRepository>();
+builder.Services.AddScoped<IOrganizationQueryService, OrganizationQueryService>();
+builder.Services.AddScoped<IOrganizationCommandService, OrganizationCommandService>();
+builder.Services.AddScoped<IOrganizationStatusRepository, OrganizationStatusRepository>();
+builder.Services.AddScoped<IOrganizationMemberRepository, OrganizationMemberRepository>();
+builder.Services.AddScoped<IOrganizationMemberTypeRepository, OrganizationMemberTypeRepository>();
 
 // Add CORS Policy
 builder.Services.AddCors(options =>
