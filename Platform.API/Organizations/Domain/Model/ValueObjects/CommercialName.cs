@@ -6,10 +6,6 @@ public record CommercialName
     
     public CommercialName(string name)
     {
-        if (string.IsNullOrWhiteSpace(name))
-        {
-            throw new ArgumentException("Name is required", nameof(name));
-        }
         if (name.Length > 200)
         {
             throw new ArgumentException("Name must be less than 200 characters", nameof(name));

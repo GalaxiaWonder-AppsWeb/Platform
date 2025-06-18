@@ -53,13 +53,17 @@ public class OrganizationRepository(AppDbContext context) : BaseRepository<Organ
 
     public async Task<IEnumerable<Organization>> FindOrganizationsByOrganizationMemberPersonId(long memberPersonId)
     {
+        // 1. Buscar los IDs de organizaciones donde la persona es miembro
         var organizationIds = await Context.Set<OrganizationMember>()
-            .Where(om => om.PersonId.personId == memberPersonId)
-            .Select(om => om.OrganizationId.organizationId)
+            .Where(m => m.PersonId.personId == memberPersonId)
+            .Select(m => m.OrganizationId.organizationId)
+            .Distinct()
             .ToListAsync();
 
+        // 2. Obtener las organizaciones asociadas
         return await Context.Set<Organization>()
             .Where(o => organizationIds.Contains(o.Id))
             .ToListAsync();
     }
+
 }

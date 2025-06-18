@@ -36,6 +36,14 @@ public partial class Organization
         Status = status;
     }
     
+    public Organization(LegalName legalName , CommercialName commercialName, RUC ruc, PersonId createdBy)
+    {
+        LegalName = legalName;
+        CommercialName = new CommercialName("");
+        Ruc = ruc;
+        CreatedBy = createdBy;
+    }
+    
     public Organization(LegalName legalName , RUC ruc, PersonId createdBy, OrganizationStatus status)
     {
         LegalName = legalName;
@@ -51,14 +59,9 @@ public partial class Organization
         CommercialName = commercialName;
     }
 
-    public void Deactivate()
+    public void AssignStatus(OrganizationStatus status)
     {
-        Status = new OrganizationStatus(OrganizationStatuses.INACTIVE);
-    }
-
-    public void Activate()
-    {
-        Status = new OrganizationStatus(OrganizationStatuses.ACTIVE);
+        Status = status;
     }
 
     public IReadOnlyList<long> OrganizationMemberIds => _organizationMemberIds.AsReadOnly();
