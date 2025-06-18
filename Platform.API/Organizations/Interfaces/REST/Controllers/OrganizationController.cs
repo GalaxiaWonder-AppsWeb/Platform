@@ -20,7 +20,6 @@ public class OrganizationController(
     IOrganizationCommandService organizationCommandService) : ControllerBase
 {
     [HttpPost("create-organization")]
-    [AllowAnonymous]
     [SwaggerOperation(
         Summary = "Create Organization",
         Description = "Create Organization with legal name, commercial name, ruc and owner",
@@ -37,6 +36,35 @@ public class OrganizationController(
         var organization = await organizationCommandService.Handle(createOrganizationCommand);
         var resource = OrganizationResourceFromEntityAssembler.ToResourceFromEntity(organization);
         return Ok(resource);
+    }
+
+    [HttpDelete("{id}")]
+    [SwaggerOperation(
+        Summary = "Eliminate Organization",
+        Description = "Eliminate Organization with id",
+        OperationId = "EliminateOrganization")]
+    [SwaggerResponse(200, "Organization eliminated", typeof(OrganizationResource))]
+    [SwaggerResponse(400, "Bad Request", typeof(string))]
+    public async Task<IActionResult> DeleteOrganization(long id)
+    {
+        var deleteOrganizationCommand = new DeleteOrganizationCommand(id);
+        await organizationCommandService.Handle(deleteOrganizationCommand);
+        return Ok("Organization eliminated");
+    }
+
+    [HttpPatch("{id}")]
+    [SwaggerOperation(
+        Summary = "Update Commercial name and/or Legal Name of an organization",
+        Description = "Update commercial name and legal name of an organization",
+        OperationId = "UpdateOrganization")]
+    [SwaggerResponse(200, "Organization updated", typeof(OrganizationResource))]
+    [SwaggerResponse(400, "Bad Request", typeof(string))]
+    public async Task<IActionResult> Handle(long id, 
+        [FromBody] UpdateOrganizationResource resource)
+    {
+        var command = new UpdateOrganizationCommand(id, resource.LegalName, resource.CommercialName);
+        var organization = await organizationCommandService.Handle(command);
+        return Ok(organization);
     }
 
     [HttpGet("{id}")]
