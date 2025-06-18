@@ -20,7 +20,6 @@ public class OrganizationController(
     IOrganizationCommandService organizationCommandService) : ControllerBase
 {
     [HttpPost("create-organization")]
-    [AllowAnonymous]
     [SwaggerOperation(
         Summary = "Create Organization",
         Description = "Create Organization with legal name, commercial name, ruc and owner",
@@ -40,7 +39,6 @@ public class OrganizationController(
     }
 
     [HttpDelete("{id}")]
-    [AllowAnonymous]
     [SwaggerOperation(
         Summary = "Eliminate Organization",
         Description = "Eliminate Organization with id",
@@ -55,7 +53,6 @@ public class OrganizationController(
     }
 
     [HttpPatch("{id}")]
-    [AllowAnonymous]
     [SwaggerOperation(
         Summary = "Update Commercial name and/or Legal Name of an organization",
         Description = "Update commercial name and legal name of an organization",
