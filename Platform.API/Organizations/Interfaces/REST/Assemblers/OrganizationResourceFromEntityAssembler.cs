@@ -10,13 +10,13 @@ public static class OrganizationResourceFromEntityAssembler
         return new OrganizationResource(
             org.Id,
             org.LegalName.Name,
-            org.CommercialName.Name,
+            org.CommercialName?.Name ?? "",
             org.Ruc.Number,
             org.CreatedBy.personId,
-            org.OrganizationStatusId,
+            org.Status.Id,
             org.Status.Name.ToString(),
-            org.OrganizationMemberIds,
-            org.OrganizationInvitationIds
+            org.OrganizationMemberIds.ToList(),
+            org.OrganizationInvitationIds.ToList()
         );
     }
 }

@@ -63,6 +63,11 @@ public class OrganizationRepository(AppDbContext context) : BaseRepository<Organ
         // 2. Obtener las organizaciones asociadas
         return await Context.Set<Organization>()
             .Where(o => organizationIds.Contains(o.Id))
+            .Include(o => o.Status)
+            .Include(o => o.Ruc)
+            .Include(o => o.LegalName)
+            .Include(o => o.CommercialName)
+            .Include(o => o.CreatedBy)
             .ToListAsync();
     }
 
