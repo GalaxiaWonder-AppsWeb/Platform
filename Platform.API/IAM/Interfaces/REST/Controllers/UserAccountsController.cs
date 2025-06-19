@@ -8,6 +8,11 @@ using Platform.API.IAM.Interfaces.REST.Resources;
 using Swashbuckle.AspNetCore.Annotations;
 
 namespace Platform.API.IAM.Interfaces.REST.Controllers;
+
+/// <summary>
+///     Controller responsible for handling operations related to <see cref="UserAccount"/> entities,
+///     such as retrieving a single account or listing all user accounts.
+/// </summary>
 [Authorize]
 [ApiController]
 [Route("api/v1/[controller]")]
@@ -15,6 +20,13 @@ namespace Platform.API.IAM.Interfaces.REST.Controllers;
 [SwaggerTag("Available User Accounts endpoints")]
 public class UserAccountsController(IUserAccountQueryService userAccountQueryService): ControllerBase
 {
+    /// <summary>
+    ///     Retrieves a user account by its unique identifier.
+    /// </summary>
+    /// <param name="id">The ID of the user account to retrieve.</param>
+    /// <returns>
+    ///     A <see cref="UserAccountResource"/> if found; otherwise, appropriate error response.
+    /// </returns>
     [HttpGet("{id}")]
     [SwaggerOperation(
         Summary = "Get a user account by its id",
@@ -28,7 +40,13 @@ public class UserAccountsController(IUserAccountQueryService userAccountQuerySer
         var userAccountResource = UserAccountResourceFromEntityAssembler.ToResourceFromEntity(userAccount!);
         return Ok(userAccountResource);
     }
-
+    
+    /// <summary>
+    ///     Retrieves a list of all user accounts in the system.
+    /// </summary>
+    /// <returns>
+    ///     A collection of <see cref="UserAccountResource"/> items.
+    /// </returns>
     [HttpGet]
     [SwaggerOperation(
         Summary = "Get all user accounts",

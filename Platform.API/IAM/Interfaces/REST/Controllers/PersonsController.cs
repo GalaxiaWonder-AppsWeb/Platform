@@ -9,6 +9,10 @@ using Swashbuckle.AspNetCore.Annotations;
 
 namespace Platform.API.IAM.Interfaces.REST.Controllers;
 
+/// <summary>
+///     Controller responsible for handling operations related to <see cref="Person"/> entities,
+///     such as retrieving a single person or listing all persons.
+/// </summary>
 [Authorize]
 [ApiController]
 [Route("api/v1/[controller]")]
@@ -16,6 +20,13 @@ namespace Platform.API.IAM.Interfaces.REST.Controllers;
 [SwaggerTag("Available Person endpoints")]
 public class PersonsController(IPersonQueryService personQueryService) : ControllerBase 
 {
+    /// <summary>
+    ///     Retrieves a person by their unique identifier.
+    /// </summary>
+    /// <param name="id">The ID of the person to retrieve.</param>
+    /// <returns>
+    ///     A <see cref="PersonResource"/> if found; otherwise, a 404 Not Found or appropriate status.
+    /// </returns>
     [HttpGet("{id}")]
     [SwaggerOperation(
         Summary = "Get a person by its id",
@@ -30,6 +41,12 @@ public class PersonsController(IPersonQueryService personQueryService) : Control
         return Ok(personResource);
     }
     
+    /// <summary>
+    ///     Retrieves a list of all persons registered in the system.
+    /// </summary>
+    /// <returns>
+    ///     A collection of <see cref="PersonResource"/> items.
+    /// </returns>
     [HttpGet]
     [SwaggerOperation(
         Summary = "Get all persons",

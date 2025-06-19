@@ -9,6 +9,10 @@ using Swashbuckle.AspNetCore.Annotations;
 
 namespace Platform.API.IAM.Interfaces.REST.Controllers;
 
+/// <summary>
+///     Controller responsible for handling operations related to <see cref="UserType"/> entities,
+///     such as retrieving a specific user type or listing all available user types.
+/// </summary>
 [Authorize]
 [ApiController]
 [Route("api/v1/[controller]")]
@@ -16,6 +20,13 @@ namespace Platform.API.IAM.Interfaces.REST.Controllers;
 [SwaggerTag("Available User Types endpoints")]
 public class UserTypeController(IUserTypeQueryService userTypeQueryService) : ControllerBase
 {
+    /// <summary>
+    ///     Retrieves a user type by its unique identifier.
+    /// </summary>
+    /// <param name="id">The ID of the user type to retrieve.</param>
+    /// <returns>
+    ///     A <see cref="UserTypeResource"/> if found; otherwise, a not found or error response.
+    /// </returns>
     [HttpGet("{id}")]
     [SwaggerOperation(
         Summary = "Get a user type by its id",
@@ -30,6 +41,12 @@ public class UserTypeController(IUserTypeQueryService userTypeQueryService) : Co
         return Ok(userTypeResource);
     }
 
+    /// <summary>
+    ///     Retrieves a list of all user types available in the system.
+    /// </summary>
+    /// <returns>
+    ///     A collection of <see cref="UserTypeResource"/> items.
+    /// </returns>
     [HttpGet]
     [SwaggerOperation(
         Summary = "Get all user types",
