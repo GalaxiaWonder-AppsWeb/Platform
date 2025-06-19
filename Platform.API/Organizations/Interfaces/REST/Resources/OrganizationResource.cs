@@ -9,4 +9,5 @@ public record OrganizationResource(
     long OrganizationStatusId,
     string StatusName,
     IEnumerable<long> OrganizationMemberIds,
-    IEnumerable<long> OrganizationInvitationIds);
+    IEnumerable<long> OrganizationInvitationIds,
+    DateTimeOffset CreatedAt);

@@ -11,9 +11,31 @@ public class OrganizationRepository(AppDbContext context) : BaseRepository<Organ
 {
     public new async Task<Organization?> FindByIdAsync(long id)
     {
-        return await context.Organizations
+        var organization = await context.Organizations
             .Include(o => o.Status)
+            .Include(o => o.Ruc)
+            .Include(o => o.LegalName)
+            .Include(o => o.CommercialName)
+            .Include(o => o.CreatedBy)
             .FirstOrDefaultAsync(o => o.Id == id);
+
+        if (organization == null) return null;
+
+        // Poblar los IDs manualmente
+        var memberIds = await Context.Set<OrganizationMember>()
+            .Where(m => m.OrganizationId.organizationId == organization.Id)
+            .Select(m => m.Id)
+            .ToListAsync();
+
+        var invitationIds = await Context.Set<OrganizationInvitation>()
+            .Where(i => i.OrganizationId.organizationId == organization.Id)
+            .Select(i => i.Id)
+            .ToListAsync();
+
+        organization.SetMemberIds(memberIds);
+        organization.SetInvitationIds(invitationIds);
+
+        return organization;
     }
     
     public bool ExistsByRuc(string ruc)
@@ -58,15 +80,13 @@ public class OrganizationRepository(AppDbContext context) : BaseRepository<Organ
 
     public async Task<IEnumerable<Organization>> FindOrganizationsByOrganizationMemberPersonId(long memberPersonId)
     {
-        // 1. Buscar los IDs de organizaciones donde la persona es miembro
         var organizationIds = await Context.Set<OrganizationMember>()
             .Where(m => m.PersonId.personId == memberPersonId)
             .Select(m => m.OrganizationId.organizationId)
             .Distinct()
             .ToListAsync();
 
-        // 2. Obtener las organizaciones asociadas
-        return await Context.Set<Organization>()
+        var organizations = await Context.Organizations
             .Where(o => organizationIds.Contains(o.Id))
             .Include(o => o.Status)
             .Include(o => o.Ruc)
@@ -74,6 +94,25 @@ public class OrganizationRepository(AppDbContext context) : BaseRepository<Organ
             .Include(o => o.CommercialName)
             .Include(o => o.CreatedBy)
             .ToListAsync();
+
+        foreach (var org in organizations)
+        {
+            var memberIds = await Context.Set<OrganizationMember>()
+                .Where(m => m.OrganizationId.organizationId == org.Id)
+                .Select(m => m.Id)
+                .ToListAsync();
+
+            var invitationIds = await Context.Set<OrganizationInvitation>()
+                .Where(i => i.OrganizationId.organizationId == org.Id)
+                .Select(i => i.Id)
+                .ToListAsync();
+
+            org.SetMemberIds(memberIds);
+            org.SetInvitationIds(invitationIds);
+        }
+
+        return organizations;
     }
+
 
 }

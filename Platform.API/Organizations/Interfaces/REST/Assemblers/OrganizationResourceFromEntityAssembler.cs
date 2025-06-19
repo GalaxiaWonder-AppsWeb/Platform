@@ -16,7 +16,8 @@ public static class OrganizationResourceFromEntityAssembler
             org.Status.Id,
             org.Status.Name.ToString(),
             org.OrganizationMemberIds.ToList(),
-            org.OrganizationInvitationIds.ToList()
+            org.OrganizationInvitationIds.ToList(),
+            org.CreatedDate.Value
         );
     }
 }

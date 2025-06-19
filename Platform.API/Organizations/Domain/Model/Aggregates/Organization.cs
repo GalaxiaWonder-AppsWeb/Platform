@@ -20,7 +20,7 @@ public partial class Organization
     public OrganizationStatus Status { get; private set; }
 
 
-    private readonly List<long> _organizationMemberIds = new();
+    private readonly List<long> _organizationMemberIds = new(); 
     private readonly List<long> _organizationInvitationIds = new();
 
     public Organization()
@@ -82,4 +82,18 @@ public partial class Organization
         if (!_organizationInvitationIds.Contains(invitationId))
             _organizationInvitationIds.Add(invitationId);
     }
+    
+    public void SetMemberIds(IEnumerable<long> ids)
+    {
+        _organizationMemberIds.Clear();
+        _organizationMemberIds.AddRange(ids);
+    }
+
+    public void SetInvitationIds(IEnumerable<long> ids)
+    {
+        _organizationInvitationIds.Clear();
+        _organizationInvitationIds.AddRange(ids);
+    }
+
+
 }
