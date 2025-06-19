@@ -13,6 +13,5 @@ public interface IOrganizationCommandService
     Task<(Organization, OrganizationInvitation, ProfileDetails)> Handle(InvitePersonToOrganizationByEmailCommand command);
     Task<(Organization, OrganizationInvitation, ProfileDetails)> Handle(AcceptInvitationCommand command);
     Task<(Organization, OrganizationInvitation, ProfileDetails)> Handle(RejectInvitationCommand command);
-    
-    //DeleteOrganizationMemberCommand is not defined now.
+    Task Handle(DeleteOrganizationMemberCommand command);
 }

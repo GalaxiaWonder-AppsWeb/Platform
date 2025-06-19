@@ -194,5 +194,19 @@ public class OrganizationCommandService(
 
         return (organization, invitation, profileDetails);
     }
+    
+    public async Task Handle(DeleteOrganizationMemberCommand command)
+    {
+        var member = await organizationMemberRepository.FindByIdAsync(command.OrganizationMemberId)
+                     ?? throw new Exception($"Organization member with ID {command.OrganizationMemberId} not found");
+
+        if (member.MemberType.Name.ToString().Equals("CONTRACTOR")) 
+            throw new Exception("Only contract members can be deleted");
+        
+        organizationMemberRepository.Remove(member);
+
+        await unitOfWork.CompleteAsync();
+    }
+
 
 }
