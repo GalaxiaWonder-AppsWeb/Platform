@@ -18,7 +18,8 @@ public static class OrganizationInvitationWithDetailsAssembler
             OrganizationName = organization.LegalName.Name,
             InvitedByFullName = $"{invitedBy.Fullname}",
             InvitedByEmail = invitedBy.Email.Address,
-            Status = invitation.Status.Name.ToString()
+            Status = invitation.Status.Name.ToString(),
+            InvitedOn = invitation.CreatedDate.Value
         };
     }
 }

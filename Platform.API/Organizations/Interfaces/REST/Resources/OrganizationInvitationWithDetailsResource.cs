@@ -7,4 +7,5 @@ public class OrganizationInvitationWithDetailsResource
     public string InvitedByFullName { get; set; } = string.Empty;
     public string InvitedByEmail { get; set; } = string.Empty;
     public string Status { get; set; } = string.Empty;
+    public DateTimeOffset InvitedOn { get; set; }
 }
