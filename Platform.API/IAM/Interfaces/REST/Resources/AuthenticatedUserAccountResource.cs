@@ -1,7 +1,7 @@
 ﻿namespace Platform.API.IAM.Interfaces.REST.Resources;
 
 /// <summary>
-///     Data transfer object (DTO) representing an authenticated user account,
+///     Resource representing an authenticated user account,
 ///     including identity, role, and access token information.
 /// </summary>
 /// <param name="Id">The unique identifier of the user account.</param>

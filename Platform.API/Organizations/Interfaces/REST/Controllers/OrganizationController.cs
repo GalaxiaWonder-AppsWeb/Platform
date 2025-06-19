@@ -12,6 +12,10 @@ using Swashbuckle.AspNetCore.Annotations;
 
 namespace Platform.API.Organizations.Interfaces.REST.Controllers;
 
+/// <summary>
+/// Controller that provides RESTful endpoints to manage organizations,
+/// including creation, update, deletion, invitations, and membership operations.
+/// </summary>
 [Authorize]
 [ApiController]
 [Route("api/v1/[controller]")]
@@ -21,6 +25,9 @@ public class OrganizationController(
     IOrganizationQueryService organizationQueryService,
     IOrganizationCommandService organizationCommandService) : ControllerBase
 {
+    /// <summary>
+    /// Creates a new organization with legal name, commercial name, RUC, and owner.
+    /// </summary>
     [HttpPost("create-organization")]
     [SwaggerOperation(
         Summary = "Create Organization",
@@ -40,6 +47,9 @@ public class OrganizationController(
         return Ok(resource);
     }
 
+    /// <summary>
+    /// Deletes an organization by its identifier.
+    /// </summary>
     [HttpDelete("{id}")]
     [SwaggerOperation(
         Summary = "Eliminate Organization",
@@ -54,6 +64,9 @@ public class OrganizationController(
         return Ok("Organization eliminated");
     }
 
+    /// <summary>
+    /// Updates the legal and/or commercial name of an organization.
+    /// </summary>
     [HttpPatch("{id}")]
     [SwaggerOperation(
         Summary = "Update Commercial name and/or Legal Name of an organization",
@@ -69,6 +82,9 @@ public class OrganizationController(
         return Ok(organization);
     }
 
+    /// <summary>
+    /// Gets the details of an organization by ID.
+    /// </summary>
     [HttpGet("{id}")]
     [SwaggerOperation(
         Summary = "Get Organization by Id",
@@ -86,6 +102,9 @@ public class OrganizationController(
         return Ok(resource);
     }
     
+    /// <summary>
+    /// Gets all organizations where the specified person is a member.
+    /// </summary>
     [HttpGet("by-member-person-id/{id}")]
     [SwaggerOperation(
         Summary = "Get an Organization by Person Id",
@@ -106,6 +125,9 @@ public class OrganizationController(
         return Ok(resources);
     }
     
+    /// <summary>
+    /// Sends an invitation to a person to join an organization by email.
+    /// </summary>
     [HttpPost("invitations")]
     [SwaggerOperation(
         Summary = "Invite a person to an organization",
@@ -130,6 +152,9 @@ public class OrganizationController(
         }
     }
     
+    /// <summary>
+    /// Accepts an organization invitation by invitation ID.
+    /// </summary>
     [HttpPatch("invitations/{id}/accept")]
     [SwaggerOperation(
         Summary = "Accept an organization invitation",
@@ -153,6 +178,9 @@ public class OrganizationController(
         }
     }
 
+    /// <summary>
+    /// Rejects an organization invitation by invitation ID.
+    /// </summary>
     [HttpPatch("invitations/{id}/reject")]
     [SwaggerOperation(
         Summary = "Reject an organization invitation",
@@ -169,6 +197,9 @@ public class OrganizationController(
         return Ok(response);
     }
 
+    /// <summary>
+    /// Gets all invitations associated with an organization by its ID.
+    /// </summary>
     [HttpGet("{id}/invitations")]
     [SwaggerOperation(
         Summary = "Get all organization invitations",
@@ -191,6 +222,9 @@ public class OrganizationController(
         return Ok(resources);
     }
 
+    /// <summary>
+    /// Gets all members of an organization by its ID.
+    /// </summary>
     [HttpGet("{id}/members")]
     [SwaggerOperation(
         Summary = "Get all organization members",
@@ -213,6 +247,9 @@ public class OrganizationController(
         return Ok(resources);
     }
     
+    /// <summary>
+    /// Deletes a member from the organization by their membership ID.
+    /// </summary>
     [HttpDelete("members/{id}")]
     [SwaggerOperation(
         Summary = "Remove a member from an organization",
@@ -228,6 +265,9 @@ public class OrganizationController(
         return Ok("Member eliminated");
     }
     
+    /// <summary>
+    /// Gets all invitations received by a specific person.
+    /// </summary>
     [HttpGet("persons/{id}/invitations")]
     [SwaggerOperation(
         Summary = "Get all invitations by person ID",
@@ -249,6 +289,4 @@ public class OrganizationController(
 
         return Ok(resources);
     }
-
-
 }

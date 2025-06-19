@@ -13,6 +13,9 @@ using Platform.API.Shared.Domain.Repositories.Model.ValueObjects;
 
 namespace Platform.API.Organizations.Application.Internal.CommandServices;
 
+/// <summary>
+/// Service responsible for handling all command operations related to Organizations, such as creation, update, invitation management, and deletion.
+/// </summary>
 public class OrganizationCommandService(
     IOrganizationRepository organizationRepository,
     IOrganizationMemberRepository organizationMemberRepository,
@@ -23,6 +26,12 @@ public class OrganizationCommandService(
     IUnitOfWork unitOfWork,
     IOrganizationStatusRepository organizationStatusRepository):IOrganizationCommandService
 {
+    /// <summary>
+    /// Handles the creation of a new organization along with its initial contractor member.
+    /// </summary>
+    /// <param name="command">The command containing the details to create the organization.</param>
+    /// <returns>The newly created organization.</returns>
+    /// <exception cref="Exception">Thrown when an organization with the same RUC already exists.</exception>
     public async Task<Organization> Handle(CreateOrganizationCommand command)
     {
         if (organizationRepository.ExistsByRuc(command.Ruc))
@@ -56,6 +65,11 @@ public class OrganizationCommandService(
         return organization;
     }
 
+    /// <summary>
+    /// Handles the deletion of an existing organization.
+    /// </summary>
+    /// <param name="command">The command containing the ID of the organization to delete.</param>
+    /// <exception cref="ArgumentException">Thrown if the organization does not exist.</exception>
     public async Task Handle(DeleteOrganizationCommand command)
     {
         var organization = await organizationRepository.FindByIdAsync(command.Id);
@@ -66,6 +80,12 @@ public class OrganizationCommandService(
         await unitOfWork.CompleteAsync();
     }
 
+    /// <summary>
+    /// Handles the update of an organization's legal and commercial names.
+    /// </summary>
+    /// <param name="command">The command containing updated organization details.</param>
+    /// <returns>The updated organization entity.</returns>
+    /// <exception cref="ArgumentException">Thrown when the organization is not found or an update error occurs.</exception>
     public async Task<Organization> Handle(UpdateOrganizationCommand command)
     {
         var organization = await organizationRepository.FindByIdAsync(command.Id);
@@ -90,6 +110,12 @@ public class OrganizationCommandService(
         }
     }
 
+    /// <summary>
+    /// Handles sending an invitation to a person to join an organization by email.
+    /// </summary>
+    /// <param name="command">The command with organization ID and target email address.</param>
+    /// <returns>A tuple containing the organization, the invitation, and the invitee's profile details.</returns>
+    /// <exception cref="Exception">Thrown when validation or persistence fails at any stage.</exception>
     public async Task<(Organization, OrganizationInvitation, ProfileDetails)> Handle(InvitePersonToOrganizationByEmailCommand command)
     {
         var person = await iamContext.GetProfileDetailsByEmailAsync(command.Email)
@@ -127,6 +153,12 @@ public class OrganizationCommandService(
         return (organization, persistedInvitation, profileDetails);
     }
 
+    /// <summary>
+    /// Handles the acceptance of an organization invitation and registers the person as a worker member.
+    /// </summary>
+    /// <param name="command">The command with the invitation ID to accept.</param>
+    /// <returns>A tuple with the organization, accepted invitation, and the profile of the new member.</returns>
+    /// <exception cref="Exception">Thrown when invitation or dependent data cannot be retrieved or processed.</exception>
     public async Task<(Organization, OrganizationInvitation, ProfileDetails)> Handle(AcceptInvitationCommand command)
     {
         var invitation = await organizationInvitationRepository.FindByIdAsync(command.Id)
@@ -160,6 +192,13 @@ public class OrganizationCommandService(
         return (organization, invitation, profileDetails);
     }
     
+    /// <summary>
+    /// Handles the rejection of a pending invitation.
+    /// </summary>
+    /// <param name="command">The command with the invitation ID to reject.</param>
+    /// <returns>A tuple with the organization, rejected invitation, and profile details.</returns>
+    /// <exception cref="Exception">Thrown when the invitation is not found or in an invalid state.</exception>
+    /// <exception cref="InvalidOperationException">Thrown when trying to reject a non-pending invitation.</exception>
     public async Task<(Organization, OrganizationInvitation, ProfileDetails)> Handle(RejectInvitationCommand command)
     {
         var invitation = await organizationInvitationRepository.FindByIdAsync(command.Id)
@@ -195,6 +234,11 @@ public class OrganizationCommandService(
         return (organization, invitation, profileDetails);
     }
     
+    /// <summary>
+    /// Handles the deletion of an organization member, as long as they are not a contractor.
+    /// </summary>
+    /// <param name="command">The command containing the ID of the member to delete.</param>
+    /// <exception cref="Exception">Thrown when the member is not found or is a contractor.</exception>
     public async Task Handle(DeleteOrganizationMemberCommand command)
     {
         var member = await organizationMemberRepository.FindByIdAsync(command.OrganizationMemberId)

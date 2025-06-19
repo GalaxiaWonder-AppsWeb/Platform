@@ -10,14 +10,20 @@ using Platform.API.Shared.Domain.Repositories.Model.ValueObjects;
 
 namespace Platform.API.Organizations.Infrastructure.Persistence.EFC.Repositories;
 
+/// <summary>
+/// Implementation of <see cref="IOrganizationInvitationRepository"/> using Entity Framework Core.
+/// </summary>
 public class OrganizationInvitationRepository(AppDbContext context) :  BaseRepository<OrganizationInvitation>(context), IOrganizationInvitationRepository
 {
+    /// <inheritdoc cref="FindByIdAsync"/>
     public new async Task<OrganizationInvitation?> FindByIdAsync(long id)
     {
         return await context.Set<OrganizationInvitation>()
             .Include(i => i.Status)
             .FirstOrDefaultAsync(i => i.Id == id);
     }
+    
+    /// <inheritdoc cref="FindInvitationsByMemberPersonId"/>
     public async Task<IEnumerable<OrganizationInvitation>> FindInvitationsByMemberPersonId(long personId)
     {
         return await context.OrganizationInvitations
@@ -26,6 +32,7 @@ public class OrganizationInvitationRepository(AppDbContext context) :  BaseRepos
             .ToListAsync();
     }
 
+    /// <inheritdoc cref="FindLatestInvitation"/>
     public async Task<OrganizationInvitation?> FindLatestInvitation(long organizationId, long personId)
     {
         return await context.OrganizationInvitations
@@ -34,6 +41,7 @@ public class OrganizationInvitationRepository(AppDbContext context) :  BaseRepos
             .FirstOrDefaultAsync();
     }
 
+    /// <inheritdoc cref="FindInvitationsByOrganizationId"/>
     public async Task<IEnumerable<OrganizationInvitation>> FindInvitationsByOrganizationId(long id)
     {
         return await context.Set<OrganizationInvitation>()
@@ -41,6 +49,8 @@ public class OrganizationInvitationRepository(AppDbContext context) :  BaseRepos
             .Where(i => i.OrganizationId.organizationId == id)
             .ToListAsync();
     }
+    
+    /// <inheritdoc cref="FindAllInvitationsWithDetailsByPersonIdAsync"/>
     public async Task<IEnumerable<(OrganizationInvitation, Organization, Person)>> FindAllInvitationsWithDetailsByPersonIdAsync(long personId)
     {
         // 1. Obtener todas las invitaciones hechas a la persona
@@ -82,8 +92,4 @@ public class OrganizationInvitationRepository(AppDbContext context) :  BaseRepos
 
         return result;
     }
-
-
-
-
 }

@@ -1,7 +1,7 @@
 ﻿namespace Platform.API.IAM.Interfaces.REST.Resources;
 
 /// <summary>
-///     Data transfer object (DTO) representing a person's basic information.
+///     Resource representing a person's basic information.
 /// </summary>
 /// <param name="Id">The unique identifier of the person.</param>
 /// <param name="FirstName">The first name of the person.</param>

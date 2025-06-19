@@ -9,6 +9,7 @@ namespace Platform.API.Organizations.Infrastructure.Persistence.EFC.Repositories
 
 public class OrganizationRepository(AppDbContext context) : BaseRepository<Organization>(context), IOrganizationRepository
 {
+    
     public new async Task<Organization?> FindByIdAsync(long id)
     {
         var organization = await context.Organizations

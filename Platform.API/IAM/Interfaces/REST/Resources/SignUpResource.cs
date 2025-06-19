@@ -4,7 +4,7 @@ using Platform.API.IAM.Domain.Model.ValueObjects;
 namespace Platform.API.IAM.Interfaces.REST.Resources;
 
 /// <summary>
-///     Data transfer object (DTO) representing the data required to register a new user account.
+///     Resource representing the data required to register a new user account.
 /// </summary>
 /// <param name="Username">The desired username for the new account.</param>
 /// <param name="Password">The plaintext password to be hashed and stored.</param>
