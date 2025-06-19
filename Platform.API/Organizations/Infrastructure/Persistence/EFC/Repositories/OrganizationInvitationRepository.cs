@@ -8,6 +8,12 @@ namespace Platform.API.Organizations.Infrastructure.Persistence.EFC.Repositories
 
 public class OrganizationInvitationRepository(AppDbContext context) :  BaseRepository<OrganizationInvitation>(context), IOrganizationInvitationRepository
 {
+    public new async Task<OrganizationInvitation?> FindByIdAsync(long id)
+    {
+        return await context.Set<OrganizationInvitation>()
+            .Include(i => i.Status)
+            .FirstOrDefaultAsync(i => i.Id == id);
+    }
     public async Task<IEnumerable<OrganizationInvitation>> FindInvitationsByMemberPersonId(long personId)
     {
         return await context.OrganizationInvitations

@@ -128,4 +128,44 @@ public class OrganizationController(
             return BadRequest(new { error = ex.Message });
         }
     }
+    
+    [HttpPatch("invitations/{id}/accept")]
+    [SwaggerOperation(
+        Summary = "Accept an organization invitation",
+        Description = "Accept an invitation to join an organization by invitation ID",
+        OperationId = "AcceptOrganizationInvitation")]
+    [SwaggerResponse(200, "Invitation accepted")]
+    [SwaggerResponse(400, "Bad Request", typeof(string))]
+    public async Task<IActionResult> AcceptInvitation([FromRoute] long id)
+    {
+        try
+        {
+            var command = new AcceptInvitationCommand(id);
+            var (organization, invitation, profileDetails) = await organizationCommandService.Handle(command);
+
+            var response = InvitePersonToOrganizationAssembler.ToResource(organization, invitation, profileDetails);
+            return Ok(response);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new { error = ex.Message });
+        }
+    }
+
+    [HttpPatch("invitations/{id}/reject")]
+    [SwaggerOperation(
+        Summary = "Reject an organization invitation",
+        Description = "Reject an invitation to join an organization by invitation ID",
+        OperationId = "RejectOrganizationInvitation")]
+    [SwaggerResponse(200, "Invitation rejected")]
+    [SwaggerResponse(400, "Bad Request", typeof(string))]
+    public async Task<IActionResult> RejectInvitation([FromRoute] long id)
+    {
+        var command = new RejectInvitationCommand(id);
+        var (organization, invitation, profileDetails) = await organizationCommandService.Handle(command);
+
+        var response = InvitePersonToOrganizationAssembler.ToResource(organization, invitation, profileDetails);
+        return Ok(response);
+    }
+
 }

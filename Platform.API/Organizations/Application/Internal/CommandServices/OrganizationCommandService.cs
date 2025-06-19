@@ -129,14 +129,15 @@ public class OrganizationCommandService(
 
     public async Task<(Organization, OrganizationInvitation, ProfileDetails)> Handle(AcceptInvitationCommand command)
     {
-        var organization = await organizationRepository.FindByInvitationIdAsync(command.Id)
-                           ?? throw new Exception($"No organization found for invitation id {command.Id}");
+        var invitation = await organizationInvitationRepository.FindByIdAsync(command.Id)
+                         ?? throw new Exception("Invitation doesn't exist");
+        
+        var organization = await organizationRepository.FindByIdAsync(invitation.OrganizationId.organizationId)
+                           ?? throw new Exception("Organization not found");
 
         var acceptedStatus = await organizationInvitationStatusRepository.FindByNameAsync("ACCEPTED")
                              ?? throw new Exception("Invitation status 'ACCEPTED' not found");
-
-        var invitation = await organizationInvitationRepository.FindByIdAsync(command.Id)
-                         ?? throw new Exception("Invitation doesn't exist");
+        
 
         var memberType = await organizationMemberTypeRepository.FindByNameAsync("WORKER")
                          ?? throw new Exception("'WORKER' role not found");
@@ -161,14 +162,25 @@ public class OrganizationCommandService(
     
     public async Task<(Organization, OrganizationInvitation, ProfileDetails)> Handle(RejectInvitationCommand command)
     {
-        var organization = await organizationRepository.FindByInvitationIdAsync(command.Id)
-                           ?? throw new Exception($"No organization found for the given invitation id: {command.Id}");
-
-        var rejectedStatus = await organizationInvitationStatusRepository.FindByNameAsync("REJECTED")
-                             ?? throw new Exception("Invitation status 'REJECTED' not found");
-
         var invitation = await organizationInvitationRepository.FindByIdAsync(command.Id)
                          ?? throw new Exception("Invitation doesn't exist");
+        if (invitation.OrganizationId == null)
+            throw new Exception("Invitation.OrganizationId is null");
+
+        if (invitation.Status == null)
+            throw new Exception("Invitation.Status is null");
+
+        if (invitation.Status.Name == null)
+            throw new Exception("Invitation.Status.Name is null");
+
+        if (invitation.PersonId == null)
+            throw new Exception("Invitation.PersonId is null");
+
+        var organization = await organizationRepository.FindByIdAsync(invitation.OrganizationId.organizationId)
+                           ?? throw new Exception("Organization not found");
+        var rejectedStatus = await organizationInvitationStatusRepository.FindByNameAsync(nameof(OrganizationInvitationStatuses.REJECTED))
+                             ?? throw new Exception($"Invitation status '{nameof(OrganizationInvitationStatuses.REJECTED)}' not found");
+
 
         if (invitation.Status.Name.ToString() != "PENDING")
             throw new InvalidOperationException("Only pending invitations can be rejected");

@@ -5,6 +5,7 @@ namespace Platform.API.Organizations.Domain.Repositories;
 
 public interface IOrganizationInvitationRepository: IBaseRepository<OrganizationInvitation>
 {
+    new Task<OrganizationInvitation?> FindByIdAsync(long id);
     Task<IEnumerable<OrganizationInvitation>> FindInvitationsByMemberPersonId(long id);
 
     Task<OrganizationInvitation?> FindLatestInvitation(long organizationId, long personId);
