@@ -1,4 +1,6 @@
-﻿using Platform.API.IAM.Domain.Model.ValueObjects;
+﻿using Platform.API.IAM.Application.ACL;
+using Platform.API.IAM.Domain.Model.ValueObjects;
+using Platform.API.IAM.Interfaces.ACL;
 using Platform.API.Organizations.Domain.Model.Aggregates;
 using Platform.API.Organizations.Domain.Model.Commands;
 using Platform.API.Organizations.Domain.Model.Entities;
@@ -15,6 +17,9 @@ public class OrganizationCommandService(
     IOrganizationRepository organizationRepository,
     IOrganizationMemberRepository organizationMemberRepository,
     IOrganizationMemberTypeRepository organizationMemberTypeRepository,
+    IIAMContextFacade iamContext,
+    IOrganizationInvitationStatusRepository organizationInvitationStatusRepository,
+    IOrganizationInvitationRepository organizationInvitationRepository,
     IUnitOfWork unitOfWork,
     IOrganizationStatusRepository organizationStatusRepository):IOrganizationCommandService
 {
@@ -85,5 +90,97 @@ public class OrganizationCommandService(
         }
     }
 
+    public async Task<(Organization, OrganizationInvitation, ProfileDetails)> Handle(InvitePersonToOrganizationByEmailCommand command)
+    {
+        var person = await iamContext.GetProfileDetailsByEmailAsync(command.Email)
+                     ?? throw new Exception("Unable to get profile details");
+
+        var personId = new PersonId(person.Id);
+
+        var organization = await organizationRepository.FindByIdAsync(command.OrganizationId)
+                           ?? throw new Exception("Organization doesn't exist");
+
+        var pendingStatus = await organizationInvitationStatusRepository.FindByNameAsync("PENDING")
+                            ?? throw new Exception("Invitation status 'PENDING' not found");
+
+        var invitation = new OrganizationInvitation(
+            new OrganizationId(organization.Id),
+            personId,
+            organization.CreatedBy,
+            pendingStatus
+        );
+
+        await organizationInvitationRepository.AddAsync(invitation);
+        await unitOfWork.CompleteAsync();
+
+        var persistedInvitation = await organizationInvitationRepository.FindLatestInvitation(
+            organization.Id, personId.personId
+        ) ?? throw new Exception("Failed to persist invitation");
+
+        organization.AddOrganizationInvitation(persistedInvitation.Id);
+        organizationRepository.Update(organization);
+        await unitOfWork.CompleteAsync();
+
+        var profileDetails = await iamContext.GetProfileDetailsByIdAsync(personId.personId)
+                             ?? throw new Exception("Failed to get profile details");
+
+        return (organization, persistedInvitation, profileDetails);
+    }
+
+    public async Task<(Organization, OrganizationInvitation, ProfileDetails)> Handle(AcceptInvitationCommand command)
+    {
+        var organization = await organizationRepository.FindByInvitationIdAsync(command.Id)
+                           ?? throw new Exception($"No organization found for invitation id {command.Id}");
+
+        var acceptedStatus = await organizationInvitationStatusRepository.FindByNameAsync("ACCEPTED")
+                             ?? throw new Exception("Invitation status 'ACCEPTED' not found");
+
+        var invitation = await organizationInvitationRepository.FindByIdAsync(command.Id)
+                         ?? throw new Exception("Invitation doesn't exist");
+
+        var memberType = await organizationMemberTypeRepository.FindByNameAsync("WORKER")
+                         ?? throw new Exception("'WORKER' role not found");
+
+        invitation.ChangeStatus(acceptedStatus);
+        organizationInvitationRepository.Update(invitation);
+
+        var organizationMember = new OrganizationMember(
+            new OrganizationId(organization.Id), 
+            new PersonId(invitation.PersonId.personId), 
+            memberType
+        );
+        await organizationMemberRepository.AddAsync(organizationMember);
+
+        await unitOfWork.CompleteAsync();
+
+        var profileDetails = await iamContext.GetProfileDetailsByIdAsync(invitation.PersonId.personId)
+                             ?? throw new Exception("Failed to retrieve profile details");
+
+        return (organization, invitation, profileDetails);
+    }
+    
+    public async Task<(Organization, OrganizationInvitation, ProfileDetails)> Handle(RejectInvitationCommand command)
+    {
+        var organization = await organizationRepository.FindByInvitationIdAsync(command.Id)
+                           ?? throw new Exception($"No organization found for the given invitation id: {command.Id}");
+
+        var rejectedStatus = await organizationInvitationStatusRepository.FindByNameAsync("REJECTED")
+                             ?? throw new Exception("Invitation status 'REJECTED' not found");
+
+        var invitation = await organizationInvitationRepository.FindByIdAsync(command.Id)
+                         ?? throw new Exception("Invitation doesn't exist");
+
+        if (invitation.Status.Name.ToString() != "PENDING")
+            throw new InvalidOperationException("Only pending invitations can be rejected");
+
+        invitation.ChangeStatus(rejectedStatus);
+        organizationInvitationRepository.Update(invitation);
+        await unitOfWork.CompleteAsync();
+
+        var profileDetails = await iamContext.GetProfileDetailsByIdAsync(invitation.PersonId.personId)
+                             ?? throw new Exception("Failed to retrieve profile details");
+
+        return (organization, invitation, profileDetails);
+    }
 
 }

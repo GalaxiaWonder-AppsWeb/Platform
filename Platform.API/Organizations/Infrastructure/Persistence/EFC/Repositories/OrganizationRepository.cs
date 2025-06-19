@@ -54,6 +54,12 @@ public class OrganizationRepository(AppDbContext context) : BaseRepository<Organ
             .FirstOrDefaultAsync(organization => organization.Ruc.Number.Equals(ruc));
     }
 
+    public async Task<Organization?> FindByInvitationIdAsync(long invitationId)
+    {
+        return await Context.Set<Organization>()
+            .FirstOrDefaultAsync(organization => organization.Id.Equals(invitationId));
+    }
+
     public async Task<Organization?> FindOrganizationByMemberId(long memberId)
     {
         var organizationId = await Context.Set<OrganizationMember>()

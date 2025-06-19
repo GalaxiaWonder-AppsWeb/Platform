@@ -20,6 +20,18 @@ public class IAMContextFacade(IPersonRepository personRepository) : IIAMContextF
         );
     }
 
+    public async Task<ProfileDetails?> GetProfileDetailsByEmailAsync(string email)
+    {
+        var person = await personRepository.FindByEmailAsync(email);
+        if (person is null) return null;
+
+        return new ProfileDetails(
+            person.Id,
+            person.Name.FirstName,
+            person.Name.LastName,
+            person.Email.Address);
+    }
+
     public async Task<List<ProfileDetails>> GetProfileDetailsByIdsAsync(IEnumerable<long> personIds)
     {
         var result = new List<ProfileDetails>();

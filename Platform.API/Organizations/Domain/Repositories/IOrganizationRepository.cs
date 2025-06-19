@@ -7,6 +7,8 @@ public interface IOrganizationRepository : IBaseRepository<Organization>
 {
     new Task<Organization?> FindByIdAsync(long id);
     
+    Task<Organization?> FindByInvitationIdAsync(long invitationId);
+    
     bool ExistsByRuc(string ruc);
     
     bool ExistsById(long id);

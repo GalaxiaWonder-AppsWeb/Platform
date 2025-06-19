@@ -23,27 +23,20 @@ public partial class OrganizationInvitation
     {
     }
 
-    public OrganizationInvitation(OrganizationId organizationId, PersonId personId, PersonId invitedBy)
+    public OrganizationInvitation(OrganizationId organizationId, PersonId personId, PersonId invitedBy, OrganizationInvitationStatus status)
     {
         OrganizationId = organizationId;
         PersonId = personId;
-        Status = new OrganizationInvitationStatus(OrganizationInvitationStatuses.PENDING);
+        Status = status;
         InvitedBy = invitedBy;
     }
 
-    public void Accept()
+    public void ChangeStatus(OrganizationInvitationStatus status)
     {
         if (Status.Name != OrganizationInvitationStatuses.PENDING)
             throw new InvalidOperationException("The invitation has already been answered.");
 
-        Status = new OrganizationInvitationStatus(OrganizationInvitationStatuses.ACCEPTED);
+        Status = status;
     }
-
-    public void Reject()
-    {
-        if (Status.Name != OrganizationInvitationStatuses.PENDING)
-            throw new InvalidOperationException("The invitation has already been answered.");
-
-        Status = new OrganizationInvitationStatus(OrganizationInvitationStatuses.REJECTED);
-    }
+    
 }
