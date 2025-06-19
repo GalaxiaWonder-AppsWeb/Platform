@@ -8,6 +8,6 @@ public class AuthenticatedUserResourceFromEntityAssembler
     public static AuthenticatedUserAccountResource ToResourceFromEntity(
         UserAccount userAccount, string token)
     {
-        return new AuthenticatedUserAccountResource(userAccount.Id, userAccount.Username.Username, userAccount.UserType.Name.ToString(), token);
+        return new AuthenticatedUserAccountResource(userAccount.Id, userAccount.Username.Username, userAccount.UserType.Name.ToString(), token, userAccount.PersonId.personId);
     }
 }
