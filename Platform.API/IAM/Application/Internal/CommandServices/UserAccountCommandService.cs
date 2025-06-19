@@ -10,6 +10,16 @@ using Platform.API.Shared.Domain.Repositories;
 
 namespace Platform.API.IAM.Application.Internal.CommandServices;
 
+/// <summary>
+///     Application service that handles user account-related commands,
+///     such as sign-in and sign-up processes.
+/// </summary>
+/// <param name="userAccountRepository">The repository for accessing user account entities.</param>
+/// <param name="userTypeRepository">The repository for retrieving user type entities.</param>
+/// <param name="personRepository">The repository for managing person entities.</param>
+/// <param name="tokenService">The service for generating authentication tokens.</param>
+/// <param name="hashingService">The service for hashing and verifying passwords.</param>
+/// <param name="unitOfWork">The unit of work for managing transactional operations.</param>
 public class UserAccountCommandService(
     IUserAccountRepository userAccountRepository,
     IUserTypeRepository userTypeRepository,
@@ -19,6 +29,15 @@ public class UserAccountCommandService(
     IUnitOfWork unitOfWork) 
     : IUserAccountCommandService
 {
+    /// <summary>
+    ///     Handles the sign-in command by verifying credentials and generating a JWT token.
+    /// </summary>
+    /// <param name="command">The sign-in command containing the email and password.</param>
+    /// <returns>
+    ///     A task representing the asynchronous operation.
+    ///     The task result contains the authenticated <see cref="UserAccount"/> and the JWT token string.
+    /// </returns>
+    /// <exception cref="Exception">Thrown if the credentials are invalid.</exception>
     public async Task<(UserAccount userAccount, string token)> Handle(SignInCommand command)
     {
         var userAccount = await userAccountRepository.FindByEmailAsync(command.Email);
@@ -29,6 +48,15 @@ public class UserAccountCommandService(
         return (userAccount, token);
     }
 
+    /// <summary>
+    ///     Handles the sign-up command by creating a new person and user account with hashed password,
+    ///     and associating the correct user type. The entire operation is transactional.
+    /// </summary>
+    /// <param name="command">The sign-up command containing user and personal data.</param>
+    /// <returns>A task representing the asynchronous operation.</returns>
+    /// <exception cref="Exception">
+    ///     Thrown if the username or email is already in use, or if any error occurs during the registration process.
+    /// </exception>
     public async Task Handle(SignUpCommand command)
     {
         if (userAccountRepository.ExistsByUserName(new UserName(command.Username)))
@@ -67,6 +95,4 @@ public class UserAccountCommandService(
             throw new Exception($"An error occurred during sign up: {e.Message}");
         }
     }
-
-
 }

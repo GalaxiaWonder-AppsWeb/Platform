@@ -8,6 +8,10 @@ using Platform.API.IAM.Interfaces.REST.Resources;
 
 namespace Platform.API.IAM.Interfaces.REST.Controllers;
 
+/// <summary>
+///     Controller responsible for handling authentication-related operations,
+///     including user sign-in and sign-up.
+/// </summary>
 [Authorize]
 [ApiController]
 [Route("api/v1/[controller]")]
@@ -15,6 +19,14 @@ namespace Platform.API.IAM.Interfaces.REST.Controllers;
 [SwaggerTag("Authentication endpoints")]
 public class AuthenticationController(IUserAccountCommandService userAccountCommandService) : ControllerBase 
 {
+    /// <summary>
+    ///     Signs in a user using provided credentials.
+    /// </summary>
+    /// <param name="signInResource">The credentials submitted by the user.</param>
+    /// <returns>
+    ///     Returns <see cref="AuthenticatedUserAccountResource"/> if authentication succeeds;
+    ///     otherwise, a <see cref="BadRequestResult"/> if authentication fails.
+    /// </returns>
     [HttpPost("sign-in")]
     [AllowAnonymous]
     [SwaggerOperation(
@@ -32,6 +44,13 @@ public class AuthenticationController(IUserAccountCommandService userAccountComm
         return Ok(resource);
     }
     
+    /// <summary>
+    ///     Registers a new user in the system.
+    /// </summary>
+    /// <param name="signUpResource">The registration data submitted by the user.</param>
+    /// <returns>
+    ///     Returns 201 Created if registration is successful; otherwise, 400 Bad Request if validation or creation fails.
+    /// </returns>
     [HttpPost("sign-up")]
     [AllowAnonymous]
     [SwaggerOperation(

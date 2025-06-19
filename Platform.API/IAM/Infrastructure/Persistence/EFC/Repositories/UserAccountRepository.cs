@@ -9,14 +9,31 @@ using Platform.API.IAM.Domain.Model.Entities;
 
 namespace Platform.API.IAM.Infrastructure.Persistence.EFC.Repositories;
 
+/// <summary>
+///     Repository implementation for managing <see cref="UserAccount"/> entities.
+/// </summary>
+/// <param name="context">The application's database context.</param>
 public class UserAccountRepository(AppDbContext context) : BaseRepository<UserAccount>(context), IUserAccountRepository
 {
+    /// <summary>
+    ///     Determines whether a user account with the specified username exists in the database.
+    /// </summary>
+    /// <param name="userName">The username to check.</param>
+    /// <returns><c>true</c> if a matching user account is found; otherwise, <c>false</c>.</returns>
     public bool ExistsByUserName(UserName userName)
     {
         return Context.Set<UserAccount>()
             .Any(userAccount => userAccount.Username.Username.Equals(userName.Username));
     }
 
+    /// <summary>
+    ///     Asynchronously finds a user account by its unique identifier, including its associated user type.
+    /// </summary>
+    /// <param name="id">The ID of the user account.</param>
+    /// <returns>
+    ///     A task representing the asynchronous operation.
+    ///     The task result contains the <see cref="UserAccount"/> with its user type if found; otherwise, <c>null</c>.
+    /// </returns>
     public async Task<UserAccount?> FindByIdWithUserTypeAsync(long id)
     {
         return await context.UserAccounts
@@ -24,6 +41,13 @@ public class UserAccountRepository(AppDbContext context) : BaseRepository<UserAc
             .FirstOrDefaultAsync(u => u.Id == id);
     }
 
+    /// <summary>
+    ///     Asynchronously retrieves all user accounts, including their associated user types.
+    /// </summary>
+    /// <returns>
+    ///     A task representing the asynchronous operation.
+    ///     The task result contains a collection of <see cref="UserAccount"/> entities with user types included.
+    /// </returns>
     public async Task<IEnumerable<UserAccount>> ListWithUserTypeAsync()
     {
         return await context.UserAccounts
@@ -31,6 +55,14 @@ public class UserAccountRepository(AppDbContext context) : BaseRepository<UserAc
             .ToListAsync();
     }
     
+    /// <summary>
+    ///     Asynchronously finds a user account by the email address of its associated person, including user type.
+    /// </summary>
+    /// <param name="email">The email address to search for.</param>
+    /// <returns>
+    ///     A task representing the asynchronous operation.
+    ///     The task result contains the <see cref="UserAccount"/> if found; otherwise, <c>null</c>.
+    /// </returns>
     public async Task<UserAccount?> FindByEmailAsync(string email)
     {
         var person = await context.Persons.FirstOrDefaultAsync(p => p.Email.Address == email);
@@ -40,8 +72,4 @@ public class UserAccountRepository(AppDbContext context) : BaseRepository<UserAc
             .Include(ua => ua.UserType) 
             .FirstOrDefaultAsync(ua => ua.PersonId.personId == person.Id);
     }
-
-
-
-
 }
