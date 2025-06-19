@@ -9,6 +9,13 @@ namespace Platform.API.Organizations.Infrastructure.Persistence.EFC.Repositories
 
 public class OrganizationMemberRepository(AppDbContext context) : BaseRepository<OrganizationMember>(context), IOrganizationMemberRepository
 {
+    public new async Task<OrganizationMember?> FindByIdAsync(long id)
+    {
+        return await context.Set<OrganizationMember>()
+            .Include(m => m.MemberType)
+            .FirstOrDefaultAsync(m => m.Id == id);
+    }
+
     public async Task<IEnumerable<OrganizationMember>> FindMembersByOrganizationId(long organizationId)
     {
         return await context.Set<OrganizationMember>()

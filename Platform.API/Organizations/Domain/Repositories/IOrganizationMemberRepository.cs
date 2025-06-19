@@ -6,5 +6,6 @@ namespace Platform.API.Organizations.Domain.Repositories;
 
 public interface IOrganizationMemberRepository: IBaseRepository<OrganizationMember>
 {
+    new Task<OrganizationMember?> FindByIdAsync(long id);
     Task<IEnumerable<OrganizationMember>> FindMembersByOrganizationId(long organizationId);
 }

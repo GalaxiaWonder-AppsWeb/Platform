@@ -212,5 +212,19 @@ public class OrganizationController(
 
         return Ok(resources);
     }
-
+    
+    [HttpDelete("members/{id}")]
+    [SwaggerOperation(
+        Summary = "Remove a member from an organization",
+        Description = "Removes a specific member from the organization using their ID",
+        OperationId = "RemoveOrganizationMember")]
+    [SwaggerResponse(204, "Member removed successfully")]
+    [SwaggerResponse(404, "Member not found", typeof(string))]
+    [SwaggerResponse(400, "Bad Request", typeof(string))]
+    public async Task<IActionResult> DeleteOrganizationMember(long id)
+    {
+        var command = new DeleteOrganizationMemberCommand(id);
+        await organizationCommandService.Handle(command);
+        return Ok("Member eliminated");
+    }
 }
