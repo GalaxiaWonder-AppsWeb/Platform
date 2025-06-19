@@ -1,4 +1,6 @@
-﻿using Platform.API.IAM.Interfaces.ACL;
+﻿using Platform.API.IAM.Domain.Model.Aggregates;
+using Platform.API.IAM.Domain.Model.ValueObjects;
+using Platform.API.IAM.Interfaces.ACL;
 using Platform.API.Organizations.Domain.Model.Aggregates;
 using Platform.API.Organizations.Domain.Model.Entities;
 using Platform.API.Organizations.Domain.Model.Queries;
@@ -62,6 +64,19 @@ public class OrganizationQueryService(
         }
 
         return results;
+    }
+
+    public async Task<IEnumerable<(OrganizationInvitation, Organization, Person)>> Handle(GetAllInvitationsByPersonIdQuery query)
+    {
+        var result = await organizationInvitationRepository.FindAllInvitationsWithDetailsByPersonIdAsync(query.PersonId);
+
+        return result.Select(tuple =>
+        {
+            var (invitation, organization, invitedBy) = tuple;
+            invitation.SetOrganization(new OrganizationId(organization.Id));
+            invitation.SetInvitedBy(new PersonId(invitedBy.Id));
+            return (invitation, organization, invitedBy);
+        }).ToList();
     }
 
 }

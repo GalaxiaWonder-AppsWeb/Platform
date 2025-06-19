@@ -1,4 +1,5 @@
-﻿using Platform.API.Organizations.Domain.Model.Aggregates;
+﻿using Platform.API.IAM.Domain.Model.Aggregates;
+using Platform.API.Organizations.Domain.Model.Aggregates;
 using Platform.API.Organizations.Domain.Model.Entities;
 using Platform.API.Organizations.Domain.Model.Queries;
 using Platform.API.Shared.Domain.Repositories.Model.ValueObjects;
@@ -12,4 +13,5 @@ public interface IOrganizationQueryService
     Task<IEnumerable<Organization>> Handle(GetAllOrganizationsByMemberPersonIdQuery query);
     Task<IEnumerable<(OrganizationInvitation, ProfileDetails)>> Handle(GetAllInvitationsByOrganizationIdQuery query);
     Task<IEnumerable<(OrganizationMember, ProfileDetails)>> Handle(GetAllMembersByOrganizationIdQuery query);
+    Task<IEnumerable<(OrganizationInvitation, Organization, Person)>> Handle(GetAllInvitationsByPersonIdQuery query);
 }

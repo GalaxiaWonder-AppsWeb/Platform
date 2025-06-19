@@ -227,4 +227,28 @@ public class OrganizationController(
         await organizationCommandService.Handle(command);
         return Ok("Member eliminated");
     }
+    
+    [HttpGet("persons/{id}/invitations")]
+    [SwaggerOperation(
+        Summary = "Get all invitations by person ID",
+        Description = "Returns all invitations received by a specific person, with organization and status info.",
+        OperationId = "GetAllInvitationsByPersonId"
+    )]
+    [SwaggerResponse(200, "List of invitations")]
+    [SwaggerResponse(404, "No invitations found")]
+    public async Task<IActionResult> GetAllInvitationsByPersonId(long id)
+    {
+        var query = new GetAllInvitationsByPersonIdQuery(id);
+        var result = await organizationQueryService.Handle(query);
+
+        if (!result.Any())
+            return NotFound($"No invitations found for person with ID {id}");
+
+        var resources = result.Select(tuple =>
+            OrganizationInvitationWithDetailsAssembler.ToResource(tuple.Item1, tuple.Item2, tuple.Item3));
+
+        return Ok(resources);
+    }
+
+
 }

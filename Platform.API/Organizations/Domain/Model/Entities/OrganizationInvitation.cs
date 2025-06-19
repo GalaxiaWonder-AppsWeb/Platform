@@ -38,5 +38,14 @@ public partial class OrganizationInvitation
 
         Status = status;
     }
+
+    public void SetOrganization(OrganizationId organizationId)
+    {
+        OrganizationId = organizationId;
+    }
     
+    public void SetInvitedBy(PersonId personId)
+    {
+        InvitedBy = personId;
+    }
 }
