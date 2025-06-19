@@ -191,6 +191,26 @@ public class OrganizationController(
         return Ok(resources);
     }
 
+    [HttpGet("{id}/members")]
+    [SwaggerOperation(
+        Summary = "Get all organization members",
+        Description = "Get all members of the specified organization along with their profile details",
+        OperationId = "GetAllOrganizationMembers"
+    )]
+    [SwaggerResponse(200, "All organization members")]
+    [SwaggerResponse(404, "Organization not found or has no members", typeof(string))]
+    public async Task<IActionResult> GetAllMembersByOrganizationId(long id)
+    {
+        var query = new GetAllMembersByOrganizationIdQuery(id);
+        var members = await organizationQueryService.Handle(query);
 
+        if (!members.Any())
+            return NotFound($"No members found for organization with ID {id}");
+
+        var resources = members
+            .Select(tuple => OrganizationMemberWithProfileAssembler.ToResource(tuple.Item1, tuple.Item2));
+
+        return Ok(resources);
+    }
 
 }
