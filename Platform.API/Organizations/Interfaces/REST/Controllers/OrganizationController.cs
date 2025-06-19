@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Platform.API.IAM.Infrastructure.Pipeline.Middleware.Attributes;
 using Platform.API.Organizations.Application.Internal.CommandServices;
 using Platform.API.Organizations.Domain.Model.Commands;
+using Platform.API.Organizations.Domain.Model.Entities;
 using Platform.API.Organizations.Domain.Model.Queries;
 using Platform.API.Organizations.Domain.Services;
 using Platform.API.Organizations.Interfaces.REST.Assemblers;
@@ -167,5 +168,29 @@ public class OrganizationController(
         var response = InvitePersonToOrganizationAssembler.ToResource(organization, invitation, profileDetails);
         return Ok(response);
     }
+
+    [HttpGet("{id}/invitations")]
+    [SwaggerOperation(
+        Summary = "Get all organization invitations",
+        Description = "Get all organization invitations",
+        OperationId = "GetAllOrganizationInvitations"
+        )]
+    [SwaggerResponse(200, "All organization invitations", typeof(IEnumerable<OrganizationInvitation>))]
+    [SwaggerResponse(404, "Organization not found", typeof(string))]
+    public async Task<IActionResult> GetAllInvitationsByOrganizationId(long id)
+    {
+        var query = new GetAllInvitationsByOrganizationIdQuery(id);
+        var invitations = await organizationQueryService.Handle(query);
+
+        if (!invitations.Any())
+            return NotFound($"No invitations found for organization with ID {id}");
+
+        var resources = invitations
+            .Select(tuple => OrganizationInvitationWithProfileAssembler.ToResource(tuple.Item1, tuple.Item2));
+
+        return Ok(resources);
+    }
+
+
 
 }
