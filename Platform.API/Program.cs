@@ -3,6 +3,7 @@ using Platform.API.Shared.Infrastructure.Persistence.EFC.Configuration;
 using Platform.API.Shared.Infrastructure.Persistence.EFC.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
+using Platform.API.IAM.Application.ACL;
 using Platform.API.IAM.Application.Internal.CommandServices;
 using Platform.API.IAM.Application.Internal.OutboundServices;
 using Platform.API.IAM.Application.Internal.QueryServices;
@@ -14,6 +15,7 @@ using Platform.API.IAM.Infrastructure.Persistence.EFC.Repositories;
 using Platform.API.IAM.Infrastructure.Pipeline.Middleware.Extensions;
 using Platform.API.IAM.Infrastructure.Tokens.JWT.Configuration;
 using Platform.API.IAM.Infrastructure.Tokens.JWT.Services;
+using Platform.API.IAM.Interfaces.ACL;
 using Platform.API.Organizations.Application.Internal.CommandServices;
 using Platform.API.Organizations.Application.Internal.QueryServices;
 using Platform.API.Organizations.Domain.Repositories;
@@ -104,6 +106,7 @@ builder.Services.AddScoped<IPersonQueryService, PersonQueryService > ();
 builder.Services.AddScoped<IUserTypeRepository, UserTypeRepository>();
 builder.Services.AddScoped<IUserTypeCommandService, UserTypeCommandService>();
 builder.Services.AddScoped<IUserTypeQueryService, UserTypeQueryService>();
+builder.Services.AddScoped<IIAMContextFacade, IAMContextFacade>();
 
 
 // TokenSettings Configuration
@@ -122,6 +125,8 @@ builder.Services.AddScoped<IOrganizationCommandService, OrganizationCommandServi
 builder.Services.AddScoped<IOrganizationStatusRepository, OrganizationStatusRepository>();
 builder.Services.AddScoped<IOrganizationMemberRepository, OrganizationMemberRepository>();
 builder.Services.AddScoped<IOrganizationMemberTypeRepository, OrganizationMemberTypeRepository>();
+builder.Services.AddScoped<IOrganizationInvitationRepository, OrganizationInvitationRepository>();
+builder.Services.AddScoped<IOrganizationInvitationStatusRepository, OrganizationInvitationStatusRepository>();
 
 // Add CORS Policy
 builder.Services.AddCors(options =>

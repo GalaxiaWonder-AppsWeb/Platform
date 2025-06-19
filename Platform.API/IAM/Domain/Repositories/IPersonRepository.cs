@@ -9,4 +9,6 @@ public interface IPersonRepository : IBaseRepository<Person>
     bool ExistsByEmail(EmailAddress email);
     
     bool ExistsByPhone(PhoneNumber phone);
+    
+    new Task<Person?> FindByEmailAsync(string email);
 }

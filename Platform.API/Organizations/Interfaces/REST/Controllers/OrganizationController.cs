@@ -1,6 +1,7 @@
 ﻿using System.Net.Mime;
 using Microsoft.AspNetCore.Mvc;
 using Platform.API.IAM.Infrastructure.Pipeline.Middleware.Attributes;
+using Platform.API.Organizations.Application.Internal.CommandServices;
 using Platform.API.Organizations.Domain.Model.Commands;
 using Platform.API.Organizations.Domain.Model.Queries;
 using Platform.API.Organizations.Domain.Services;
@@ -102,5 +103,29 @@ public class OrganizationController(
             .ToList();
 
         return Ok(resources);
+    }
+    
+    [HttpPost("invitations")]
+    [SwaggerOperation(
+        Summary = "Invite a person to an organization",
+        Description = "Invite a person to an organization",
+        OperationId = "InviteToOrganization")]
+    [SwaggerResponse(200, "Organization invited", typeof(OrganizationResource))]
+    [SwaggerResponse(400, "Bad Request", typeof(string))]
+    public async Task<IActionResult> InvitePersonToOrganization(
+        [FromBody] InvitePersonToOrganizationResource resource)
+    {
+        try
+        {
+            var command = new InvitePersonToOrganizationByEmailCommand(resource.OrganizationId, resource.Email);
+            var (organization, invitation, profileDetails) = await organizationCommandService.Handle(command);
+
+            var response = InvitePersonToOrganizationAssembler.ToResource(organization, invitation, profileDetails);
+            return CreatedAtAction(nameof(InvitePersonToOrganization), response);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new { error = ex.Message });
+        }
     }
 }

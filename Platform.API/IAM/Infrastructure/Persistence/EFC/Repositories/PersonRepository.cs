@@ -1,4 +1,5 @@
-﻿using Platform.API.IAM.Domain.Model.Aggregates;
+﻿using Microsoft.EntityFrameworkCore;
+using Platform.API.IAM.Domain.Model.Aggregates;
 using Platform.API.IAM.Domain.Model.ValueObjects;
 using Platform.API.IAM.Domain.Repositories;
 using Platform.API.Shared.Infrastructure.Persistence.EFC.Configuration;
@@ -16,5 +17,11 @@ public class PersonRepository(AppDbContext context) : BaseRepository<Person>(con
     public bool ExistsByPhone(PhoneNumber phone)
     {
         return Context.Set<Person>().Any(person => person.Phone.Equals(phone));
+    }
+
+    public new async Task<Person?> FindByEmailAsync(string email)
+    {
+        return await context.Persons
+            .FirstOrDefaultAsync(p => p.Email.Address == email);
     }
 }
