@@ -8,5 +8,5 @@ namespace Platform.API.Projects.Domain.Repositories;
 /// </summary>
 public interface IProjectRepository :IBaseRepository<Project>
 {
-    
+    Task<Project?> FindById(long id);
 }

@@ -26,14 +26,56 @@ public class ProjectController(
     public async Task<IActionResult> CreateProject(
         [FromBody] CreateProjectResource resource)
     {
-        var createProjectCommand = 
+        var createProjectCommand =
             CreateProjectCommandFromResourceAssembler.ToCommandFromResource(resource);
         var project = await projectCommandService.Handle(createProjectCommand);
         if (project is null)
         {
             return BadRequest("Project creation failed.");
         }
+
         var response = ProjectResourceFromEntityAssembler.ToResourceFromEntity(project);
         return Ok(response);
     }
+
+    [HttpPatch("{id}/name")]
+    [SwaggerOperation(
+        Summary = "Update Project Name",
+        Description = "Update the name of an existing project",
+        OperationId = "project-update-name")]
+    [SwaggerResponse(StatusCodes.Status200OK, "Project name updated successfully", typeof(ProjectResource))]
+    [SwaggerResponse(StatusCodes.Status400BadRequest, "Project update failed")]
+    public async Task<IActionResult> UpdateProjectName(
+        long id, [FromBody] UpdateProjectNameResource resource)
+    {
+        var command = UpdateProjectNameCommandFromResourceAssembler
+            .ToCommandFromResource(id, resource);
+        var project = await projectCommandService.Handle(command);
+        if (project is null)
+        {
+            return BadRequest("Project update failed.");
+        }
+        return Ok(project);
+    }
+    
+    [HttpPatch("{id}/description")]
+    [SwaggerOperation(
+        Summary = "Update Project Description",
+        Description = "Update the description of an existing project",
+        OperationId = "project-update-description")]
+    [SwaggerResponse(StatusCodes.Status200OK, "Project description updated successfully", typeof(ProjectResource))]
+    [SwaggerResponse(StatusCodes.Status400BadRequest, "Project update failed")]
+    public async Task<IActionResult> UpdateProjectDescription(
+        long id, [FromBody] UpdateProjectDescriptionResource resource)
+    {
+        var command = UpdateProjectDescriptionCommandFromResourceAssembler
+            .ToCommandFromResource(id, resource);
+        var project = await projectCommandService.Handle(command);
+        if (project is null)
+        {
+            return BadRequest("Project update failed.");
+        }
+        return Ok(project);
+    }
+
 }

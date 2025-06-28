@@ -49,4 +49,50 @@ public class ProjectCommandService(
         await unitOfWork.CompleteAsync();
         return project;
     }
+
+    /// <summary>
+    /// Handles the update of a project's name.
+    /// </summary>
+    /// <param name="command">
+    /// The command containing the project ID and new name.
+    /// </param>
+    /// <returns>
+    /// The updated project or null if the project was not found.
+    /// </returns>
+    /// <exception cref="Exception">
+    /// Throws an exception if the project with the specified ID is not found.
+    /// </exception>
+    public async Task<Project?> Handle(UpdateProjectNameCommand command)
+    {
+        var project = await projectRepository.FindById(command.Id);
+        if (project == null) throw new Exception($"Project with ID {command.Id} not found");
+        
+        project.UpdateProjectName(command.ProjectName);
+        projectRepository.Update(project);
+        await unitOfWork.CompleteAsync();
+        return project;
+    }
+    
+    /// <summary>
+    /// Handles the update of a project's description.
+    /// </summary>
+    /// <param name="command">
+    /// The command containing the project ID and new description.
+    /// </param>
+    /// <returns>
+    /// The updated project or null if the project was not found.
+    /// </returns>
+    /// <exception cref="Exception">
+    /// Throws an exception if the project with the specified ID is not found.
+    /// </exception>
+    public async Task<Project?> Handle(UpdateProjectDescriptionCommand command)
+    {
+        var project = await projectRepository.FindById(command.Id);
+        if (project == null) throw new Exception($"Project with ID {command.Id} not found");
+        
+        project.UpdateDescription(command.ProjectDescription);
+        projectRepository.Update(project);
+        await unitOfWork.CompleteAsync();
+        return project;
+    }
 }

@@ -18,4 +18,26 @@ public interface IProjectCommandService
     /// The newly created <see cref="Project"/> entity, or null if the creation failed.
     /// </returns>
     Task<Project?> Handle(CreateProjectCommand command);
+    
+    /// <summary>
+    /// Handles the update of the project name.
+    /// </summary>
+    /// <param name="command">
+    /// the command containing the project ID and the new name for the project.
+    /// </param>
+    /// <returns>
+    /// The updated <see cref="Project"/> entity, or null if the update failed.
+    /// </returns>
+    Task<Project?> Handle(UpdateProjectNameCommand command);
+    
+    /// <summary>
+    /// Handles the update of the project description.
+    /// </summary>
+    /// <param name="command">
+    /// The command containing the project ID and the new description for the project.
+    /// </param>
+    /// <returns>
+    /// The updated <see cref="Project"/> entity, or null if the update failed.
+    /// </returns>
+    Task<Project?> Handle(UpdateProjectDescriptionCommand command);
 }

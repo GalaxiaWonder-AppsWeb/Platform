@@ -2,4 +2,4 @@
 
 namespace Platform.API.Projects.Domain.Model.Commands;
 
-public record UpdateProjectNameCommand(ProjectName ProjectName);
+public record UpdateProjectNameCommand(long Id, ProjectName ProjectName);
