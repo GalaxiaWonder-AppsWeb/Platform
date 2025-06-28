@@ -34,4 +34,9 @@ public class ProjectStatus
     {
         Name = name;
     }
+    
+    public ProjectStatuses GetName()
+    {
+        return Name;
+    }
 }
