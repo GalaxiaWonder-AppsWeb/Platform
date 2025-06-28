@@ -18,5 +18,5 @@ public interface IProjectStatusRepository: IBaseRepository<ProjectStatus>
     /// <returns>
     /// The <see cref="ProjectStatus"/> if found; otherwise, <c>null</c>.
     /// </returns>
-    Task<ProjectStatus?> FindByName(ProjectStatuses name);
+    Task<ProjectStatus?> FindByName(string name);
 }

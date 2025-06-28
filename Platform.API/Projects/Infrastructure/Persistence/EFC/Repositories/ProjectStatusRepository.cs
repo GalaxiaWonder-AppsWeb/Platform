@@ -20,9 +20,9 @@ public class ProjectStatusRepository(AppDbContext context) : BaseRepository<Proj
     /// <returns>
     /// The matching <see cref="ProjectStatus"/> if found; otherwise, <c>null</c>.
     /// </returns>
-    public async Task<ProjectStatus?> FindByName(ProjectStatuses name)
+    public async Task<ProjectStatus?> FindByName(string name)
     {
         return await Context.Set<ProjectStatus>()
-            .FirstOrDefaultAsync(ps => ps.GetName() == name);
+            .FirstOrDefaultAsync(ps => ps.GetName().ToString() == name);
     }
 }

@@ -64,7 +64,6 @@ public partial class Project
         DateRange = command.DateRange;
         OrganizationId = command.OrganizationId;
         ContractingEntityId = command.ContractingEntityId;
-        Status = command.Status;
     }
 
     /// <summary>
