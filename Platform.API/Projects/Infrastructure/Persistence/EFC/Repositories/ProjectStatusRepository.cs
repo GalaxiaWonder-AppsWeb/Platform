@@ -23,6 +23,6 @@ public class ProjectStatusRepository(AppDbContext context) : BaseRepository<Proj
     public async Task<ProjectStatus?> FindByName(string name)
     {
         return await Context.Set<ProjectStatus>()
-            .FirstOrDefaultAsync(ps => ps.GetName().ToString() == name);
+            .FirstOrDefaultAsync(ps => ps.Name.ToString() == name);
     }
 }

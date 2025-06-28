@@ -17,7 +17,7 @@ public class ProjectStatus
     /// <summary>
     /// Enum description representing the status of the projects.
     /// </summary>
-    private ProjectStatuses Name { get; set; }
+    public ProjectStatuses Name { get; set; }
     
     /// <summary>
     /// Initializes a new empty instance of <see cref="ProjectStatus"/>.

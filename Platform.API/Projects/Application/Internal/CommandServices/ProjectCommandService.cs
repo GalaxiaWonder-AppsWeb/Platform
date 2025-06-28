@@ -38,7 +38,8 @@ public class ProjectCommandService(
     public async Task<Project?> Handle(CreateProjectCommand command)
     {
         var project = new Project(command);
-        var status = await projectStatusRepository.FindByName(command.Status.GetName().ToString());
+        var existingStatus = command.Status.Name.ToString();
+        var status = await projectStatusRepository.FindByName(existingStatus);
         if (status == null)
         {
             throw new Exception($"Project status {command.Status.GetName()} not found");

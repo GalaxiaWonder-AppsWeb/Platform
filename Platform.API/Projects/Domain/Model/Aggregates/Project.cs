@@ -19,33 +19,35 @@ public partial class Project
     /// <summary>
     /// Name of the project, encapsulated in a value object to ensure validation and immutability.
     /// </summary>
-    private ProjectName ProjectName { get; set; }
+    public ProjectName ProjectName { get; set; }
     
     /// <summary>
     /// Description of the project, encapsulated in a value object to ensure validation and immutability.
     /// </summary>
-    private Description Description { get; set; }
+    public Description Description { get; set; }
     
     /// <summary>
     /// Range of dates within the project will be done.
     /// </summary>
-    private DateRange DateRange { get; set; }
+    public DateRange DateRange { get; set; }
     
     /// <summary>
     /// Identifier of the organization that owns the project, encapsulated in a value object to ensure validation and immutability.
     /// </summary>
-    private OrganizationId OrganizationId { get; set; }
+    public OrganizationId OrganizationId { get; set; }
     
     /// <summary>
     /// Identifier of the person or entity in charge of contracting.
     /// </summary>
-    private PersonId ContractingEntityId { get; set; }
+    public PersonId ContractingEntityId { get; set; }
     
     /// <summary>
     /// Represents the current status of the project, encapsulated in a value object to ensure validation and immutability.
     /// </summary>
-    private ProjectStatus Status { get; set; }
+    public ProjectStatus Status { get; set; }
     
+    public long StatusId { get; set; }
+
     /// <summary>
     /// Default constructor for the <see cref="Project"/>.
     /// </summary>

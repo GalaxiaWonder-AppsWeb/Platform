@@ -26,9 +26,6 @@
     <ItemGroup>
       <Folder Include="Projects\Application\Internal\QueryServices\" />
       <Folder Include="Projects\Domain\Model\Queries\" />
-      <Folder Include="Projects\Interfaces\REST\Assemblers\" />
-      <Folder Include="Projects\Interfaces\REST\Controllers\" />
-      <Folder Include="Projects\Interfaces\REST\Resources\" />
     </ItemGroup>
 
 </Project>
