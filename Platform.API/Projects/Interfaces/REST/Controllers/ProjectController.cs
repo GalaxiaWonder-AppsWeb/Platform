@@ -78,4 +78,17 @@ public class ProjectController(
         return Ok(project);
     }
 
+    [HttpDelete("{id}")]
+    [SwaggerOperation(
+        Summary = "Delete a Project",
+        Description = "Delete an existing project",
+        OperationId = "project-delete")]
+    [SwaggerResponse(StatusCodes.Status200OK, "Project deleted successfully")]
+    [SwaggerResponse(StatusCodes.Status400BadRequest, "Project deletion failed")]
+    public async Task<IActionResult> DeleteProject(long id)
+    {
+        var command = DeleteProjectCommandFromResourceAssembler.ToCommandFromResource(id);
+        await projectCommandService.Handle(command);
+        return Ok("Project deleted successfully");
+    }
 }

@@ -95,4 +95,21 @@ public class ProjectCommandService(
         await unitOfWork.CompleteAsync();
         return project;
     }
+
+    /// <summary>
+    /// Handles the deletion of a project.
+    /// </summary>
+    /// <param name="command">
+    /// The command containing the project ID to delete.
+    /// </param>
+    /// <exception cref="Exception">
+    /// Throws an exception if the project with the specified ID is not found.
+    /// </exception>
+    public async Task Handle(DeleteProjectCommand command)
+    {
+        var project = await projectRepository.FindById(command.Id);
+        if (project == null) throw new Exception($"Project with ID {command.Id} not found");
+        projectRepository.Remove(project);
+        await unitOfWork.CompleteAsync();
+    }
 }
