@@ -25,7 +25,6 @@
 
     <ItemGroup>
       <Folder Include="Projects\Application\Internal\QueryServices\" />
-      <Folder Include="Projects\Domain\Model\Queries\" />
     </ItemGroup>
 
 </Project>
