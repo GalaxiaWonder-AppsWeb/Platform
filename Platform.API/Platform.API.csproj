@@ -23,4 +23,9 @@
         <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.12.0" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="Projects\Application\Internal\QueryServices\" />
+      <Folder Include="Projects\Domain\Model\Queries\" />
+    </ItemGroup>
+
 </Project>

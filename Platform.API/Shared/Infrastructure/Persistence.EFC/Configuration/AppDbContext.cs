@@ -6,6 +6,10 @@ using Platform.API.IAM.Domain.Model.ValueObjects;
 using Platform.API.Organizations.Domain.Model.Aggregates;
 using Platform.API.Organizations.Domain.Model.Entities;
 using Platform.API.Organizations.Domain.Model.ValueObjects;
+using Platform.API.Projects.Domain.Model.Aggregates;
+using Platform.API.Projects.Domain.Model.Entities;
+using Platform.API.Projects.Domain.Model.ValueObjects;
+using Platform.API.Shared.Infrastructure.Persistence.EFC.Configuration.Extensions;
 
 namespace Platform.API.Shared.Infrastructure.Persistence.EFC.Configuration;
 
@@ -22,6 +26,10 @@ public class AppDbContext(DbContextOptions options) : DbContext(options)
     public DbSet<Organization> Organizations { get; set; }
     public DbSet<OrganizationMember> OrganizationMembers { get; set; }
     public DbSet<OrganizationInvitation> OrganizationInvitations { get; set; }
+    
+    //PROJECT CONTEXT
+    public DbSet<Project> Projects { get; set; } = null!;
+    public DbSet<ProjectStatus> ProjectStatuss { get; set; } = null!;
 
     protected override void OnConfiguring(DbContextOptionsBuilder builder)
     {
@@ -32,6 +40,9 @@ public class AppDbContext(DbContextOptions options) : DbContext(options)
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
+        
+        base.OnModelCreating(builder);
+
         // PERSON
         builder.Entity<Person>(person =>
         {
@@ -299,6 +310,82 @@ public class AppDbContext(DbContextOptions options) : DbContext(options)
                 .IsRequired();
         });
         
+        // PROJECT
+        builder.Entity<Project>(entity =>
+        {
+            entity.ToTable("projects");
+
+            entity.HasKey(p => p.Id);
+
+            entity.Property(p => p.Id)
+                .HasColumnName("id")
+                .ValueGeneratedOnAdd();
+
+            entity.OwnsOne(p => p.ProjectName, name =>
+            {
+                name.Property(n => n.Value)
+                    .HasColumnName("name")
+                    .IsRequired();
+            });
+
+            entity.OwnsOne(p => p.Description, desc =>
+            {
+                desc.Property(d => d.Value)
+                    .HasColumnName("description");
+            });
+            
+            entity.OwnsOne(p => p.DateRange, range =>
+            {
+                range.Property(r => r.StartDate)
+                    .HasColumnName("starting_date")
+                    .IsRequired();
+                range.Property(r => r.EndDate)
+                    .HasColumnName("ending_date")
+                    .IsRequired();
+            });
+            
+
+            entity.OwnsOne(p => p.OrganizationId, owned =>
+            {
+                owned.Property(o => o.organizationId)
+                    .HasColumnName("organization_id")
+                    .IsRequired();
+            });
+            
+
+            entity.OwnsOne(p => p.ContractingEntityId, owned =>
+            {
+                owned.Property(o => o.personId)
+                    .HasColumnName("contracting_entity_id")
+                    .IsRequired();
+            });
+
+            entity.HasOne(p => p.Status)
+                .WithMany()
+                .HasForeignKey(p => p.StatusId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+
+
+        });
+        
+        //PROJECT STATUS
+        builder.Entity<ProjectStatus>(entity =>
+        {
+            entity.ToTable("project_statuses");
+
+            entity.HasKey(i => i.Id);
+
+            entity.Property(i => i.Id)
+                .HasColumnName("id")
+                .ValueGeneratedOnAdd();
+
+            entity.Property(i => i.Name)
+                .HasColumnName("name")
+                .HasConversion<string>()
+                .IsRequired();
+        });
+        
         //SETTEO DE DATA
         builder.Entity<OrganizationStatus>().HasData(
             new { Id = 1L, Name = OrganizationStatuses.ACTIVE },
@@ -311,13 +398,20 @@ public class AppDbContext(DbContextOptions options) : DbContext(options)
         );
 
        builder.Entity<OrganizationInvitationStatus>().HasData(
-            new { Id = 1L, Name = OrganizationInvitationStatuses.PENDING },
+            new { Id = 1L, Name = OrganizationInvitationStatuses.PENDING},
             new { Id = 2L, Name = OrganizationInvitationStatuses.ACCEPTED },
             new { Id = 3L, Name = OrganizationInvitationStatuses.REJECTED }
         );
+       
+       builder.Entity<ProjectStatus>().HasData(
+            new { Id = 1L, Name = ProjectStatuses.BASIC_STUDIES },
+            new { Id = 2L, Name = ProjectStatuses.DESIGN_IN_PROCESS },
+            new { Id = 3L, Name = ProjectStatuses.UNDER_REVIEW },
+            new { Id = 4L, Name = ProjectStatuses.CHANGE_REQUESTED },
+            new { Id = 5L, Name = ProjectStatuses.CHANGE_PENDING },
+            new { Id = 6L, Name = ProjectStatuses.APPROVED }
+        );
 
-        
-        base.OnModelCreating(builder);
     }
 
 }
