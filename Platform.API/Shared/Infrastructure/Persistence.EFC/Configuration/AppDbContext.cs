@@ -30,6 +30,7 @@ public class AppDbContext(DbContextOptions options) : DbContext(options)
     //PROJECT CONTEXT
     public DbSet<Project> Projects { get; set; } = null!;
     public DbSet<ProjectStatus> ProjectStatuss { get; set; } = null!;
+    public DbSet<ProjectTeamMember> ProjectTeamMembers { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder builder)
     {

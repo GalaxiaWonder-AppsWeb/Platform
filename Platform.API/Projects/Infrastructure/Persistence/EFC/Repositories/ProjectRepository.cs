@@ -17,4 +17,26 @@ public class ProjectRepository(AppDbContext context) : BaseRepository<Project>(c
             .Include(p => p.Status)
             .FirstOrDefaultAsync(p => p.Id == id);
     }
+    
+    public async Task<IEnumerable<Project>> FindAllProjectsByTeamMemberPersonIdAsync(long personId)
+    {
+        var projects = await context.Projects
+            .Join(
+                context.ProjectTeamMembers,
+                project => project.Id,
+                member => member.ProjectId.Value,
+                (project, member) => new { project, member }
+            )
+            .Where(x => x.member.PersonId.personId == personId)
+            .Select(x => x.project)
+            .Distinct()
+            .ToListAsync();
+
+        return projects;
+    }
+
+
+
+
+
 }
