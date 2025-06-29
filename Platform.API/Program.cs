@@ -22,6 +22,7 @@ using Platform.API.Organizations.Domain.Repositories;
 using Platform.API.Organizations.Domain.Services;
 using Platform.API.Organizations.Infrastructure.Persistence.EFC.Repositories;
 using Platform.API.Projects.Application.Internal.CommandServices;
+using Platform.API.Projects.Application.Internal.QueryServices;
 using Platform.API.Projects.Domain.Repositories;
 using Platform.API.Projects.Domain.Services;
 using Platform.API.Projects.Infrastructure.Persistence.EFC.Repositories;
@@ -134,9 +135,12 @@ builder.Services.AddScoped<IOrganizationInvitationStatusRepository, Organization
 
 //Project Configuration
 builder.Services.AddScoped<IProjectRepository, ProjectRepository>();
+builder.Services.AddScoped<IProjectTeamMemberRepository, ProjectTeamMemberRepository>();
 builder.Services.AddScoped<IProjectStatusRepository, ProjectStatusRepository>();
+builder.Services.AddScoped<ISpecialtyRepository, SpecialtyRepository>();
+builder.Services.AddScoped<IProjectTeamMemberCommandService, ProjectTeamMemberCommandService>();
 builder.Services.AddScoped<IProjectCommandService, ProjectCommandService>();
-
+builder.Services.AddScoped<IProjectQueryService, ProjectQueryService>();
 // Add CORS Policy
 builder.Services.AddCors(options =>
 {

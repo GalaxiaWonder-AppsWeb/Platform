@@ -31,7 +31,6 @@ public class AppDbContext(DbContextOptions options) : DbContext(options)
     public DbSet<Project> Projects { get; set; } = null!;
     public DbSet<ProjectStatus> ProjectStatuss { get; set; } = null!;
     public DbSet<ProjectTeamMember> ProjectTeamMembers { get; set; }
-
     protected override void OnConfiguring(DbContextOptionsBuilder builder)
     {
         // Add the created and updated interceptor
@@ -387,6 +386,68 @@ public class AppDbContext(DbContextOptions options) : DbContext(options)
                 .IsRequired();
         });
         
+        //PROJECT TEAM MEMBER
+        builder.Entity<ProjectTeamMember>(entity =>
+        {
+            entity.ToTable("project_team_members");
+
+            entity.HasKey(ptm => ptm.Id);
+
+            entity.Property(ptm => ptm.Id)
+                .HasColumnName("id")
+                .ValueGeneratedOnAdd();
+
+            entity.OwnsOne(ptm => ptm.ProjectId, proj =>
+            {
+                proj.Property(p => p.Value)
+                    .HasColumnName("project_id")
+                    .IsRequired();
+            });
+            
+            // FK: MemberType
+            entity.Property(m => m.SpecialtyId)
+                .HasColumnName("specialty_id")
+                .IsRequired();
+
+            entity.HasOne(m => m.Specialty)
+                .WithMany()
+                .HasForeignKey(m => m.SpecialtyId)
+                .OnDelete(DeleteBehavior.Restrict);
+            
+            entity.OwnsOne(ptm => ptm.OrganizationMemberId, member =>
+            {
+                member.Property(m => m.organizationMemberId)
+                    .HasColumnName("organization_member_id")
+                    .IsRequired();
+            });
+            
+            entity.OwnsOne(ptm => ptm.PersonId, member =>
+            {
+                member.Property(m => m.personId)
+                    .HasColumnName("person_id")
+                    .IsRequired();
+            });
+            
+            entity.OwnsOne(p => p.PersonName, desc =>
+            {
+                desc.Property(d => d.FirstName)
+                    .HasColumnName("first_name");
+            });
+            
+            entity.OwnsOne(p => p.PersonName, desc =>
+            {
+                desc.Property(d => d.LastName)
+                    .HasColumnName("last_name");
+            });
+            
+            
+            entity.OwnsOne(p => p.EmailAddress, desc =>
+            {
+                desc.Property(d => d.Address)
+                    .HasColumnName("email_address");
+            });
+        });
+        
         //SETTEO DE DATA
         builder.Entity<OrganizationStatus>().HasData(
             new { Id = 1L, Name = OrganizationStatuses.ACTIVE },
@@ -411,6 +472,17 @@ public class AppDbContext(DbContextOptions options) : DbContext(options)
             new { Id = 4L, Name = ProjectStatuses.CHANGE_REQUESTED },
             new { Id = 5L, Name = ProjectStatuses.CHANGE_PENDING },
             new { Id = 6L, Name = ProjectStatuses.APPROVED }
+        );
+       
+       builder.Entity<Specialty>().HasData(
+            new { Id = 1L, Name = Specialties.ARCHITECTURE },
+            new { Id = 2L, Name = Specialties.STRUCTURES },
+            new { Id = 3L, Name = Specialties.HSA },
+            new { Id = 4L, Name = Specialties.TOPOGRAPHY },
+            new { Id = 5L, Name = Specialties.SANITATION },
+            new { Id = 6L, Name = Specialties.ELECTRICITY },
+            new { Id = 7L, Name = Specialties.COMMUNICATIONS },
+            new { Id = 8L, Name = Specialties.NON_APPLICABLE }
         );
 
     }

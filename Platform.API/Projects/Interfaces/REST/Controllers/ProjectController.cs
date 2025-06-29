@@ -1,6 +1,7 @@
 ﻿using System.Net.Mime;
 using Microsoft.AspNetCore.Mvc;
 using Platform.API.IAM.Infrastructure.Pipeline.Middleware.Attributes;
+using Platform.API.Projects.Domain.Model.Queries;
 using Platform.API.Projects.Domain.Services;
 using Platform.API.Projects.Interfaces.REST.Assemblers;
 using Platform.API.Projects.Interfaces.REST.Resources;
@@ -14,7 +15,8 @@ namespace Platform.API.Projects.Interfaces.REST.Controllers;
 [Produces(MediaTypeNames.Application.Json)]
 [SwaggerTag("Available Project endpoints")]
 public class ProjectController(
-    IProjectCommandService projectCommandService) : ControllerBase
+    IProjectCommandService projectCommandService,
+    IProjectQueryService projectQueryService) : ControllerBase
 {
     [HttpPost]
     [SwaggerOperation(
@@ -90,5 +92,22 @@ public class ProjectController(
         var command = DeleteProjectCommandFromResourceAssembler.ToCommandFromResource(id);
         await projectCommandService.Handle(command);
         return Ok("Project deleted successfully");
+    }
+
+    [HttpGet("{id}")]
+    [SwaggerOperation(
+        Summary = "Get Project by ID",
+        Description = "Retrieve a project by its ID",
+        OperationId = "project-get-by-id")]
+    [SwaggerResponse(StatusCodes.Status200OK, "Project retrieved successfully", typeof(ProjectResource))]
+    [SwaggerResponse(StatusCodes.Status404NotFound, "Project not found")]
+    public async Task<IActionResult> GetProjectsByPersonId(long id)
+    {
+        var query = new GetAllProjectsByTeamMemberPersonIdQuery(id);
+        var projects = await projectQueryService.Handle(query);
+        var resources = projects
+            .Select(ProjectResourceFromEntityAssembler.ToResourceFromEntity)
+            .ToList();
+        return Ok(resources);
     }
 }

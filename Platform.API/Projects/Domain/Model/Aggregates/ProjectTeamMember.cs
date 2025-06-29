@@ -28,6 +28,8 @@ public partial class ProjectTeamMember
     /// </summary>
     public Specialty Specialty { get; private set; }
     
+    public long SpecialtyId { get; set; }
+    
     /// <summary>
     /// Identifier of the organization member, encapsulated in a value object to ensure validation and immutability.
     /// </summary>
