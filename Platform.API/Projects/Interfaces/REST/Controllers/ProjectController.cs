@@ -96,11 +96,11 @@ public class ProjectController(
 
     [HttpGet("{id}")]
     [SwaggerOperation(
-        Summary = "Get Project by ID",
-        Description = "Retrieve a project by its ID",
-        OperationId = "project-get-by-id")]
-    [SwaggerResponse(StatusCodes.Status200OK, "Project retrieved successfully", typeof(ProjectResource))]
-    [SwaggerResponse(StatusCodes.Status404NotFound, "Project not found")]
+        Summary = "Get Projects by personId",
+        Description = "Retrieve projects by a personId",
+        OperationId = "projects-get-by-person-id")]
+    [SwaggerResponse(StatusCodes.Status200OK, "Projects retrieved successfully", typeof(ProjectResource))]
+    [SwaggerResponse(StatusCodes.Status404NotFound, "Projects not found")]
     public async Task<IActionResult> GetProjectsByPersonId(long id)
     {
         var query = new GetAllProjectsByTeamMemberPersonIdQuery(id);
