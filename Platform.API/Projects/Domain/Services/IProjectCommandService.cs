@@ -48,4 +48,15 @@ public interface IProjectCommandService
     /// The command specifying the project to delete, including the project ID.
     /// </param>
     Task Handle(DeleteProjectCommand command);
+    
+    /// <summary>
+    /// Handles the update of the project status.
+    /// </summary>
+    /// <param name="command">
+    /// The command containing the project ID and the new status for the project.
+    /// </param>
+    /// <returns>
+    /// The updated <see cref="Project"/> entity, or null if the update failed.
+    /// </returns>
+    Task<Project?> Handle(UpdateProjectStatusCommand command);
 }

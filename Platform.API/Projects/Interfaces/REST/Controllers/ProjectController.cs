@@ -1,6 +1,7 @@
 ﻿using System.Net.Mime;
 using Microsoft.AspNetCore.Mvc;
 using Platform.API.IAM.Infrastructure.Pipeline.Middleware.Attributes;
+using Platform.API.Projects.Domain.Model.Commands;
 using Platform.API.Projects.Domain.Model.Queries;
 using Platform.API.Projects.Domain.Services;
 using Platform.API.Projects.Interfaces.REST.Assemblers;
@@ -59,7 +60,7 @@ public class ProjectController(
             return BadRequest("Project update failed.");
         }
 
-        return Ok(project);
+        return Ok("Name updated successfully : " + project.ProjectName.Value);
     }
 
     [HttpPatch("[controller]/{id}/description")]
@@ -80,7 +81,26 @@ public class ProjectController(
             return BadRequest("Project update failed.");
         }
 
-        return Ok(project);
+        return Ok("Description updated successfully : " + project.Description.Value);
+    }
+
+    [HttpPatch("[controller]/{projectId}/status")]
+    [SwaggerOperation(
+        Summary = "Update Project Status",
+        Description = "Update the status of an existing project",
+        OperationId = "project-update-status")]
+    [SwaggerResponse(StatusCodes.Status200OK, "Project status updated successfully", typeof(ProjectResource))]
+    [SwaggerResponse(StatusCodes.Status400BadRequest, "Project update failed")]
+    public async Task<IActionResult> UpdateProjectStatus(
+        long projectId, [FromBody] UpdateProjectStatusResource resource)
+    {
+        var command = UpdateProjectStatusCommandFromResourceAssembler.ToCommandFromResource(projectId, resource);
+        var project = await projectCommandService.Handle(command);
+        if (project is null)
+        {
+            return BadRequest("Project update failed.");
+        }
+        return Ok("Status updated successfully : " + project.Status.Name);
     }
 
     [HttpDelete("[controller]/{id}")]

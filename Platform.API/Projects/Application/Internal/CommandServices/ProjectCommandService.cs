@@ -50,17 +50,19 @@ public class ProjectCommandService(
         {
             throw new Exception($"Project status {command.Status.GetName()} not found");
         }
+
         var contractingEntity = await iamFacade.GetProfileDetailsByEmailAsync(command.ContractingEntityEmail.Address);
         if (contractingEntity == null)
         {
             throw new Exception($"Contracting entity with email {command.ContractingEntityEmail.Address} not found");
         }
+
         var contractingEntityId = new PersonId(contractingEntity.Id);
         project.ReassignStatus(status);
         project.SetContractingEntityId(contractingEntityId);
         await projectRepository.AddAsync(project);
         await unitOfWork.CompleteAsync();
-        
+
         // Publish the project created event
         var projectCreatedEvent = new ProjectCreatedDomainEvent(
             project.Id,
@@ -86,13 +88,13 @@ public class ProjectCommandService(
     {
         var project = await projectRepository.FindById(command.Id);
         if (project == null) throw new Exception($"Project with ID {command.Id} not found");
-        
+
         project.UpdateProjectName(command.ProjectName);
         projectRepository.Update(project);
         await unitOfWork.CompleteAsync();
         return project;
     }
-    
+
     /// <summary>
     /// Handles the update of a project's description.
     /// </summary>
@@ -109,7 +111,7 @@ public class ProjectCommandService(
     {
         var project = await projectRepository.FindById(command.Id);
         if (project == null) throw new Exception($"Project with ID {command.Id} not found");
-        
+
         project.UpdateDescription(command.ProjectDescription);
         projectRepository.Update(project);
         await unitOfWork.CompleteAsync();
@@ -132,4 +134,23 @@ public class ProjectCommandService(
         projectRepository.Remove(project);
         await unitOfWork.CompleteAsync();
     }
+
+    public async Task<Project?> Handle(UpdateProjectStatusCommand command)
+    {
+        var project = await projectRepository.FindById(command.Id);
+        if (project == null) throw new Exception($"Project with ID {command.Id} not found");
+
+        var existingStatus = command.Status.Name.ToString();
+        var status = await projectStatusRepository.FindByName(existingStatus);
+        if (status == null)
+        {
+            throw new Exception($"Project status {command.Status.GetName()} not found");
+        }
+
+        project.ReassignStatus(status);
+        projectRepository.Update(project);
+        await unitOfWork.CompleteAsync();
+        return project;
+    }
+
 }
