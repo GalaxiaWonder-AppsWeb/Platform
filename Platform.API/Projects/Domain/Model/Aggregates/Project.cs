@@ -1,8 +1,11 @@
 ﻿using Platform.API.IAM.Domain.Model.ValueObjects;
 using Platform.API.Projects.Domain.Model.Commands;
 using Platform.API.Projects.Domain.Model.Entities;
+using Platform.API.Projects.Domain.Model.Events;
 using Platform.API.Projects.Domain.Model.ValueObjects;
-using Platform.API.Shared.Domain.Repositories.Model.ValueObjects;
+using Platform.API.Shared.Domain.Model.Aggregates;
+using Platform.API.Shared.Domain.Model.Events;
+using Platform.API.Shared.Domain.Model.ValueObjects;
 
 namespace Platform.API.Projects.Domain.Model.Aggregates;
 
@@ -11,7 +14,7 @@ namespace Platform.API.Projects.Domain.Model.Aggregates;
 /// Wraps the properties and behaviors related to a project.
 /// Persists the project's details such as its name, description, date range, organization ownership, and status.
 /// </summary>
-public partial class Project
+public partial class Project : AggregateRoot
 {
     /// <summary>
     /// Represents the unique identifier for the project.
@@ -67,6 +70,7 @@ public partial class Project
         Description = command.Description;
         DateRange = command.DateRange;
         OrganizationId = command.OrganizationId;
+        AddDomainEvent(new ProjectCreatedDomainEvent(Id, OrganizationId.organizationId));
     }
     
     /// <summary>

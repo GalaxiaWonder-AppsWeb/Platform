@@ -1,6 +1,6 @@
 ﻿using Platform.API.Organizations.Domain.Model.Entities;
 using Platform.API.Organizations.Interfaces.REST.Resources;
-using Platform.API.Shared.Domain.Repositories.Model.ValueObjects;
+using Platform.API.Shared.Domain.Model.ValueObjects;
 
 namespace Platform.API.Organizations.Interfaces.REST.Assemblers;
 

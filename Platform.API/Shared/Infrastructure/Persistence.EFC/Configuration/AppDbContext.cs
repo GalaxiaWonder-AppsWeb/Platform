@@ -9,6 +9,7 @@ using Platform.API.Organizations.Domain.Model.ValueObjects;
 using Platform.API.Projects.Domain.Model.Aggregates;
 using Platform.API.Projects.Domain.Model.Entities;
 using Platform.API.Projects.Domain.Model.ValueObjects;
+using Platform.API.Shared.Domain.Model.Events;
 using Platform.API.Shared.Infrastructure.Persistence.EFC.Configuration.Extensions;
 
 namespace Platform.API.Shared.Infrastructure.Persistence.EFC.Configuration;
@@ -42,6 +43,9 @@ public class AppDbContext(DbContextOptions options) : DbContext(options)
     {
         
         base.OnModelCreating(builder);
+        
+        //PARA IGNORAR EVENTOS DE DOMINIO
+        builder.Ignore<DomainEvent>();
 
         // PERSON
         builder.Entity<Person>(person =>
@@ -446,6 +450,23 @@ public class AppDbContext(DbContextOptions options) : DbContext(options)
                 desc.Property(d => d.Address)
                     .HasColumnName("email_address");
             });
+        });
+        
+        //SPECIALTY
+        builder.Entity<Specialty>(entity =>
+        {
+            entity.ToTable("specialties");
+
+            entity.HasKey(i => i.Id);
+
+            entity.Property(i => i.Id)
+                .HasColumnName("id")
+                .ValueGeneratedOnAdd();
+
+            entity.Property(i => i.Name)
+                .HasColumnName("name")
+                .HasConversion<string>()
+                .IsRequired();
         });
         
         // MILESTONE

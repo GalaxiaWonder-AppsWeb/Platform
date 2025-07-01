@@ -1,7 +1,9 @@
 ﻿using Platform.API.IAM.Domain.Model.ValueObjects;
 using Platform.API.IAM.Interfaces.ACL;
+using Platform.API.Projects.Application.Internal.EventHandlers;
 using Platform.API.Projects.Domain.Model.Aggregates;
 using Platform.API.Projects.Domain.Model.Commands;
+using Platform.API.Projects.Domain.Model.Events;
 using Platform.API.Projects.Domain.Repositories;
 using Platform.API.Projects.Domain.Services;
 using Platform.API.Shared.Domain.Repositories;
@@ -24,6 +26,7 @@ public class ProjectCommandService(
     IProjectRepository projectRepository,
     IProjectStatusRepository projectStatusRepository,
     IIAMContextFacade iamFacade,
+    ProjectCreatedDomainEventHandler projectCreatedDomainEventHandler,
     IUnitOfWork unitOfWork) : IProjectCommandService
 {
     /// <summary>
@@ -57,6 +60,13 @@ public class ProjectCommandService(
         project.SetContractingEntityId(contractingEntityId);
         await projectRepository.AddAsync(project);
         await unitOfWork.CompleteAsync();
+        
+        // Publish the project created event
+        var projectCreatedEvent = new ProjectCreatedDomainEvent(
+            project.Id,
+            project.OrganizationId.organizationId
+        );
+        await projectCreatedDomainEventHandler.Handle(projectCreatedEvent);
         return project;
     }
 

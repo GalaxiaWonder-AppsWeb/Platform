@@ -8,8 +8,8 @@ using Platform.API.Organizations.Domain.Model.ValueObjects;
 using Platform.API.Organizations.Domain.Repositories;
 using Platform.API.Organizations.Domain.Services;
 using Platform.API.Organizations.Infrastructure.Persistence.EFC.Repositories;
+using Platform.API.Shared.Domain.Model.ValueObjects;
 using Platform.API.Shared.Domain.Repositories;
-using Platform.API.Shared.Domain.Repositories.Model.ValueObjects;
 
 namespace Platform.API.Organizations.Application.Internal.CommandServices;
 

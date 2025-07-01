@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 using Platform.API.IAM.Domain.Model.ValueObjects;
-using Platform.API.Shared.Domain.Repositories.Model.ValueObjects;
+using Platform.API.Shared.Domain.Model.ValueObjects;
 
 namespace Platform.API.Organizations.Domain.Model.Entities;
 
