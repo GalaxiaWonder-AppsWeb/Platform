@@ -16,7 +16,8 @@ namespace Platform.API.Projects.Interfaces.REST.Controllers;
 [SwaggerTag("Available Project endpoints")]
 public class ProjectController(
     IProjectCommandService projectCommandService,
-    IProjectQueryService projectQueryService) : ControllerBase
+    IProjectQueryService projectQueryService,
+    ProjectResourceFromEntityAssembler projectResourceFromEntityAssembler) : ControllerBase
 {
     [HttpPost]
     [SwaggerOperation(
@@ -36,7 +37,7 @@ public class ProjectController(
             return BadRequest("Project creation failed.");
         }
 
-        var response = ProjectResourceFromEntityAssembler.ToResourceFromEntity(project);
+        var response = await projectResourceFromEntityAssembler.ToResourceFromEntity(project);
         return Ok(response);
     }
 
@@ -105,9 +106,9 @@ public class ProjectController(
     {
         var query = new GetAllProjectsByTeamMemberPersonIdQuery(id);
         var projects = await projectQueryService.Handle(query);
-        var resources = projects
-            .Select(ProjectResourceFromEntityAssembler.ToResourceFromEntity)
-            .ToList();
+        var resources = await Task.WhenAll(
+            projects.Select(project => projectResourceFromEntityAssembler.ToResourceFromEntity(project))
+        );
         return Ok(resources);
     }
 }

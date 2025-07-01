@@ -28,6 +28,7 @@ using Platform.API.Projects.Application.Internal.QueryServices;
 using Platform.API.Projects.Domain.Repositories;
 using Platform.API.Projects.Domain.Services;
 using Platform.API.Projects.Infrastructure.Persistence.EFC.Repositories;
+using Platform.API.Projects.Interfaces.REST.Assemblers;
 using Platform.API.Shared.Domain.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -136,6 +137,7 @@ builder.Services.AddScoped<IOrganizationInvitationRepository, OrganizationInvita
 builder.Services.AddScoped<IOrganizationInvitationStatusRepository, OrganizationInvitationStatusRepository>();
 builder.Services.AddScoped<IOrganizationMemberQueryService, OrganizationMemberQueryService>();
 builder.Services.AddScoped<IOrganizationMemberFacade, OrganizationMemberFacade>();
+builder.Services.AddScoped<IOrganizationFacade, OrganizationFacade>();
 
 //Project Configuration
 builder.Services.AddScoped<IProjectRepository, ProjectRepository>();
@@ -145,6 +147,8 @@ builder.Services.AddScoped<ISpecialtyRepository, SpecialtyRepository>();
 builder.Services.AddScoped<IProjectTeamMemberCommandService, ProjectTeamMemberCommandService>();
 builder.Services.AddScoped<IProjectCommandService, ProjectCommandService>();
 builder.Services.AddScoped<IProjectQueryService, ProjectQueryService>();
+builder.Services.AddScoped<ProjectResourceFromEntityAssembler>();
+
 // Add CORS Policy
 builder.Services.AddCors(options =>
 {
