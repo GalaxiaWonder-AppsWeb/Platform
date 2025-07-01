@@ -11,7 +11,7 @@ namespace Platform.API.Projects.Interfaces.REST.Controllers;
 
 [Authorize]
 [ApiController]
-[Route("api/v1/[controller]")]
+[Route("api/v1")]
 [Produces(MediaTypeNames.Application.Json)]
 [SwaggerTag("Available Project endpoints")]
 public class ProjectController(
@@ -19,7 +19,7 @@ public class ProjectController(
     IProjectQueryService projectQueryService,
     ProjectResourceFromEntityAssembler projectResourceFromEntityAssembler) : ControllerBase
 {
-    [HttpPost]
+    [HttpPost("[controller]")]
     [SwaggerOperation(
         Summary = "Create a Project",
         Description = "Create a new project",
@@ -41,7 +41,7 @@ public class ProjectController(
         return Ok(response);
     }
 
-    [HttpPatch("{id}/name")]
+    [HttpPatch("[controller]/{id}/name")]
     [SwaggerOperation(
         Summary = "Update Project Name",
         Description = "Update the name of an existing project",
@@ -62,7 +62,7 @@ public class ProjectController(
         return Ok(project);
     }
 
-    [HttpPatch("{id}/description")]
+    [HttpPatch("[controller]/{id}/description")]
     [SwaggerOperation(
         Summary = "Update Project Description",
         Description = "Update the description of an existing project",
@@ -83,7 +83,7 @@ public class ProjectController(
         return Ok(project);
     }
 
-    [HttpDelete("{id}")]
+    [HttpDelete("[controller]/{id}")]
     [SwaggerOperation(
         Summary = "Delete a Project",
         Description = "Delete an existing project",
@@ -97,16 +97,17 @@ public class ProjectController(
         return Ok("Project deleted successfully");
     }
 
-    [HttpGet("{id}")]
+    [HttpGet("organizations/{organizationId}/team-members/{personId}/projects")]
     [SwaggerOperation(
-        Summary = "Get Projects by personId (linked to team member)",
-        Description = "Retrieve projects by a personId",
-        OperationId = "projects-get-by-person-id")]
+        Summary = "Get Projects by personId and organization",
+        Description = "Retrieve projects by a personId and organization",
+        OperationId = "projects-get-by-person-id-organization")]
     [SwaggerResponse(StatusCodes.Status200OK, "Projects retrieved successfully", typeof(ProjectResource))]
     [SwaggerResponse(StatusCodes.Status404NotFound, "Projects not found")]
-    public async Task<IActionResult> GetProjectsByPersonId(long id)
+    public async Task<IActionResult> GetProjectsByPersonId(long organizationId, long personId)
     {
-        var query = new GetAllProjectsByTeamMemberPersonIdQuery(id);
+        var query = new GetAllProjectsByTeamMemberPersonIdQuery(
+            personId, organizationId);
         var projects = await projectQueryService.Handle(query);
         var resources = new List<ProjectResource>();
         foreach (var project in projects)
@@ -119,7 +120,7 @@ public class ProjectController(
 
     }
 
-    [HttpGet("contracting-entity/{id}")]
+    [HttpGet("[controller]/contracting-entity/{id}")]
     [SwaggerOperation(
         Summary = "Get Projects by Contracting Entity Id",
         Description = "Retrieve projects by a contracting entity Id",

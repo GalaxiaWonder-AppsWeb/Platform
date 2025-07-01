@@ -9,6 +9,6 @@ namespace Platform.API.Projects.Domain.Repositories;
 public interface IProjectRepository :IBaseRepository<Project>
 {
     Task<Project?> FindById(long id);
-    Task<IEnumerable<Project>> FindAllProjectsByTeamMemberPersonIdAsync(long personId);
+    Task<IEnumerable<Project>> FindAllProjectsByTeamMemberPersonIdAsync(long personId, long organizationId);
     Task<IEnumerable<Project>> FindAllProjectsByContractingEntityId(long personId);
 }

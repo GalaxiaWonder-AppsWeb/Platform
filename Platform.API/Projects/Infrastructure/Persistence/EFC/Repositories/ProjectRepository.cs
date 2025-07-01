@@ -18,18 +18,22 @@ public class ProjectRepository(AppDbContext context) : BaseRepository<Project>(c
             .FirstOrDefaultAsync(p => p.Id == id);
     }
     
-    public async Task<IEnumerable<Project>> FindAllProjectsByTeamMemberPersonIdAsync(long personId)
+    public async Task<IEnumerable<Project>> FindAllProjectsByTeamMemberPersonIdAsync(long personId, long organizationId)
     {
         var projects = await context.Projects
             .Include(p => p.OrganizationId)
             .Include(p => p.ContractingEntityId)
-            .Include(p => p.Status)            .Join(
+            .Include(p => p.Status)            
+            .Join(
                 context.ProjectTeamMembers,
                 project => project.Id,
                 member => member.ProjectId.Value,
                 (project, member) => new { project, member }
             )
-            .Where(x => x.member.PersonId.personId == personId)
+            .Where(x => 
+                x.member.PersonId.personId == personId &&
+                x.project.OrganizationId.organizationId == organizationId
+            )
             .Select(x => x.project)
             .Distinct()
             .ToListAsync();

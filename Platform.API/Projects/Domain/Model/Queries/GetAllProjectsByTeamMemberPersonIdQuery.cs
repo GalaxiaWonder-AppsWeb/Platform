@@ -6,4 +6,7 @@
 /// <param name="PersonId">
 /// the unique identifier of the person whose projects are to be retrieved.
 /// </param>
-public record GetAllProjectsByTeamMemberPersonIdQuery(long PersonId);
+/// <param name="OrganizationId">
+/// The unique identifier of the organization to which the person belongs.
+/// </param>
+public record GetAllProjectsByTeamMemberPersonIdQuery(long PersonId, long OrganizationId);
