@@ -5,4 +5,4 @@ using Platform.API.Shared.Domain.Repositories.Model.ValueObjects;
 
 namespace Platform.API.Projects.Domain.Model.Commands;
 
-public record CreateProjectCommand(ProjectName ProjectName, Description Description, DateRange DateRange, OrganizationId OrganizationId, EmailAddress ContractingEntityEmail, ProjectStatus Status);
+public record CreateProjectTeamMemberCommand(ProjectId ProjectId, Specialty Specialty, OrganizationMemberId OrganizationMemberId);

@@ -40,5 +40,21 @@ public class OrganizationMemberRepository(AppDbContext context) : BaseRepository
             .Where(m => m.OrganizationId.organizationId == organizationId)
             .ToListAsync();
     }
-
+    
+    /// <summary>
+    /// Retrieves a person id by the organization member id.
+    /// </summary>
+    /// <param name="organizationMemberId">
+    /// The unique identifier of the organization member.
+    /// </param>
+    /// <returns>
+    /// The person id associated with the organization member, or <c>null</c> if not found.
+    /// </returns>
+    public async Task<long?> FindPersonIdByOrganizationMemberId(long organizationMemberId)
+    {
+        return await context.Set<OrganizationMember>()
+            .Where(m => m.Id == organizationMemberId)
+            .Select(m => m.PersonId.personId)
+            .FirstOrDefaultAsync();
+    }
 }

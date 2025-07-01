@@ -7,7 +7,9 @@ using Platform.API.Shared.Domain.Repositories.Model.ValueObjects;
 namespace Platform.API.Projects.Domain.Model.Aggregates;
 
 /// <summary>
-/// 
+/// Class representing a project within the platform.
+/// Wraps the properties and behaviors related to a project.
+/// Persists the project's details such as its name, description, date range, organization ownership, and status.
 /// </summary>
 public partial class Project
 {
@@ -65,7 +67,17 @@ public partial class Project
         Description = command.Description;
         DateRange = command.DateRange;
         OrganizationId = command.OrganizationId;
-        ContractingEntityId = command.ContractingEntityId;
+    }
+    
+    /// <summary>
+    /// Set the unique identifier for the contracting entity.
+    /// </summary>
+    /// <param name="contractingEntityId">
+    /// Represents the unique identifier of the contracting entity, encapsulated in a personId.
+    /// </param>
+    public void SetContractingEntityId(PersonId contractingEntityId)
+    {
+        ContractingEntityId = contractingEntityId;
     }
 
     /// <summary>

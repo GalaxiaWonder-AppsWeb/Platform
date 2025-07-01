@@ -16,15 +16,19 @@ using Platform.API.IAM.Infrastructure.Pipeline.Middleware.Extensions;
 using Platform.API.IAM.Infrastructure.Tokens.JWT.Configuration;
 using Platform.API.IAM.Infrastructure.Tokens.JWT.Services;
 using Platform.API.IAM.Interfaces.ACL;
+using Platform.API.Organizations.Application.ACL;
 using Platform.API.Organizations.Application.Internal.CommandServices;
 using Platform.API.Organizations.Application.Internal.QueryServices;
 using Platform.API.Organizations.Domain.Repositories;
 using Platform.API.Organizations.Domain.Services;
 using Platform.API.Organizations.Infrastructure.Persistence.EFC.Repositories;
+using Platform.API.Organizations.Interfaces.ACL;
 using Platform.API.Projects.Application.Internal.CommandServices;
+using Platform.API.Projects.Application.Internal.QueryServices;
 using Platform.API.Projects.Domain.Repositories;
 using Platform.API.Projects.Domain.Services;
 using Platform.API.Projects.Infrastructure.Persistence.EFC.Repositories;
+using Platform.API.Projects.Interfaces.REST.Assemblers;
 using Platform.API.Shared.Domain.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -131,11 +135,19 @@ builder.Services.AddScoped<IOrganizationMemberRepository, OrganizationMemberRepo
 builder.Services.AddScoped<IOrganizationMemberTypeRepository, OrganizationMemberTypeRepository>();
 builder.Services.AddScoped<IOrganizationInvitationRepository, OrganizationInvitationRepository>();
 builder.Services.AddScoped<IOrganizationInvitationStatusRepository, OrganizationInvitationStatusRepository>();
+builder.Services.AddScoped<IOrganizationMemberQueryService, OrganizationMemberQueryService>();
+builder.Services.AddScoped<IOrganizationMemberFacade, OrganizationMemberFacade>();
+builder.Services.AddScoped<IOrganizationFacade, OrganizationFacade>();
 
 //Project Configuration
 builder.Services.AddScoped<IProjectRepository, ProjectRepository>();
+builder.Services.AddScoped<IProjectTeamMemberRepository, ProjectTeamMemberRepository>();
 builder.Services.AddScoped<IProjectStatusRepository, ProjectStatusRepository>();
+builder.Services.AddScoped<ISpecialtyRepository, SpecialtyRepository>();
+builder.Services.AddScoped<IProjectTeamMemberCommandService, ProjectTeamMemberCommandService>();
 builder.Services.AddScoped<IProjectCommandService, ProjectCommandService>();
+builder.Services.AddScoped<IProjectQueryService, ProjectQueryService>();
+builder.Services.AddScoped<ProjectResourceFromEntityAssembler>();
 
 // Add CORS Policy
 builder.Services.AddCors(options =>

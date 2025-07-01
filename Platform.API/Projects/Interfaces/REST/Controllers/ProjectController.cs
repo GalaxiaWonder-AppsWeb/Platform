@@ -1,6 +1,7 @@
 ﻿using System.Net.Mime;
 using Microsoft.AspNetCore.Mvc;
 using Platform.API.IAM.Infrastructure.Pipeline.Middleware.Attributes;
+using Platform.API.Projects.Domain.Model.Queries;
 using Platform.API.Projects.Domain.Services;
 using Platform.API.Projects.Interfaces.REST.Assemblers;
 using Platform.API.Projects.Interfaces.REST.Resources;
@@ -14,7 +15,9 @@ namespace Platform.API.Projects.Interfaces.REST.Controllers;
 [Produces(MediaTypeNames.Application.Json)]
 [SwaggerTag("Available Project endpoints")]
 public class ProjectController(
-    IProjectCommandService projectCommandService) : ControllerBase
+    IProjectCommandService projectCommandService,
+    IProjectQueryService projectQueryService,
+    ProjectResourceFromEntityAssembler projectResourceFromEntityAssembler) : ControllerBase
 {
     [HttpPost]
     [SwaggerOperation(
@@ -34,7 +37,7 @@ public class ProjectController(
             return BadRequest("Project creation failed.");
         }
 
-        var response = ProjectResourceFromEntityAssembler.ToResourceFromEntity(project);
+        var response = await projectResourceFromEntityAssembler.ToResourceFromEntity(project);
         return Ok(response);
     }
 
@@ -90,5 +93,22 @@ public class ProjectController(
         var command = DeleteProjectCommandFromResourceAssembler.ToCommandFromResource(id);
         await projectCommandService.Handle(command);
         return Ok("Project deleted successfully");
+    }
+
+    [HttpGet("{id}")]
+    [SwaggerOperation(
+        Summary = "Get Projects by personId",
+        Description = "Retrieve projects by a personId",
+        OperationId = "projects-get-by-person-id")]
+    [SwaggerResponse(StatusCodes.Status200OK, "Projects retrieved successfully", typeof(ProjectResource))]
+    [SwaggerResponse(StatusCodes.Status404NotFound, "Projects not found")]
+    public async Task<IActionResult> GetProjectsByPersonId(long id)
+    {
+        var query = new GetAllProjectsByTeamMemberPersonIdQuery(id);
+        var projects = await projectQueryService.Handle(query);
+        var resources = await Task.WhenAll(
+            projects.Select(project => projectResourceFromEntityAssembler.ToResourceFromEntity(project))
+        );
+        return Ok(resources);
     }
 }
