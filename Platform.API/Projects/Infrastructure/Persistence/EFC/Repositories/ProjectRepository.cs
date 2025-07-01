@@ -21,7 +21,9 @@ public class ProjectRepository(AppDbContext context) : BaseRepository<Project>(c
     public async Task<IEnumerable<Project>> FindAllProjectsByTeamMemberPersonIdAsync(long personId)
     {
         var projects = await context.Projects
-            .Join(
+            .Include(p => p.OrganizationId)
+            .Include(p => p.ContractingEntityId)
+            .Include(p => p.Status)            .Join(
                 context.ProjectTeamMembers,
                 project => project.Id,
                 member => member.ProjectId.Value,
