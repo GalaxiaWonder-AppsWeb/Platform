@@ -10,4 +10,5 @@ public interface IProjectRepository :IBaseRepository<Project>
 {
     Task<Project?> FindById(long id);
     Task<IEnumerable<Project>> FindAllProjectsByTeamMemberPersonIdAsync(long personId);
+    Task<IEnumerable<Project>> FindAllProjectsByContractingEntityId(long personId);
 }

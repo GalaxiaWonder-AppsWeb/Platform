@@ -34,9 +34,15 @@ public class ProjectRepository(AppDbContext context) : BaseRepository<Project>(c
 
         return projects;
     }
-
-
-
-
+    
+    public async Task<IEnumerable<Project>> FindAllProjectsByContractingEntityId(long contractingEntityId)
+    {
+        return await context.Projects
+            .Include(p => p.OrganizationId)
+            .Include(p => p.ContractingEntityId)
+            .Include(p => p.Status)
+            .Where(p => p.ContractingEntityId.personId == contractingEntityId)
+            .ToListAsync();
+    }
 
 }

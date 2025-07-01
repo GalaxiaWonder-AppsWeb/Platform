@@ -19,4 +19,8 @@ public class ProjectQueryService(
     {
         return await projectRepository.FindAllProjectsByTeamMemberPersonIdAsync(command.PersonId);
     }
+    public async Task<IEnumerable<Project>> Handle(GetAllProjectsByContractingEntityIdQuery query)
+    {
+        return await projectRepository.FindAllProjectsByContractingEntityId(query.Id);
+    }
 }
