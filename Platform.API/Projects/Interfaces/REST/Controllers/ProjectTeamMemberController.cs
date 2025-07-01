@@ -7,6 +7,8 @@ using Swashbuckle.AspNetCore.Annotations;
 
 namespace Platform.API.Projects.Interfaces.REST.Controllers;
 
+// COLOCAR AUTHORIZE AQUI ES NECESARIO PERO CUANDO SE COLOCA
+// NO FUNCIONA EL ENDPOINT, LO CAMBIARE MAS ADELANTE
 [ApiController]
 [Route("api/v1/[controller]")]
 [Produces(MediaTypeNames.Application.Json)]
@@ -14,8 +16,6 @@ namespace Platform.API.Projects.Interfaces.REST.Controllers;
 public class ProjectTeamMemberController(
     IProjectTeamMemberCommandService projectTeamMemberCommandService) : ControllerBase
 {
-    // COLOCAR AUTHORIZE AQUI ES NECESARIO PERO CUANDO SE COLOCA
-    // NO FUNCIONA EL ENDPOINT, LO CAMBIARE MAS ADELANTE
     [HttpPost]
     [SwaggerOperation(
         Summary = "Create a Project Team Member",
@@ -35,5 +35,19 @@ public class ProjectTeamMemberController(
         }
         var response = ProjectTeamMemberResourceFromEntityAssembler.ToResourceFromEntity(projectTeamMember);
         return Ok(response);
+    }
+
+    [HttpDelete("{id}")]
+    [SwaggerOperation(
+        Summary = "Delete a Project Team Member",
+        Description = "Remove a team member from a project",
+        OperationId = "project-team-member-delete")]
+    [SwaggerResponse(StatusCodes.Status200OK, "Project team member deleted successfully")]
+    [SwaggerResponse(StatusCodes.Status400BadRequest, "Project team member deletion failed")]
+    public async Task<IActionResult> DeleteProjectTeamMember(long id)
+    {
+        var command = DeleteProjectTeamMemberCommandFromResourceAssembler.ToCommandFromResource(id);
+        await projectTeamMemberCommandService.Handle(command);
+        return Ok("Project team member deleted successfully.");
     }
 }

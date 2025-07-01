@@ -51,4 +51,24 @@ public class ProjectTeamMemberCommandService(
         await unitOfWork.CompleteAsync();
         return projectTeamMember;
     }
+
+    /// <summary>
+    /// Handles the deletion of a project team member.
+    /// </summary>
+    /// <param name="command">
+    /// The command containing the ID of the project team member to delete.
+    /// </param>
+    /// <exception cref="Exception">
+    /// Throws an exception if the project team member with the specified ID is not found.
+    /// </exception>
+    public async Task Handle(DeleteProjectTeamMemberCommand command)
+    {
+        var projectTeamMember = await projectTeamMemberRepository.FindById(command.Id);
+        if (projectTeamMember == null)
+        {
+            throw new Exception($"Project team member with ID {command.Id} not found");
+        }
+        projectTeamMemberRepository.Remove(projectTeamMember);
+        await unitOfWork.CompleteAsync();
+    }
 }

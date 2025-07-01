@@ -18,4 +18,12 @@ public interface IProjectTeamMemberCommandService
     /// The newly created <see cref="ProjectTeamMember"/> entity, or null if the creation failed.
     /// </returns>
     Task<ProjectTeamMember?> Handle(CreateProjectTeamMemberCommand command);
+    
+    /// <summary>
+    /// Handles the deletion of a project team member.
+    /// </summary>
+    /// <param name="command">
+    /// The command containing the details to delete the project team member, including project ID.
+    /// </param>
+    Task Handle(DeleteProjectTeamMemberCommand command);
 }

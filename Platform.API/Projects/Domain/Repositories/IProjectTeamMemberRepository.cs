@@ -8,5 +8,14 @@ namespace Platform.API.Projects.Domain.Repositories;
 /// </summary>
 public interface IProjectTeamMemberRepository: IBaseRepository<ProjectTeamMember>
 {
-    
+    /// <summary>
+    /// Find a project team member by their unique identifier.
+    /// </summary>
+    /// <param name="id">
+    /// Person id of the project team member to find.
+    /// </param>
+    /// <returns>
+    /// Project team member if found, otherwise null.
+    /// </returns>
+    Task<ProjectTeamMember?> FindById(long id);
 }
