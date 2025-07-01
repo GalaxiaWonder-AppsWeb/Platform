@@ -1,4 +1,6 @@
-﻿using Platform.API.Projects.Domain.Model.Aggregates;
+﻿using Platform.API.IAM.Domain.Model.ValueObjects;
+using Platform.API.IAM.Interfaces.ACL;
+using Platform.API.Projects.Domain.Model.Aggregates;
 using Platform.API.Projects.Domain.Model.Commands;
 using Platform.API.Projects.Domain.Repositories;
 using Platform.API.Projects.Domain.Services;
@@ -21,6 +23,7 @@ namespace Platform.API.Projects.Application.Internal.CommandServices;
 public class ProjectCommandService(
     IProjectRepository projectRepository,
     IProjectStatusRepository projectStatusRepository,
+    IIAMContextFacade iamFacade,
     IUnitOfWork unitOfWork) : IProjectCommandService
 {
     /// <summary>
@@ -44,7 +47,14 @@ public class ProjectCommandService(
         {
             throw new Exception($"Project status {command.Status.GetName()} not found");
         }
+        var contractingEntity = await iamFacade.GetProfileDetailsByEmailAsync(command.ContractingEntityEmail.Address);
+        if (contractingEntity == null)
+        {
+            throw new Exception($"Contracting entity with email {command.ContractingEntityEmail.Address} not found");
+        }
+        var contractingEntityId = new PersonId(contractingEntity.Id);
         project.ReassignStatus(status);
+        project.SetContractingEntityId(contractingEntityId);
         await projectRepository.AddAsync(project);
         await unitOfWork.CompleteAsync();
         return project;

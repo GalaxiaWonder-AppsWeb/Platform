@@ -16,7 +16,7 @@ public class CreateProjectCommandFromResourceAssembler
             new Description(resource.Description),
             new DateRange(resource.StartDate, resource.EndDate),
             new OrganizationId(resource.OrganizationId),
-            new PersonId(resource.ContractingEntityId),
+            new EmailAddress(resource.ContractingEntityEmail),
             new ProjectStatus(ProjectStatuses.BASIC_STUDIES));
     }
 }
