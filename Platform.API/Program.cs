@@ -149,6 +149,9 @@ builder.Services.AddScoped<IProjectCommandService, ProjectCommandService>();
 builder.Services.AddScoped<IProjectQueryService, ProjectQueryService>();
 builder.Services.AddScoped<ProjectResourceFromEntityAssembler>();
 
+// Milestone Configuration
+
+
 // Add CORS Policy
 builder.Services.AddCors(options =>
 {

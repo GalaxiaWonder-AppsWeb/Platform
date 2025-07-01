@@ -448,6 +448,39 @@ public class AppDbContext(DbContextOptions options) : DbContext(options)
             });
         });
         
+        // MILESTONE
+        builder.Entity<Milestone>(entity =>
+        {
+            entity.ToTable("milestones");
+
+            entity.HasKey(p => p.Id);
+
+            entity.Property(p => p.Id)
+                .HasColumnName("id")
+                .ValueGeneratedOnAdd();
+
+            entity.OwnsOne(p => p.Name, name =>
+            {
+                name.Property(n => n.Value)
+                    .HasColumnName("name")
+                    .IsRequired();
+            });
+
+            entity.OwnsOne(p => p.Description, desc =>
+            {
+                desc.Property(d => d.Value)
+                    .HasColumnName("description");
+            });
+
+            entity.OwnsOne(p => p.ProjectId, owned =>
+            {
+                owned.Property(o => o.Value)
+                    .HasColumnName("project_id")
+                    .IsRequired();
+            });
+
+        });
+        
         //SETTEO DE DATA
         builder.Entity<OrganizationStatus>().HasData(
             new { Id = 1L, Name = OrganizationStatuses.ACTIVE },
