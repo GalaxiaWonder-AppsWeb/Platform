@@ -37,6 +37,11 @@ public partial class Project : AggregateRoot
     public DateRange DateRange { get; set; }
     
     /// <summary>
+    /// Budget of the project, encapsulated in a value object to ensure validation and immutability.
+    /// </summary>
+    public Money Budget { get; set; }
+    
+    /// <summary>
     /// Identifier of the organization that owns the project, encapsulated in a value object to ensure validation and immutability.
     /// </summary>
     public OrganizationId OrganizationId { get; set; }
@@ -69,6 +74,7 @@ public partial class Project : AggregateRoot
         ProjectName = command.ProjectName;
         Description = command.Description;
         DateRange = command.DateRange;
+        Budget = command.Budget;
         OrganizationId = command.OrganizationId;
         AddDomainEvent(new ProjectCreatedDomainEvent(Id, OrganizationId.organizationId));
     }

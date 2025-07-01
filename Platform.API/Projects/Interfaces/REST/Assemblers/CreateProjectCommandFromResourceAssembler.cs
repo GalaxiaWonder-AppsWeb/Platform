@@ -15,6 +15,7 @@ public class CreateProjectCommandFromResourceAssembler
             new ProjectName(resource.ProjectName),
             new Description(resource.Description),
             new DateRange(resource.StartDate, resource.EndDate),
+            new Money(resource.Budget, "USD"),
             new OrganizationId(resource.OrganizationId),
             new EmailAddress(resource.ContractingEntityEmail),
             new ProjectStatus(ProjectStatuses.BASIC_STUDIES));

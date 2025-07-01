@@ -368,9 +368,17 @@ public class AppDbContext(DbContextOptions options) : DbContext(options)
                 .WithMany()
                 .HasForeignKey(p => p.StatusId)
                 .OnDelete(DeleteBehavior.Restrict);
-
-
-
+            
+            entity.OwnsOne(p => p.Budget, budget =>
+            {
+                budget.Property(b => b.Amount)
+                    .HasColumnName("budget")
+                    .IsRequired();
+                budget.Property(b => b.Currency)
+                    .HasColumnName("budget_currency")
+                    .HasMaxLength(3)
+                    .IsRequired();
+            });
         });
         
         //PROJECT STATUS

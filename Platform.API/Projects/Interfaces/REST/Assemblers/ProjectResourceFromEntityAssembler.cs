@@ -24,6 +24,7 @@ public class ProjectResourceFromEntityAssembler
             proj.Description.Value,
             proj.DateRange.StartDate.Date,
             proj.DateRange.EndDate.Date,
+            proj.Budget.Amount,
             proj.OrganizationId.organizationId,
             proj.ContractingEntityId.personId,
             contractor
