@@ -106,9 +106,13 @@ public class ProjectController(
     {
         var query = new GetAllProjectsByTeamMemberPersonIdQuery(id);
         var projects = await projectQueryService.Handle(query);
-        var resources = await Task.WhenAll(
-            projects.Select(project => projectResourceFromEntityAssembler.ToResourceFromEntity(project))
-        );
+        var resources = new List<ProjectResource>();
+        foreach (var project in projects)
+        {
+            var resource = await projectResourceFromEntityAssembler.ToResourceFromEntity(project);
+            resources.Add(resource);
+        }
         return Ok(resources);
+
     }
 }
