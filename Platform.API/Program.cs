@@ -16,11 +16,13 @@ using Platform.API.IAM.Infrastructure.Pipeline.Middleware.Extensions;
 using Platform.API.IAM.Infrastructure.Tokens.JWT.Configuration;
 using Platform.API.IAM.Infrastructure.Tokens.JWT.Services;
 using Platform.API.IAM.Interfaces.ACL;
+using Platform.API.Organizations.Application.ACL;
 using Platform.API.Organizations.Application.Internal.CommandServices;
 using Platform.API.Organizations.Application.Internal.QueryServices;
 using Platform.API.Organizations.Domain.Repositories;
 using Platform.API.Organizations.Domain.Services;
 using Platform.API.Organizations.Infrastructure.Persistence.EFC.Repositories;
+using Platform.API.Organizations.Interfaces.ACL;
 using Platform.API.Projects.Application.Internal.CommandServices;
 using Platform.API.Projects.Application.Internal.QueryServices;
 using Platform.API.Projects.Domain.Repositories;
@@ -132,6 +134,8 @@ builder.Services.AddScoped<IOrganizationMemberRepository, OrganizationMemberRepo
 builder.Services.AddScoped<IOrganizationMemberTypeRepository, OrganizationMemberTypeRepository>();
 builder.Services.AddScoped<IOrganizationInvitationRepository, OrganizationInvitationRepository>();
 builder.Services.AddScoped<IOrganizationInvitationStatusRepository, OrganizationInvitationStatusRepository>();
+builder.Services.AddScoped<IOrganizationMemberQueryService, OrganizationMemberQueryService>();
+builder.Services.AddScoped<IOrganizationMemberFacade, OrganizationMemberFacade>();
 
 //Project Configuration
 builder.Services.AddScoped<IProjectRepository, ProjectRepository>();

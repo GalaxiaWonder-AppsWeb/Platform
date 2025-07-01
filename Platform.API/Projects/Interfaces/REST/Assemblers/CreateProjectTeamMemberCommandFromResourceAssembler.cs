@@ -20,9 +20,6 @@ public class CreateProjectTeamMemberCommandFromResourceAssembler
         return new CreateProjectTeamMemberCommand(
             new ProjectId(projectId),
             new Specialty(Enum.Parse<Specialties>(resource.Specialty)),
-            new OrganizationMemberId(resource.OrganizationMemberId),
-            new PersonId(resource.PersonId),
-            new PersonName(resource.FirstName, resource.LastName),
-            new EmailAddress(resource.EmailAddress));
+            new OrganizationMemberId(resource.OrganizationMemberId));
     }
 }

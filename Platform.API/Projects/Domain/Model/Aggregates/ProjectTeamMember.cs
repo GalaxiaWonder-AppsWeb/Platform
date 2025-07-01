@@ -65,9 +65,25 @@ public partial class ProjectTeamMember
     {
         ProjectId = command.ProjectId;
         OrganizationMemberId = command.OrganizationMemberId;
-        PersonId = command.PersonId;
-        PersonName = command.PersonName;
-        EmailAddress = command.EmailAddress;
+    }
+
+    /// <summary>
+    /// Set the personal information of the project team member.
+    /// </summary>
+    /// <param name="personName">
+    /// Represents the name of the person associated with this team member, encapsulated in a value object to ensure validation and immutability.
+    /// </param>
+    /// <param name="emailAddress">
+    /// Represents the email address of the team member, encapsulated in a value object to ensure validation and immutability.
+    /// </param>
+    /// <param name="personId">
+    /// Represents the identifier of the person associated with this team member, encapsulated in a value object to ensure validation and immutability.
+    /// </param>
+    public void SetPersonalInformation(PersonId personId, PersonName personName, EmailAddress emailAddress)
+    {
+        PersonId = personId;
+        PersonName = personName;
+        EmailAddress = emailAddress;
     }
     
     /// <summary>
