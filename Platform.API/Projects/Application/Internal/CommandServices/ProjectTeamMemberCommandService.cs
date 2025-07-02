@@ -13,6 +13,7 @@ namespace Platform.API.Projects.Application.Internal.CommandServices;
 public class ProjectTeamMemberCommandService(
     IProjectTeamMemberRepository projectTeamMemberRepository,
     ISpecialtyRepository specialtyRepository,
+    IRoleRepository roleRepository,
     IIAMContextFacade iamFacade,
     IOrganizationMemberFacade organizationMemberFacade,
     IUnitOfWork unitOfWork) : IProjectTeamMemberCommandService
@@ -47,6 +48,13 @@ public class ProjectTeamMemberCommandService(
             throw new Exception($"Specialty {command.Specialty.GetName()} not found");
         }
         projectTeamMember.SetSpecialty(specialty);
+        var existingRole = command.Role.Name.ToString();
+        var role = await roleRepository.FindByName(existingRole);
+        if (role == null)
+        {
+            throw new Exception($"Role {command.Role.GetName()} not found");
+        }
+        projectTeamMember.SetRole(role);
         projectTeamMember.SetPersonalInformation(new PersonId(personId.Result), new PersonName(personInformation.FirstName, personInformation.LastName), new EmailAddress(personInformation.Email));
         await projectTeamMemberRepository.AddAsync(projectTeamMember);
         await unitOfWork.CompleteAsync();

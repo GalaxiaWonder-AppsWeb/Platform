@@ -17,6 +17,7 @@ public class ProjectCreatedDomainEventHandler(
     IProjectTeamMemberRepository projectTeamMemberRepository,
     ISpecialtyRepository specialtyRepository,
     IOrganizationMemberFacade organizationMemberFacade,
+    IRoleRepository roleRepository,
     IIAMContextFacade iamFacade,
     IUnitOfWork unitOfWork)
 {
@@ -25,6 +26,7 @@ public class ProjectCreatedDomainEventHandler(
     {
         var personInformationCommand = new CreateProjectTeamMemberCommand(new ProjectId(domainEvent.ProjectId),
             new Specialty(Specialties.NON_APPLICABLE),
+            new Role(Roles.COORDINATOR),
             new OrganizationMemberId(domainEvent.OrganizationId));
         var personId =
             organizationMemberFacade.GetPersonIdByOrganizationMemberId(
@@ -42,6 +44,12 @@ public class ProjectCreatedDomainEventHandler(
             throw new Exception($"Specialty {personInformationCommand.Specialty.GetName()} not found");
         }
         projectTeamMember.SetSpecialty(specialty);
+        var role = await roleRepository.FindByName(personInformationCommand.Role.Name.ToString());
+        if (role == null)
+        {
+            throw new Exception($"Role {personInformationCommand.Role.GetName()} not found");
+        }
+        projectTeamMember.SetRole(role);
         projectTeamMember.SetPersonalInformation(new PersonId(personId.Result), new PersonName(personInformation.FirstName, personInformation.LastName), new EmailAddress(personInformation.Email));
         await projectTeamMemberRepository.AddAsync(projectTeamMember);
         await unitOfWork.CompleteAsync();

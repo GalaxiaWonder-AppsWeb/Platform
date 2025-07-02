@@ -403,6 +403,22 @@ public class AppDbContext(DbContextOptions options) : DbContext(options)
                 .IsRequired();
         });
         
+        builder.Entity<Role>(entity =>
+        {
+            entity.ToTable("roles");
+
+            entity.HasKey(i => i.Id);
+
+            entity.Property(i => i.Id)
+                .HasColumnName("id")
+                .ValueGeneratedOnAdd();
+
+            entity.Property(i => i.Name)
+                .HasColumnName("name")
+                .HasConversion<string>()
+                .IsRequired();
+        });
+        
         //PROJECT TEAM MEMBER
         builder.Entity<ProjectTeamMember>(entity =>
         {
@@ -651,6 +667,11 @@ public class AppDbContext(DbContextOptions options) : DbContext(options)
            new { Id = 3L, Name = TaskStatuses.SUBMITTED },
            new { Id = 4L, Name = TaskStatuses.APPROVED },
            new { Id = 5L, Name = TaskStatuses.REJECTED }
+        );
+       
+       builder.Entity<Role>().HasData(
+           new { Id = 1L, Name = Roles.COORDINATOR },
+            new { Id = 2L, Name = Roles.SPECIALIST }
         );
 
     }

@@ -31,6 +31,13 @@ public partial class ProjectTeamMember
     public long SpecialtyId { get; set; }
     
     /// <summary>
+    /// Represents the role of the team member within the project, encapsulated in a value object to ensure validation and immutability.
+    /// </summary>
+    public Role Role { get; set; }
+    
+    public long RoleId { get; set; }
+    
+    /// <summary>
     /// Identifier of the organization member, encapsulated in a value object to ensure validation and immutability.
     /// </summary>
     public OrganizationMemberId OrganizationMemberId { get; private set; }
@@ -95,5 +102,16 @@ public partial class ProjectTeamMember
     public void SetSpecialty(Specialty specialty)
     {
         Specialty = specialty;
+    }
+    
+    /// <summary>
+    /// Set the role of the project team member.
+    /// </summary>
+    /// <param name="role">
+    /// The new role to be assigned to the team member.
+    /// </param>
+    public void SetRole(Role role)
+    {
+        Role = role;
     }
 }
