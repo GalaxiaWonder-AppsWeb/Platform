@@ -23,6 +23,8 @@ public class Task : MilestoneItem
     /// </summary>
     public TaskStatus Status { get; set; }
     
+    public long StatusId { get; set; }
+    
     /// <summary>
     /// The unique identifier of the person assigned to the task.
     /// </summary>
