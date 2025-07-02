@@ -16,12 +16,14 @@ public class Task : MilestoneItem
     /// <summary>
     /// Specialty of the task.
     /// </summary>
-    public Specialty Specialty { get; set; }
+    public Specialty? Specialty { get; set; }
+    
+    public long SpecialtyId { get; set; }
     
     /// <summary>
     /// Enum representing the status of the task.
     /// </summary>
-    public TaskStatus Status { get; set; }
+    public TaskStatus? Status { get; set; }
     
     public long StatusId { get; set; }
     
@@ -48,7 +50,6 @@ public class Task : MilestoneItem
         DateRange = command.DateRange;
         MilestoneId = command.MilestoneId;
         Specialty = command.Specialty;
-        Status = command.Status;
         PersonId = command.PersonId;
     }
 
@@ -118,5 +119,10 @@ public class Task : MilestoneItem
     public void ReassignDateRange(DateRange dateRange)
     {
         DateRange = dateRange;
+    }
+    
+    public void SetSpecialty(Specialty specialty)
+    {
+        Specialty = specialty;
     }
 }

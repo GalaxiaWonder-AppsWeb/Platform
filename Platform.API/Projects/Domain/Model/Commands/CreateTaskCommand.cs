@@ -6,4 +6,4 @@ using TaskStatus = Platform.API.Projects.Domain.Model.Entities.TaskStatus;
 
 namespace Platform.API.Projects.Domain.Model.Commands;
 
-public record CreateTaskCommand(MilestoneItemName Name, Description Description, DateRange DateRange, MilestoneId MilestoneId, Specialty Specialty, TaskStatus Status, PersonId PersonId);
+public record CreateTaskCommand(MilestoneItemName Name, Description Description, DateRange DateRange, MilestoneId MilestoneId, Specialty Specialty, TaskStatus? Status, PersonId? PersonId);

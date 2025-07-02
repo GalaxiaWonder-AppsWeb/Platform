@@ -156,6 +156,12 @@ builder.Services.AddScoped<IMilestoneRepository, MilestoneRepository>();
 builder.Services.AddScoped<IMilestoneCommandService, MilestoneCommandService>();
 builder.Services.AddScoped<IMilestoneQueryService, MilestoneQueryService>();
 
+// Task Configuration
+builder.Services.AddScoped<ITaskRepository, TaskRepository>();
+builder.Services.AddScoped<ITaskCommandService, TaskCommandService>();
+builder.Services.AddScoped<ITaskQueryService, TaskQueryService>();
+builder.Services.AddScoped<ITaskStatusRepository, TaskStatusRepository>();
+
 // Add CORS Policy
 builder.Services.AddCors(options =>
 {

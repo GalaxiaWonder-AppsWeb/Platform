@@ -10,11 +10,22 @@ public class TaskCommandService(
     ITaskRepository taskRepository,
     ITaskStatusRepository taskStatusRepository,
     IMilestoneRepository milestoneRepository,
+    ISpecialtyRepository specialtyRepository,
     IUnitOfWork unitOfWork) : ITaskCommandService
 {
     public async Task<Task?> Handle(CreateTaskCommand command)
     {
         var milestone = await milestoneRepository.FindById(command.MilestoneId.Value);
+        var status = await taskStatusRepository.FindByName(command.Status.Name.ToString());
+        var specialty = await specialtyRepository.FindByName(command.Specialty.Name.ToString());
+        if (specialty is null)
+        {
+            throw new Exception($"Specialty {command.Specialty.Name} not found");
+        }
+        if (status is null)
+        {
+            throw new Exception($"Task status {command.Status.Name} not found");
+        }
         if (milestone is null)
         {
             throw new Exception($"Milestone {command.MilestoneId.Value} not found");
@@ -25,8 +36,23 @@ public class TaskCommandService(
             throw new Exception($"Task date range {command.DateRange} is outside of milestone date range {milestone.DateRange}");
         }
 
+        
         var task = new Task(command);
+        task.SetSpecialty(specialty);
+        task.ReassignStatus(status);
+        
+        if (command.PersonId is null || command.Status is null)
+        {
+            var reassignedStatus = await taskStatusRepository.FindByName("DRAFT");
+            if (reassignedStatus is null)
+            {
+                throw new Exception("Draft status not found");
+            }
+            task.ToDraft(reassignedStatus);
+        }
+        
         await taskRepository.AddAsync(task);
+        await unitOfWork.CompleteAsync();
         return task;
     }
     
