@@ -18,15 +18,21 @@ public class ProjectResourceFromEntityAssembler
     {
         var contractor = await _orgFacade.GetContractorByOrganizationId(proj.OrganizationId.organizationId);
 
+        if (proj.Status.Name.ToString() is null)
+        {
+            throw new InvalidOperationException("Project status cannot be null.");
+        }
         return new ProjectResource(
             proj.Id,
             proj.ProjectName.Value,
             proj.Description.Value,
             proj.DateRange.StartDate.Date,
             proj.DateRange.EndDate.Date,
+            proj.Budget.Amount,
             proj.OrganizationId.organizationId,
             proj.ContractingEntityId.personId,
-            contractor
+            contractor,
+            proj.Status.Name.ToString()
         );
     }
 }

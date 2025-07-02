@@ -24,6 +24,7 @@ using Platform.API.Organizations.Domain.Services;
 using Platform.API.Organizations.Infrastructure.Persistence.EFC.Repositories;
 using Platform.API.Organizations.Interfaces.ACL;
 using Platform.API.Projects.Application.Internal.CommandServices;
+using Platform.API.Projects.Application.Internal.EventHandlers;
 using Platform.API.Projects.Application.Internal.QueryServices;
 using Platform.API.Projects.Domain.Repositories;
 using Platform.API.Projects.Domain.Services;
@@ -148,6 +149,12 @@ builder.Services.AddScoped<IProjectTeamMemberCommandService, ProjectTeamMemberCo
 builder.Services.AddScoped<IProjectCommandService, ProjectCommandService>();
 builder.Services.AddScoped<IProjectQueryService, ProjectQueryService>();
 builder.Services.AddScoped<ProjectResourceFromEntityAssembler>();
+builder.Services.AddScoped<ProjectCreatedDomainEventHandler>();
+
+// Milestone Configuration
+builder.Services.AddScoped<IMilestoneRepository, MilestoneRepository>();
+builder.Services.AddScoped<IMilestoneCommandService, MilestoneCommandService>();
+builder.Services.AddScoped<IMilestoneQueryService, MilestoneQueryService>();
 
 // Add CORS Policy
 builder.Services.AddCors(options =>

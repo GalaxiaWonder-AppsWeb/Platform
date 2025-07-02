@@ -1,3 +1,5 @@
-﻿namespace Platform.API.Projects.Interfaces.REST.Resources;
+﻿using Platform.API.Shared.Domain.Model.ValueObjects;
 
-public record CreateProjectResource(string ProjectName, string Description, DateTimeOffset StartDate, DateTimeOffset EndDate, long OrganizationId, string ContractingEntityEmail);
+namespace Platform.API.Projects.Interfaces.REST.Resources;
+
+public record CreateProjectResource(string ProjectName, string Description, DateTimeOffset StartDate, DateTimeOffset EndDate, decimal Budget, long OrganizationId, string ContractingEntityEmail);

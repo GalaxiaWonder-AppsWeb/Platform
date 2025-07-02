@@ -1,8 +1,11 @@
 ﻿using Platform.API.IAM.Domain.Model.ValueObjects;
 using Platform.API.Projects.Domain.Model.Commands;
 using Platform.API.Projects.Domain.Model.Entities;
+using Platform.API.Projects.Domain.Model.Events;
 using Platform.API.Projects.Domain.Model.ValueObjects;
-using Platform.API.Shared.Domain.Repositories.Model.ValueObjects;
+using Platform.API.Shared.Domain.Model.Aggregates;
+using Platform.API.Shared.Domain.Model.Events;
+using Platform.API.Shared.Domain.Model.ValueObjects;
 
 namespace Platform.API.Projects.Domain.Model.Aggregates;
 
@@ -11,7 +14,7 @@ namespace Platform.API.Projects.Domain.Model.Aggregates;
 /// Wraps the properties and behaviors related to a project.
 /// Persists the project's details such as its name, description, date range, organization ownership, and status.
 /// </summary>
-public partial class Project
+public partial class Project : AggregateRoot
 {
     /// <summary>
     /// Represents the unique identifier for the project.
@@ -32,6 +35,11 @@ public partial class Project
     /// Range of dates within the project will be done.
     /// </summary>
     public DateRange DateRange { get; set; }
+    
+    /// <summary>
+    /// Budget of the project, encapsulated in a value object to ensure validation and immutability.
+    /// </summary>
+    public Money Budget { get; set; }
     
     /// <summary>
     /// Identifier of the organization that owns the project, encapsulated in a value object to ensure validation and immutability.
@@ -66,7 +74,9 @@ public partial class Project
         ProjectName = command.ProjectName;
         Description = command.Description;
         DateRange = command.DateRange;
+        Budget = command.Budget;
         OrganizationId = command.OrganizationId;
+        AddDomainEvent(new ProjectCreatedDomainEvent(Id, OrganizationId.organizationId));
     }
     
     /// <summary>
@@ -111,5 +121,16 @@ public partial class Project
     public void ReassignStatus(ProjectStatus status)
     {
         Status = status;
+    }
+
+    /// <summary>
+    /// Updates the date range of the project with a new value.
+    /// </summary>
+    /// <param name="dateRange">
+    /// The new date range to set, encapsulated in a value object to ensure validation and immutability.
+    /// </param>
+    public void ReassignDate(DateRange dateRange)
+    {
+        DateRange = dateRange;
     }
 }

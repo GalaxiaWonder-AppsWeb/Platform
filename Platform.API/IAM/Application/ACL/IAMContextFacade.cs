@@ -1,7 +1,7 @@
 ﻿using Platform.API.IAM.Domain.Repositories;
 using Platform.API.IAM.Infrastructure.Persistence.EFC.Repositories;
 using Platform.API.IAM.Interfaces.ACL;
-using Platform.API.Shared.Domain.Repositories.Model.ValueObjects;
+using Platform.API.Shared.Domain.Model.ValueObjects;
 
 namespace Platform.API.IAM.Application.ACL;
 

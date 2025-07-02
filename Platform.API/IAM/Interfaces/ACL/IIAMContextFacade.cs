@@ -1,4 +1,4 @@
-﻿using Platform.API.Shared.Domain.Repositories.Model.ValueObjects;
+﻿using Platform.API.Shared.Domain.Model.ValueObjects;
 
 namespace Platform.API.IAM.Interfaces.ACL;
 

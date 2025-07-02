@@ -28,7 +28,7 @@ public class OrganizationController(
     /// <summary>
     /// Creates a new organization with legal name, commercial name, RUC, and owner.
     /// </summary>
-    [HttpPost("create-organization")]
+    [HttpPost]
     [SwaggerOperation(
         Summary = "Create Organization",
         Description = "Create Organization with legal name, commercial name, ruc and owner",

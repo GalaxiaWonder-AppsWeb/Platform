@@ -1,7 +1,7 @@
 ﻿using Platform.API.Organizations.Domain.Model.Aggregates;
 using Platform.API.Organizations.Domain.Model.Commands;
 using Platform.API.Organizations.Domain.Model.Entities;
-using Platform.API.Shared.Domain.Repositories.Model.ValueObjects;
+using Platform.API.Shared.Domain.Model.ValueObjects;
 
 namespace Platform.API.Organizations.Domain.Services;
 

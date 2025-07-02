@@ -9,6 +9,7 @@ using Platform.API.Organizations.Domain.Model.ValueObjects;
 using Platform.API.Projects.Domain.Model.Aggregates;
 using Platform.API.Projects.Domain.Model.Entities;
 using Platform.API.Projects.Domain.Model.ValueObjects;
+using Platform.API.Shared.Domain.Model.Events;
 using Platform.API.Shared.Infrastructure.Persistence.EFC.Configuration.Extensions;
 
 namespace Platform.API.Shared.Infrastructure.Persistence.EFC.Configuration;
@@ -42,6 +43,9 @@ public class AppDbContext(DbContextOptions options) : DbContext(options)
     {
         
         base.OnModelCreating(builder);
+        
+        //PARA IGNORAR EVENTOS DE DOMINIO
+        builder.Ignore<DomainEvent>();
 
         // PERSON
         builder.Entity<Person>(person =>
@@ -364,9 +368,17 @@ public class AppDbContext(DbContextOptions options) : DbContext(options)
                 .WithMany()
                 .HasForeignKey(p => p.StatusId)
                 .OnDelete(DeleteBehavior.Restrict);
-
-
-
+            
+            entity.OwnsOne(p => p.Budget, budget =>
+            {
+                budget.Property(b => b.Amount)
+                    .HasColumnName("budget")
+                    .IsRequired();
+                budget.Property(b => b.Currency)
+                    .HasColumnName("budget_currency")
+                    .HasMaxLength(3)
+                    .IsRequired();
+            });
         });
         
         //PROJECT STATUS
@@ -445,6 +457,65 @@ public class AppDbContext(DbContextOptions options) : DbContext(options)
             {
                 desc.Property(d => d.Address)
                     .HasColumnName("email_address");
+            });
+        });
+        
+        //SPECIALTY
+        builder.Entity<Specialty>(entity =>
+        {
+            entity.ToTable("specialties");
+
+            entity.HasKey(i => i.Id);
+
+            entity.Property(i => i.Id)
+                .HasColumnName("id")
+                .ValueGeneratedOnAdd();
+
+            entity.Property(i => i.Name)
+                .HasColumnName("name")
+                .HasConversion<string>()
+                .IsRequired();
+        });
+        
+        // MILESTONE
+        builder.Entity<Milestone>(entity =>
+        {
+            entity.ToTable("milestones");
+
+            entity.HasKey(p => p.Id);
+
+            entity.Property(p => p.Id)
+                .HasColumnName("id")
+                .ValueGeneratedOnAdd();
+
+            entity.OwnsOne(p => p.Name, name =>
+            {
+                name.Property(n => n.Value)
+                    .HasColumnName("name")
+                    .IsRequired();
+            });
+
+            entity.OwnsOne(p => p.Description, desc =>
+            {
+                desc.Property(d => d.Value)
+                    .HasColumnName("description");
+            });
+
+            entity.OwnsOne(p => p.ProjectId, owned =>
+            {
+                owned.Property(o => o.Value)
+                    .HasColumnName("project_id")
+                    .IsRequired();
+            });
+            
+            entity.OwnsOne(p => p.DateRange, range =>
+            {
+                range.Property(r => r.StartDate)
+                    .HasColumnName("starting_date")
+                    .IsRequired();
+                range.Property(r => r.EndDate)
+                    .HasColumnName("ending_date")
+                    .IsRequired();
             });
         });
         

@@ -3,7 +3,7 @@ using Platform.API.Projects.Domain.Model.Commands;
 using Platform.API.Projects.Domain.Model.Entities;
 using Platform.API.Projects.Domain.Model.ValueObjects;
 using Platform.API.Projects.Interfaces.REST.Resources;
-using Platform.API.Shared.Domain.Repositories.Model.ValueObjects;
+using Platform.API.Shared.Domain.Model.ValueObjects;
 
 namespace Platform.API.Projects.Interfaces.REST.Assemblers;
 
