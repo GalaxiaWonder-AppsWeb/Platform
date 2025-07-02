@@ -48,4 +48,12 @@ public interface IMilestoneCommandService
     /// The updated <see cref="Milestone"/> entity, or null if the update failed.
     /// </returns>
     Task<Milestone?> Handle(UpdateMilestoneDateRangeCommand command);
+    
+    /// <summary>
+    /// Handles the deletion of an existing milestone.
+    /// </summary>
+    /// <param name="command">
+    /// The command specifying the milestone to delete, including the milestone ID.
+    /// </param>
+    Task Handle (DeleteMilestoneCommand command);
 }

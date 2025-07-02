@@ -116,4 +116,18 @@ public class MilestoneController(
         return Ok(resources);
 
     }
+
+    [HttpDelete("{id}")]
+    [SwaggerOperation(
+        Summary = "Delete a Milestone",
+        Description = "Delete an existing milestone",
+        OperationId = "milestone-delete")]
+    [SwaggerResponse(StatusCodes.Status200OK, "Milestone deleted successfully")]
+    [SwaggerResponse(StatusCodes.Status400BadRequest, "Milestone deletion failed")]
+    public async Task<IActionResult> DeleteMilestone(long id)
+    {
+        var command = DeleteMilestoneCommandFromResourceAssembler.ToCommandFromResource(id);
+        await milestoneCommandService.Handle(command);
+        return Ok("Milestone deleted successfully");
+    }
 }

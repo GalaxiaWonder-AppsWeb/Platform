@@ -136,4 +136,13 @@ public class MilestoneCommandService(
         await unitOfWork.CompleteAsync();
         return milestone;
     }
+    
+    public async Task Handle(DeleteMilestoneCommand command)
+    {
+        var milestone = await milestoneRepository.FindById(command.Id);
+        if (milestone is null) throw new Exception($"Milestone with id {command.Id} not found");
+        
+        milestoneRepository.Remove(milestone);
+        await unitOfWork.CompleteAsync();
+    }
 }
