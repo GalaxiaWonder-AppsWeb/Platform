@@ -507,7 +507,16 @@ public class AppDbContext(DbContextOptions options) : DbContext(options)
                     .HasColumnName("project_id")
                     .IsRequired();
             });
-
+            
+            entity.OwnsOne(p => p.DateRange, range =>
+            {
+                range.Property(r => r.StartDate)
+                    .HasColumnName("starting_date")
+                    .IsRequired();
+                range.Property(r => r.EndDate)
+                    .HasColumnName("ending_date")
+                    .IsRequired();
+            });
         });
         
         //SETTEO DE DATA

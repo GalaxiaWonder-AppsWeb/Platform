@@ -27,6 +27,26 @@ public class MilestoneCommandService(
         {
             throw new Exception($"Project {command.ProjectId.Value} not found");
         }
+        if (command.DateRange.StartDate < project.DateRange.StartDate)
+        {
+            throw new Exception($"Milestone start date {command.DateRange.StartDate} cannot be before project start date {project.DateRange.StartDate}");
+        }
+
+        if (command.DateRange.StartDate > project.DateRange.EndDate)
+        {
+            throw new Exception($"Milestone start date {command.DateRange.StartDate} cannot be after project end date {project.DateRange.EndDate}");
+        }
+
+        if (command.DateRange.EndDate < project.DateRange.StartDate)
+        {
+            throw new Exception($"Milestone end date {command.DateRange.EndDate} cannot be before project start date {project.DateRange.StartDate}");
+        }
+
+        if (command.DateRange.EndDate > project.DateRange.EndDate)
+        {
+            throw new Exception($"Milestone end date {command.DateRange.EndDate} cannot be after project end date {project.DateRange.EndDate}");
+        }
+
 
         var milestone = new Milestone(command);
         await milestoneRepository.AddAsync(milestone);

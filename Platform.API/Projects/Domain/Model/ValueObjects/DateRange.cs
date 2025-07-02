@@ -33,7 +33,8 @@ public record DateRange
             throw new ArgumentException("Start date must be earlier than end date", nameof(startDate));
         if (startDate < DateTimeOffset.Now)
             throw new ArgumentException("Start date cannot be in the past", nameof(startDate));
-        
+        if (endDate < DateTimeOffset.Now)
+            throw new ArgumentException("End date cannot be in the past", nameof(endDate));
         StartDate = startDate;
         EndDate = endDate;
     }

@@ -152,7 +152,9 @@ builder.Services.AddScoped<ProjectResourceFromEntityAssembler>();
 builder.Services.AddScoped<ProjectCreatedDomainEventHandler>();
 
 // Milestone Configuration
-
+builder.Services.AddScoped<IMilestoneRepository, MilestoneRepository>();
+builder.Services.AddScoped<IMilestoneCommandService, MilestoneCommandService>();
+builder.Services.AddScoped<IMilestoneQueryService, MilestoneQueryService>();
 
 // Add CORS Policy
 builder.Services.AddCors(options =>
