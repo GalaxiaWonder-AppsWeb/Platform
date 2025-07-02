@@ -125,6 +125,25 @@ public class ProjectController(
         var response = await projectResourceFromEntityAssembler.ToResourceFromEntity(project);
         return Ok(response);
     }
+    
+    [HttpGet("[controller]/{id}")]
+    [SwaggerOperation(
+        Summary = "Get Project by Id",
+        Description = "Retrieve a project by its Id",
+        OperationId = "project-get-by-id")]
+    [SwaggerResponse(StatusCodes.Status200OK, "Project retrieved successfully", typeof(ProjectResource))]
+    [SwaggerResponse(StatusCodes.Status404NotFound, "Project not found")]
+    public async Task<IActionResult> GetProjectById(long id)
+    {
+        var query = new GetProjectByIdQuery(id);
+        var project = await projectQueryService.Handle(query);
+        if (project is null)
+        {
+            return NotFound("Project not found.");
+        }
+        var resource = await projectResourceFromEntityAssembler.ToResourceFromEntity(project);
+        return Ok(resource);
+    }
 
     [HttpGet("[controller]/contracting-entity/{id}")]
     [SwaggerOperation(
