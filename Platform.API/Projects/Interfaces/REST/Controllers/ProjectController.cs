@@ -161,7 +161,7 @@ public class ProjectController(
         return Ok("Project deleted successfully");
     }
 
-    [HttpGet("organizations/{organizationId}/team-members/{personId}/projects")]
+    [HttpGet("organization/{organizationId}/team-members/{personId}/projects")]
     [SwaggerOperation(
         Summary = "Get Projects by personId and organization",
         Description = "Retrieve projects by a personId and organization",
