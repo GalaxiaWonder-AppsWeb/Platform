@@ -9,6 +9,7 @@ using Platform.API.Projects.Domain.Model.ValueObjects;
 using Platform.API.Projects.Domain.Repositories;
 using Platform.API.Shared.Domain.Model.ValueObjects;
 using Platform.API.Shared.Domain.Repositories;
+using Task = System.Threading.Tasks.Task;
 
 namespace Platform.API.Projects.Application.Internal.EventHandlers;
 
