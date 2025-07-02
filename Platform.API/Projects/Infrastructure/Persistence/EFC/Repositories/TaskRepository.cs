@@ -16,13 +16,13 @@ public class TaskRepository(AppDbContext context) : BaseRepository<Task>(context
             .FirstOrDefaultAsync(t => t.Id == id);
     }
 
-    public async Task<Task?> FindAllTasksByMilestoneId(long milestoneId)
+    public async Task<IEnumerable<Task>> FindAllTasksByMilestoneId(long milestoneId)
     {
         return await Context.Set<Task>()
             .Include(t => t.PersonId)
             .Include(t => t.Status)
             .Where(t => t.MilestoneId.Value == milestoneId)
-            .FirstOrDefaultAsync();
+            .ToListAsync();
     }
     
     public async Task<IEnumerable<Task>> FindAllTasksByPersonIdAndMilestoneId(long personId, long milestoneId)

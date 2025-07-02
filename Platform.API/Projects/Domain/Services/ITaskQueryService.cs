@@ -5,5 +5,6 @@ namespace Platform.API.Projects.Domain.Services;
 
 public interface ITaskQueryService
 {
+    Task<IEnumerable<Task>> Handle(GetAllTasksByMilestoneIdQuery query);
     Task<IEnumerable<Task>> Handle(GetAllTasksByPersonIdAndMilestoneIdQuery query);
 }

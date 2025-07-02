@@ -8,6 +8,7 @@ namespace Platform.API.Projects.Application.Internal.CommandServices;
 
 public class TaskCommandService(
     ITaskRepository taskRepository,
+    ITaskStatusRepository taskStatusRepository,
     IMilestoneRepository milestoneRepository,
     IUnitOfWork unitOfWork) : ITaskCommandService
 {
@@ -18,6 +19,12 @@ public class TaskCommandService(
         {
             throw new Exception($"Milestone {command.MilestoneId.Value} not found");
         }
+        if (command.DateRange.StartDate < milestone.DateRange.StartDate ||
+            command.DateRange.EndDate > milestone.DateRange.EndDate)
+        {
+            throw new Exception($"Task date range {command.DateRange} is outside of milestone date range {milestone.DateRange}");
+        }
+
         var task = new Task(command);
         await taskRepository.AddAsync(task);
         return task;
@@ -37,6 +44,45 @@ public class TaskCommandService(
         if (command.Description is not null)
         {
             task.ReassignDescription(command.Description);
+        }
+        if (command.Status is not null)
+        {
+            var reassignedStatus = await taskStatusRepository.FindByName(command.Status.Name.ToString());
+            if (reassignedStatus is null)
+            {
+                throw new Exception($"Task status {command.Status.Name} not found");
+            }
+            task.ReassignStatus(reassignedStatus);
+        }
+
+        var milestone = await milestoneRepository.FindById(task.MilestoneId.Value);
+        if (milestone is null)
+        {
+            throw new Exception($"Milestone {task.MilestoneId.Value} not found");
+        }
+
+        if (command.DateRange is not null)
+        {
+            if (command.DateRange.StartDate < milestone.DateRange.StartDate ||
+                command.DateRange.EndDate > milestone.DateRange.EndDate)
+            {
+                throw new Exception($"Task date range {command.DateRange} is outside of milestone date range {milestone.DateRange}");
+            }
+            task.ReassignDateRange(command.DateRange);
+        }
+
+        if (command.RemovePerson)
+        {
+            var reassignedStatus = await taskStatusRepository.FindByName("DRAFT");
+            if (reassignedStatus is null)
+            {
+                throw new Exception("Draft status not found");
+            }
+            task.ToDraft(reassignedStatus);
+        }
+        else if (command.PersonId is not null)
+        {
+            task.ReassignPerson(command.PersonId);
         }
         taskRepository.Update(task);
         await unitOfWork.CompleteAsync();
