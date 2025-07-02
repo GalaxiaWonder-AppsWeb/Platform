@@ -122,4 +122,15 @@ public partial class Project : AggregateRoot
     {
         Status = status;
     }
+
+    /// <summary>
+    /// Updates the date range of the project with a new value.
+    /// </summary>
+    /// <param name="dateRange">
+    /// The new date range to set, encapsulated in a value object to ensure validation and immutability.
+    /// </param>
+    public void ReassignDate(DateRange dateRange)
+    {
+        DateRange = dateRange;
+    }
 }

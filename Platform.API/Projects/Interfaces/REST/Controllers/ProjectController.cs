@@ -105,6 +105,47 @@ public class ProjectController(
         var response = await projectResourceFromEntityAssembler.ToResourceFromEntity(project);
         return Ok(response);
     }
+    
+    [HttpPatch("[controller]/{projectId}/date-range")]
+    [SwaggerOperation(
+        Summary = "Update Project Date Range",
+        Description = "Update the date range of an existing project",
+        OperationId = "project-update-date-range")]
+    [SwaggerResponse(StatusCodes.Status200OK, "Project date range updated successfully", typeof(ProjectResource))]
+    [SwaggerResponse(StatusCodes.Status400BadRequest, "Project update failed")]
+    public async Task<IActionResult> UpdateProjectDateRange(
+        long projectId, [FromBody] UpdateProjectDateRangeResource resource)
+    {
+        var command = UpdateProjectDateRangeCommandFromResourceAssembler.ToCommandFromResource(projectId, resource);
+        var project = await projectCommandService.Handle(command);
+        if (project is null)
+        {
+            return BadRequest("Project update failed.");
+        }
+        var response = await projectResourceFromEntityAssembler.ToResourceFromEntity(project);
+        return Ok(response);
+    }
+
+    [HttpGet("[controller]/contracting-entity/{id}")]
+    [SwaggerOperation(
+        Summary = "Get Projects by Contracting Entity Id",
+        Description = "Retrieve projects by a contracting entity Id",
+        OperationId = "projects-get-by-contracting-entity-id")]
+    [SwaggerResponse(StatusCodes.Status200OK, "Projects retrieved successfully", typeof(ProjectResource))]
+    [SwaggerResponse(StatusCodes.Status404NotFound, "Projects not found")]
+    public async Task<IActionResult> GetProjectsByContractingEntityId(long id)
+    {
+        var query = new GetAllProjectsByContractingEntityIdQuery(id);
+        var projects = await projectQueryService.Handle(query);
+        var resources = new List<ProjectResource>();
+        foreach (var project in projects)
+        {
+            var resource = await projectResourceFromEntityAssembler.ToResourceFromEntity(project);
+            resources.Add(resource);
+        }
+
+        return Ok(resources);
+    }
 
     [HttpDelete("[controller]/{id}")]
     [SwaggerOperation(
@@ -142,26 +183,4 @@ public class ProjectController(
         return Ok(resources);
 
     }
-
-    [HttpGet("[controller]/contracting-entity/{id}")]
-    [SwaggerOperation(
-        Summary = "Get Projects by Contracting Entity Id",
-        Description = "Retrieve projects by a contracting entity Id",
-        OperationId = "projects-get-by-contracting-entity-id")]
-    [SwaggerResponse(StatusCodes.Status200OK, "Projects retrieved successfully", typeof(ProjectResource))]
-    [SwaggerResponse(StatusCodes.Status404NotFound, "Projects not found")]
-    public async Task<IActionResult> GetProjectsByContractingEntityId(long id)
-    {
-        var query = new GetAllProjectsByContractingEntityIdQuery(id);
-        var projects = await projectQueryService.Handle(query);
-        var resources = new List<ProjectResource>();
-        foreach (var project in projects)
-        {
-            var resource = await projectResourceFromEntityAssembler.ToResourceFromEntity(project);
-            resources.Add(resource);
-        }
-
-        return Ok(resources);
-    }
-
 }
