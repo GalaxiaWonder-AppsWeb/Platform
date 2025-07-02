@@ -5,4 +5,4 @@ using TaskStatus = Platform.API.Projects.Domain.Model.Entities.TaskStatus;
 
 namespace Platform.API.Projects.Domain.Model.Commands;
 
-public record UpdateTaskCommand(MilestoneItemName? Name, Description? Description, DateRange? DateRange,TaskStatus? Status, PersonId? PersonId);
+public record UpdateTaskCommand(long Id, MilestoneItemName? Name, Description? Description, DateRange? DateRange,TaskStatus? Status, PersonId? PersonId);
