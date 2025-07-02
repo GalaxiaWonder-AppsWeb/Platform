@@ -59,8 +59,9 @@ public class ProjectController(
         {
             return BadRequest("Project update failed.");
         }
+        var response = await projectResourceFromEntityAssembler.ToResourceFromEntity(project);
 
-        return Ok("Name updated successfully : " + project.ProjectName.Value);
+        return Ok(response);
     }
 
     [HttpPatch("[controller]/{id}/description")]
@@ -80,8 +81,9 @@ public class ProjectController(
         {
             return BadRequest("Project update failed.");
         }
+        var response = await projectResourceFromEntityAssembler.ToResourceFromEntity(project);
 
-        return Ok("Description updated successfully : " + project.Description.Value);
+        return Ok(response);
     }
 
     [HttpPatch("[controller]/{projectId}/status")]
@@ -100,7 +102,8 @@ public class ProjectController(
         {
             return BadRequest("Project update failed.");
         }
-        return Ok("Status updated successfully : " + project.Status.Name);
+        var response = await projectResourceFromEntityAssembler.ToResourceFromEntity(project);
+        return Ok(response);
     }
 
     [HttpDelete("[controller]/{id}")]

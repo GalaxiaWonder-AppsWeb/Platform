@@ -39,6 +39,66 @@ public class MilestoneController(
         var response = await MilestoneResourceFromEntityAssembler.ToResourceFromEntity(milestone);
         return Ok(response);
     }
+    
+    [HttpPatch("{id}/name")]
+    [SwaggerOperation(
+        Summary = "Update Milestone Name",
+        Description = "Update the name of an existing milestone",
+        OperationId = "milestone-update-name")]
+    [SwaggerResponse(StatusCodes.Status200OK, "Milestone name updated successfully", typeof(MilestoneResource))]
+    [SwaggerResponse(StatusCodes.Status400BadRequest, "Milestone update failed")]
+    public async Task<IActionResult> UpdateMilestoneName(long id, [FromBody] UpdateMilestoneNameResource resource)
+    {
+        var command = UpdateMilestoneNameCommandFromResourceAssembler.ToCommandFromResource(id, resource);
+        var milestone = await milestoneCommandService.Handle(command);
+        if (milestone is null)
+        {
+            return BadRequest("Milestone update failed.");
+        }
+
+        var response = await MilestoneResourceFromEntityAssembler.ToResourceFromEntity(milestone);
+        return Ok(response);
+    }
+    
+    [HttpPatch("{id}/description")]
+    [SwaggerOperation(
+        Summary = "Update Milestone Description",
+        Description = "Update the description of an existing milestone",
+        OperationId = "milestone-update-description")]
+    [SwaggerResponse(StatusCodes.Status200OK, "Milestone description updated successfully", typeof(MilestoneResource))]
+    [SwaggerResponse(StatusCodes.Status400BadRequest, "Milestone update failed")]
+    public async Task<IActionResult> UpdateMilestoneDescription(long id, [FromBody] UpdateMilestoneDescriptionResource resource)
+    {
+        var command = UpdateMilestoneDescriptionCommandFromResourceAssembler.ToCommandFromResource(id, resource);
+        var milestone = await milestoneCommandService.Handle(command);
+        if (milestone is null)
+        {
+            return BadRequest("Milestone update failed.");
+        }
+
+        var response = await MilestoneResourceFromEntityAssembler.ToResourceFromEntity(milestone);
+        return Ok(response);
+    }
+    
+    [HttpPatch("{id}/date")]
+    [SwaggerOperation(
+        Summary = "Update Milestone Date Range",
+        Description = "Update the date range of an existing milestone",
+        OperationId = "milestone-update-date-range")]
+    [SwaggerResponse(StatusCodes.Status200OK, "Milestone date range updated successfully", typeof(MilestoneResource))]
+    [SwaggerResponse(StatusCodes.Status400BadRequest, "Milestone update failed")]
+    public async Task<IActionResult> UpdateMilestoneDateRange(long id, [FromBody] UpdateMilestoneDateRangeResource resource)
+    {
+        var command = UpdateMilestoneDateRangeCommandFromResourceAssembler.ToCommandFromResource(id, resource);
+        var milestone = await milestoneCommandService.Handle(command);
+        if (milestone is null)
+        {
+            return BadRequest("Milestone update failed.");
+        }
+
+        var response = await MilestoneResourceFromEntityAssembler.ToResourceFromEntity(milestone);
+        return Ok(response);
+    }
 
     [HttpGet("by-project/{projectId}")]
     [SwaggerOperation(
