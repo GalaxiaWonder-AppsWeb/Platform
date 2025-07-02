@@ -15,4 +15,16 @@ public class ProjectTeamMemberRepository(AppDbContext context): BaseRepository<P
         return await Context.Set<ProjectTeamMember>()
             .FirstOrDefaultAsync(ptm => ptm.Id == id);
     }
+    
+    public async Task<IEnumerable<ProjectTeamMember>> FindAllProjectTeamMembersByProjectId(long projectId)
+    {
+        return await Context.Set<ProjectTeamMember>()
+            .Include(p => p.PersonId)
+            .Include(p => p.ProjectId)
+            .Include(p=> p.OrganizationMemberId)
+            .Include(p => p.Role)
+            .Include(p => p.Specialty)
+            .Where(ptm => ptm.ProjectId.Value == projectId)
+            .ToListAsync();
+    }
 }

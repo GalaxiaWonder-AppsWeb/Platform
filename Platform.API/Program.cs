@@ -151,6 +151,7 @@ builder.Services.AddScoped<IProjectQueryService, ProjectQueryService>();
 builder.Services.AddScoped<ProjectResourceFromEntityAssembler>();
 builder.Services.AddScoped<ProjectCreatedDomainEventHandler>();
 builder.Services.AddScoped<IRoleRepository, RoleRepository>();
+builder.Services.AddScoped<IProjectTeamMemberQueryService, ProjectTeamMemberQueryService>();
 
 // Milestone Configuration
 builder.Services.AddScoped<IMilestoneRepository, MilestoneRepository>();
