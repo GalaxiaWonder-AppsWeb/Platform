@@ -1,6 +1,8 @@
 ﻿using System.Net.Mime;
 using Microsoft.AspNetCore.Mvc;
 using Platform.API.IAM.Infrastructure.Pipeline.Middleware.Attributes;
+using Platform.API.Projects.Domain.Model.Aggregates;
+using Platform.API.Projects.Domain.Model.Queries;
 using Platform.API.Projects.Domain.Services;
 using Platform.API.Projects.Interfaces.REST.Assemblers;
 using Platform.API.Projects.Interfaces.REST.Resources;
@@ -36,5 +38,22 @@ public class MilestoneController(
 
         var response = await MilestoneResourceFromEntityAssembler.ToResourceFromEntity(milestone);
         return Ok(response);
+    }
+
+    [HttpGet("by-project/{projectId}")]
+    [SwaggerOperation(
+        Summary = "Get Milestones by Project ID",
+        Description = "Retrieve all milestones associated with a specific project ID",
+        OperationId = "milestone-get-by-project-id")]
+    [SwaggerResponse(StatusCodes.Status200OK, "Milestones retrieved successfully", typeof(IEnumerable<MilestoneResource>))]
+    [SwaggerResponse(StatusCodes.Status404NotFound, "No milestones found for the specified project ID")]
+    public async Task<IActionResult> GetMilestonesByProjectId(long projectId)
+    {
+        var query = new GetAllMilestonesByProjectIdQuery(projectId);
+        var milestones = await milestoneQueryService.Handle(query);
+        var resourceTasks = milestones.Select(m => MilestoneResourceFromEntityAssembler.ToResourceFromEntity(m));
+        var resources = await Task.WhenAll(resourceTasks);
+        return Ok(resources);
+
     }
 }
