@@ -26,6 +26,11 @@ public partial class Milestone
     /// Provides a contextual link between the milestone and its parent project.
     /// </summary>
     public ProjectId ProjectId { get; set; }
+    
+    /// <summary>
+    /// Represents the date range during which the milestone is expected to be achieved.
+    /// </summary>
+    public DateRange DateRange { get; set; }
 
     /// <summary>
     /// Default constructor for the <see cref="Milestone"/>.
@@ -46,5 +51,39 @@ public partial class Milestone
         Name = command.Name;
         Description = command.Description;
         ProjectId = command.ProjectId;
+        DateRange = command.DateRange;
+    }
+    
+    /// <summary>
+    /// Changes the name of the milestone.
+    /// </summary>
+    /// <param name="name">
+    /// Represents the new name for the milestone.
+    /// </param>
+    public void ReassignName(MilestoneName name)
+    {
+        Name = name;
+    }
+    
+    /// <summary>
+    /// Changes the description of the milestone.
+    /// </summary>
+    /// <param name="description">
+    /// Represents the new description for the milestone.
+    /// </param>
+    public void ReassignDescription(Description description)
+    {
+        Description = description;
+    }
+    
+    /// <summary>
+    /// Changes the date range of the milestone.
+    /// </summary>
+    /// <param name="dateRange">
+    /// Represents the new date range for the milestone.
+    /// </param>
+    public void ReassignDateRange(DateRange dateRange)
+    {
+        DateRange = dateRange;
     }
 }

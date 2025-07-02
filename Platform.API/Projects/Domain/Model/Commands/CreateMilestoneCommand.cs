@@ -14,4 +14,7 @@ namespace Platform.API.Projects.Domain.Model.Commands;
 /// <param name="ProjectId">
 /// Represents the unique identifier of the project to which this milestone belongs.
 /// </param>
-public record CreateMilestoneCommand(MilestoneName Name, Description Description, ProjectId ProjectId);
+/// <param name="DateRange">
+/// Represents the date range during which the milestone is expected to be achieved.
+/// </param>
+public record CreateMilestoneCommand(MilestoneName Name, Description Description, ProjectId ProjectId, DateRange DateRange);

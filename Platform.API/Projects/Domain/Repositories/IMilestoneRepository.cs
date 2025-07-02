@@ -8,5 +8,6 @@ namespace Platform.API.Projects.Domain.Repositories;
 /// </summary>
 public interface IMilestoneRepository : IBaseRepository<Milestone>
 {
+    Task<Milestone?> FindById(long id);
     Task<IEnumerable<Milestone>> FindAllMilestonesByProjectId(long projectId);
 }
