@@ -1,4 +1,5 @@
-﻿using Platform.API.Projects.Domain.Model.Commands;
+﻿using Platform.API.IAM.Interfaces.ACL;
+using Platform.API.Projects.Domain.Model.Commands;
 using Platform.API.Projects.Domain.Repositories;
 using Platform.API.Projects.Domain.Services;
 using Platform.API.Shared.Domain.Repositories;
@@ -11,6 +12,7 @@ public class TaskCommandService(
     ITaskStatusRepository taskStatusRepository,
     IMilestoneRepository milestoneRepository,
     ISpecialtyRepository specialtyRepository,
+    IIAMContextFacade iamFacade,
     IUnitOfWork unitOfWork) : ITaskCommandService
 {
     public async Task<Task?> Handle(CreateTaskCommand command)
@@ -62,6 +64,7 @@ public class TaskCommandService(
     
     public async Task<Task?> Handle(UpdateTaskCommand command)
     {
+        
         var task = await taskRepository.FindById(command.Id);
         if (task is null)
         {
@@ -100,7 +103,7 @@ public class TaskCommandService(
             }
             task.ReassignDateRange(command.DateRange);
         }
-
+        
         if (command.RemovePerson)
         {
             var reassignedStatus = await taskStatusRepository.FindByName("DRAFT");
@@ -112,6 +115,11 @@ public class TaskCommandService(
         }
         else if (command.PersonId is not null)
         {
+            var personId = await iamFacade.GetProfileDetailsByIdAsync(command.PersonId.personId);
+            if (personId is null)
+            {
+                throw new Exception($"Person {command.PersonId.personId} not found");
+            }
             task.ReassignPerson(command.PersonId);
         }
         taskRepository.Update(task);

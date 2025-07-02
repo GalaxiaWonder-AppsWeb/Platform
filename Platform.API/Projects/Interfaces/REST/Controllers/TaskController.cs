@@ -36,4 +36,25 @@ public class TaskController(
         
         return Ok(response);
     }
+    
+    [HttpPatch("{id}")]
+    [SwaggerOperation(
+        Summary = "Update a Task",
+        Description = "Update an existing task",
+        OperationId = "task-update")]
+    [SwaggerResponse(StatusCodes.Status200OK, "Task updated successfully")]
+    [SwaggerResponse(StatusCodes.Status400BadRequest, "Task update failed")]
+    public async Task<IActionResult> UpdateTask(long id, 
+        [FromBody] UpdateTaskResource resource)
+    {
+        var updateTaskCommand = UpdateTaskCommandFromResourceAssembler.ToCommandFromResource(id, resource);
+        var task = await taskCommandService.Handle(updateTaskCommand);
+        if (task is null)
+        {
+            return BadRequest("Task update failed.");
+        }
+        var response = await TaskResourceFromEntityAssembler.ToResourceFromEntity(task);
+        
+        return Ok(response);
+    }
 }
