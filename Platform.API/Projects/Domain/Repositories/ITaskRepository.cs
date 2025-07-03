@@ -8,4 +8,5 @@ public interface ITaskRepository : IBaseRepository<Task>
     Task<Task?> FindById(long id);
     Task<IEnumerable<Task>> FindAllTasksByMilestoneId(long milestoneId);
     Task<IEnumerable<Task>> FindAllTasksByPersonIdAndMilestoneId(long personId, long milestoneId);
+    Task<IEnumerable<Task>> FindAllTasksByMilestoneIds(IEnumerable<long> milestoneIds);
 }

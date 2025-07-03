@@ -5,5 +5,5 @@ namespace Platform.API.Billings.Domain.Repositories;
 
 public interface ITaskBudgetRepository : IBaseRepository<TaskBudget>
 {
-    Task<decimal> FindTotalTasksBudgetByProjectId(long projectId);
+    Task<IEnumerable<TaskBudget>> FindTaskBudgetsByTaskIds(IEnumerable<long> taskIds);
 }

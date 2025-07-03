@@ -26,7 +26,6 @@
     <ItemGroup>
       <Folder Include="Billings\Application\Internal\CommandServices\" />
       <Folder Include="Billings\Application\Internal\QueryServices\" />
-      <Folder Include="Billings\Infrastructure\Persistence\EFC\Repositories\" />
       <Folder Include="Billings\Interfaces\REST\Assemblers\" />
       <Folder Include="Billings\Interfaces\REST\Controllers\" />
       <Folder Include="Billings\Interfaces\REST\Resources\" />
