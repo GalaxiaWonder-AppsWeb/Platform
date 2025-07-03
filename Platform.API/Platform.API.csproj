@@ -26,7 +26,6 @@
     <ItemGroup>
       <Folder Include="Change\Application\Internal\CommandServices\" />
       <Folder Include="Change\Application\Internal\QueryServices\" />
-      <Folder Include="Change\Infrastructure\Persistence\EFC\Repositories\" />
       <Folder Include="Change\Interfaces\REST\Assemblers\" />
       <Folder Include="Change\Interfaces\REST\Controllers\" />
       <Folder Include="Change\Interfaces\REST\Resources\" />
