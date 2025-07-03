@@ -8,6 +8,11 @@ namespace Platform.API.Billings.Infrastructure.Persistence.EFC.Repositories;
 
 public class TaskBudgetRepository(AppDbContext context) : BaseRepository<TaskBudget>(context) , ITaskBudgetRepository
 {
+    public async Task<TaskBudget?> FindByTaskId(long taskId)
+    {
+        return await Context.Set<TaskBudget>()
+            .FirstOrDefaultAsync(tb => tb.TaskId.taskId == taskId);
+    }
     public async Task<IEnumerable<TaskBudget>> FindTaskBudgetsByTaskIds(IEnumerable<long> taskIds)
     {
         return await Context.Set<TaskBudget>()
