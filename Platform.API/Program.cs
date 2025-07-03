@@ -3,6 +3,11 @@ using Platform.API.Shared.Infrastructure.Persistence.EFC.Configuration;
 using Platform.API.Shared.Infrastructure.Persistence.EFC.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
+using Platform.API.Change.Application.Internal.CommandServices;
+using Platform.API.Change.Application.Internal.QueryServices;
+using Platform.API.Change.Domain.Repositories;
+using Platform.API.Change.Domain.Services;
+using Platform.API.Change.Infrastructure.Persistence.EFC.Repositories;
 using Platform.API.IAM.Application.ACL;
 using Platform.API.IAM.Application.Internal.CommandServices;
 using Platform.API.IAM.Application.Internal.OutboundServices;
@@ -163,6 +168,13 @@ builder.Services.AddScoped<ITaskRepository, TaskRepository>();
 builder.Services.AddScoped<ITaskCommandService, TaskCommandService>();
 builder.Services.AddScoped<ITaskQueryService, TaskQueryService>();
 builder.Services.AddScoped<ITaskStatusRepository, TaskStatusRepository>();
+
+// Change Process Configuration
+builder.Services.AddScoped<IChangeProcessRepository, ChangeProcessRepository>();
+builder.Services.AddScoped<IChangeProcessCommandService, ChangeProcessCommandService>();
+builder.Services.AddScoped<IChangeProcessQueryService, ChangeProcessQueryService>();
+builder.Services.AddScoped<IChangeOriginRepository, ChangeOriginRepository>();
+builder.Services.AddScoped<IChangeProcessStatusRepository, ChangeProcessStatusRepository>();
 
 // Add CORS Policy
 builder.Services.AddCors(options =>
