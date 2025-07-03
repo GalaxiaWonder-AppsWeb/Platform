@@ -20,6 +20,9 @@ public class ChangeProcessRepository(AppDbContext context) : BaseRepository<Chan
     public async Task<ChangeProcess?> FindById(long id)
     {
         return await Context.Set<ChangeProcess>()
+            .Include(cp => cp.Origin)
+            .Include(cp => cp.Status)
+            .Include(cp => cp.ProjectId)
             .FirstOrDefaultAsync(cp => cp.Id == id);
     }
     
@@ -35,6 +38,9 @@ public class ChangeProcessRepository(AppDbContext context) : BaseRepository<Chan
     public async Task<ChangeProcess?> FindByProjectId(long projectId)
     {
         return await Context.Set<ChangeProcess>()
+            .Include(cp => cp.Origin)
+            .Include(cp => cp.Status)
+            .Include(cp => cp.ProjectId)
             .FirstOrDefaultAsync(cp => cp.ProjectId.Value == projectId);
     }
 }

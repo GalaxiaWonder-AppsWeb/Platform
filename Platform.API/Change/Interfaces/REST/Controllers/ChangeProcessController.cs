@@ -36,4 +36,24 @@ public class ChangeProcessController(
         var response = await ChangeProcessResourceFromEntityAssembler.ToResourceFromEntity(changeProcess);
         return Ok(response);
     }
+
+    [HttpPatch("{changeProcessId}")]
+    [SwaggerOperation(
+        Summary = "Update a Change Process",
+        Description = "Update an existing change process",
+        OperationId = "change-process-update")]
+    [SwaggerResponse(StatusCodes.Status200OK, "Change process updated successfully", typeof(ChangeProcessResource))]
+    [SwaggerResponse(StatusCodes.Status400BadRequest, "Change process update failed")]
+    public async Task<IActionResult> RespondToChangeProcess(long changeProcessId,
+        RespondToChangeProcessResource resource)
+    {
+        var command = RespondToChangeProcessCommandFromResourceAssembler.ToCommandFromResource(changeProcessId, resource);
+        var changeProcess = await changeProcessCommandService.Handle(command);
+        if (changeProcess is null)
+        {
+            return BadRequest("Change process response failed.");
+        }
+        var response = await ChangeProcessResourceFromEntityAssembler.ToResourceFromEntity(changeProcess);
+        return Ok(response);
+    }
 }
