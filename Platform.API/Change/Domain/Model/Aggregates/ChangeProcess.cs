@@ -5,7 +5,7 @@ using Platform.API.Projects.Domain.Model.ValueObjects;
 
 namespace Platform.API.Change.Domain.Model.Aggregates;
 
-public class ChangeProcess
+public partial class ChangeProcess
 {
     /// <summary>
     /// Represents the unique identifier for a change process.
@@ -18,11 +18,15 @@ public class ChangeProcess
     /// </summary>
     public ChangeOrigin Origin { get; private set; }
     
+    public long OriginId { get; private set; }
+    
     /// <summary>
     /// Represents the current status of the change process.
     /// Wraps a status of a change process. (ej. PENDING, APPROVED, REJECTED)
     /// </summary>
     public ChangeProcessStatus Status { get; private set; }
+    
+    public long StatusId { get; private set; }
     
     /// <summary>
     /// Represents the justification for the change process.
@@ -84,15 +88,19 @@ public class ChangeProcess
     /// <param name="response">
     /// Response to the change process.
     /// </param>
+    /// <param name="status">
+    /// Represents the new status of the change process after the response.
+    /// </param>
     /// <exception cref="InvalidOperationException">
     /// Thrown when the response has already been set for the change process.
     /// </exception>
-    public void RespondToChange(ChangeResponse response)
+    public void RespondToChange(ChangeResponse response, ChangeProcessStatus status)
     {
         if (Response is not null)
         {
             throw new InvalidOperationException("Change process response has already been set.");
         }
         Response = response;
+        Status = status;
     }
 }

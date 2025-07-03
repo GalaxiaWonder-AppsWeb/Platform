@@ -1,5 +1,8 @@
 ﻿using EntityFrameworkCore.CreatedUpdatedDate.Extensions;
 using Microsoft.EntityFrameworkCore;
+using Platform.API.Change.Domain.Model.Aggregates;
+using Platform.API.Change.Domain.Model.Entities;
+using Platform.API.Change.Domain.Model.ValueObjects;
 using Platform.API.IAM.Domain.Model.Aggregates;
 using Platform.API.IAM.Domain.Model.Entities;
 using Platform.API.IAM.Domain.Model.ValueObjects;
@@ -624,6 +627,119 @@ public class AppDbContext(DbContextOptions options) : DbContext(options)
                 .IsRequired();
         });
         
+        // CHANGE PROCESS
+        builder.Entity<ChangeProcess>(entity =>
+        {
+            entity.ToTable("change_processes");
+            
+            entity.HasKey(cp => cp.Id);
+            
+            entity.Property(i => i.Id)
+                .HasColumnName("id")
+                .ValueGeneratedOnAdd();
+            
+            entity.HasOne(p => p.Origin)
+                .WithMany()
+                .HasForeignKey(p => p.OriginId)
+                .OnDelete(DeleteBehavior.Restrict);
+            
+            entity.Property(p => p.OriginId)
+                .HasColumnName("origin_id");
+            
+            entity.HasOne(p => p.Status)
+                .WithMany()
+                .HasForeignKey(p => p.StatusId)
+                .OnDelete(DeleteBehavior.Restrict);
+            
+            entity.Property(p => p.StatusId)
+                .HasColumnName("status_id");
+
+            entity.OwnsOne(p => p.Justification, desc =>
+            {
+                desc.Property(d => d.Value)
+                    .HasColumnName("justification");
+            });
+            
+            entity.OwnsOne(p => p.Response, resp =>
+            {
+                resp.Property(r => r.Value)
+                    .HasColumnName("response");
+            });
+            
+            entity.OwnsOne(p => p.ProjectId, owned =>
+            {
+                owned.Property(o => o.Value)
+                    .HasColumnName("project_id")
+                    .IsRequired();
+            });
+        });
+        
+        //CHANGE ORDER
+        builder.Entity<ChangeOrder>(entity =>
+        {
+            entity.ToTable("change_orders");
+            
+            entity.HasKey(cp => cp.Id);
+            
+            entity.Property(i => i.Id)
+                .HasColumnName("id")
+                .ValueGeneratedOnAdd();
+            
+            entity.OwnsOne(p => p.MilestoneId, owned =>
+            {
+                owned.Property(o => o.Value)
+                    .HasColumnName("milestone_id")
+                    .IsRequired();
+            });
+            
+            entity.OwnsOne(p => p.Description, desc =>
+            {
+                desc.Property(d => d.Value)
+                    .HasColumnName("description");
+            });
+            
+            entity.OwnsOne(p => p.ChangeProcessId, owned =>
+            {
+                owned.Property(o => o.Value)
+                    .HasColumnName("change_process_id")
+                    .IsRequired();
+            });
+        });
+        
+        // CHANGE ORIGIN
+        builder.Entity<ChangeOrigin>(entity =>
+        {
+            entity.ToTable("change_origins");
+
+            entity.HasKey(i => i.Id);
+
+            entity.Property(i => i.Id)
+                .HasColumnName("id")
+                .ValueGeneratedOnAdd();
+
+            entity.Property(i => i.Name)
+                .HasColumnName("name")
+                .HasConversion<string>()
+                .IsRequired();
+        });
+
+        // CHANGE PROCESS STATUS
+        builder.Entity<ChangeProcessStatus>(entity =>
+        {
+            entity.ToTable("change_process_statuses");
+
+            entity.HasKey(i => i.Id);
+
+            entity.Property(i => i.Id)
+                .HasColumnName("id")
+                .ValueGeneratedOnAdd();
+
+            entity.Property(i => i.Name)
+                .HasColumnName("name")
+                .HasConversion<string>()
+                .IsRequired();
+        });
+        
         //SETTEO DE DATA
         builder.Entity<OrganizationStatus>().HasData(
             new { Id = 1L, Name = OrganizationStatuses.ACTIVE },
@@ -673,6 +789,17 @@ public class AppDbContext(DbContextOptions options) : DbContext(options)
            new { Id = 1L, Name = Roles.COORDINATOR },
             new { Id = 2L, Name = Roles.SPECIALIST }
         );
+       
+       builder.Entity<ChangeOrigin>().HasData(
+           new { Id = 1L, Name = ChangeOrigins.CHANGE_REQUEST },
+            new { Id = 2L, Name = ChangeOrigins.TECHNICAL_QUERY }
+        );
+       
+         builder.Entity<ChangeProcessStatus>().HasData(
+              new { Id = 1L, Name = ChangeProcessStatuses.PENDING },
+                new { Id = 2L, Name = ChangeProcessStatuses.APPROVED },
+                new { Id = 3L, Name = ChangeProcessStatuses.REJECTED }
+          );
 
     }
 

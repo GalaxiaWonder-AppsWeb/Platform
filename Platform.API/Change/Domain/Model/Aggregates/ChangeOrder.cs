@@ -4,7 +4,7 @@ using Platform.API.Projects.Domain.Model.ValueObjects;
 
 namespace Platform.API.Change.Domain.Model.Aggregates;
 
-public class ChangeOrder
+public partial class ChangeOrder
 {
     /// <summary>
     /// Represents the unique identifier for a change order.
