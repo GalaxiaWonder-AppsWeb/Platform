@@ -9,6 +9,7 @@ public class ProjectTeamMemberResourceFromEntityAssembler
     {
         return new ProjectTeamMemberResource(
             projectTeamMember.Id,
+            projectTeamMember.Role.Name.ToString(),
             projectTeamMember.Specialty.Name.ToString(),
             projectTeamMember.OrganizationMemberId.organizationMemberId,
             projectTeamMember.PersonId.personId,

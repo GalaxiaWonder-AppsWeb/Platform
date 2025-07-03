@@ -1,5 +1,6 @@
 ﻿using System.Net.Mime;
 using Microsoft.AspNetCore.Mvc;
+using Platform.API.Projects.Domain.Model.Queries;
 using Platform.API.Projects.Domain.Services;
 using Platform.API.Projects.Interfaces.REST.Assemblers;
 using Platform.API.Projects.Interfaces.REST.Resources;
@@ -14,7 +15,8 @@ namespace Platform.API.Projects.Interfaces.REST.Controllers;
 [Produces(MediaTypeNames.Application.Json)]
 [SwaggerTag("Available Project Team Member endpoints")]
 public class ProjectTeamMemberController(
-    IProjectTeamMemberCommandService projectTeamMemberCommandService) : ControllerBase
+    IProjectTeamMemberCommandService projectTeamMemberCommandService,
+    IProjectTeamMemberQueryService projectTeamMemberQueryService) : ControllerBase
 {
     [HttpPost]
     [SwaggerOperation(
@@ -35,6 +37,25 @@ public class ProjectTeamMemberController(
         }
         var response = ProjectTeamMemberResourceFromEntityAssembler.ToResourceFromEntity(projectTeamMember);
         return Ok(response);
+    }
+    
+    [HttpGet("by-project-id/{projectId}")]
+    [SwaggerOperation(
+        Summary = "Get Project Team Members by Project ID",
+        Description = "Retrieve all team members associated with a specific project",
+        OperationId = "project-team-member-get-by-project-id")]
+    [SwaggerResponse(StatusCodes.Status200OK, "Project team members retrieved successfully")]
+    [SwaggerResponse(StatusCodes.Status400BadRequest, "Project team members retrieval failed")]
+    public async Task<IActionResult> GetProjectTeamMembersByProjectId(long projectId)
+    {
+        var query = new GetAllProjectTeamMembersByProjectIdQuery(projectId);
+        var projectTeamMembers = await projectTeamMemberQueryService.Handle(query);
+        
+        var resources = projectTeamMembers
+            .Select(ProjectTeamMemberResourceFromEntityAssembler.ToResourceFromEntity)
+            .ToList();
+        
+        return Ok(resources);
     }
 
     [HttpDelete("{id}")]

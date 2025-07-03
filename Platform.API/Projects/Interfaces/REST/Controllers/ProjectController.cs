@@ -125,6 +125,25 @@ public class ProjectController(
         var response = await projectResourceFromEntityAssembler.ToResourceFromEntity(project);
         return Ok(response);
     }
+    
+    [HttpGet("[controller]/{id}")]
+    [SwaggerOperation(
+        Summary = "Get Project by Id",
+        Description = "Retrieve a project by its Id",
+        OperationId = "project-get-by-id")]
+    [SwaggerResponse(StatusCodes.Status200OK, "Project retrieved successfully", typeof(ProjectResource))]
+    [SwaggerResponse(StatusCodes.Status404NotFound, "Project not found")]
+    public async Task<IActionResult> GetProjectById(long id)
+    {
+        var query = new GetProjectByIdQuery(id);
+        var project = await projectQueryService.Handle(query);
+        if (project is null)
+        {
+            return NotFound("Project not found.");
+        }
+        var resource = await projectResourceFromEntityAssembler.ToResourceFromEntity(project);
+        return Ok(resource);
+    }
 
     [HttpGet("[controller]/contracting-entity/{id}")]
     [SwaggerOperation(
@@ -161,7 +180,7 @@ public class ProjectController(
         return Ok("Project deleted successfully");
     }
 
-    [HttpGet("organizations/{organizationId}/team-members/{personId}/projects")]
+    [HttpGet("organization/{organizationId}/team-members/{personId}/projects")]
     [SwaggerOperation(
         Summary = "Get Projects by personId and organization",
         Description = "Retrieve projects by a personId and organization",

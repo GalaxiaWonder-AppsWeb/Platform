@@ -11,6 +11,8 @@ using Platform.API.Projects.Domain.Model.Entities;
 using Platform.API.Projects.Domain.Model.ValueObjects;
 using Platform.API.Shared.Domain.Model.Events;
 using Platform.API.Shared.Infrastructure.Persistence.EFC.Configuration.Extensions;
+using Task = Platform.API.Projects.Domain.Model.Aggregates.Task;
+using TaskStatus = Platform.API.Projects.Domain.Model.Entities.TaskStatus;
 
 namespace Platform.API.Shared.Infrastructure.Persistence.EFC.Configuration;
 
@@ -369,6 +371,9 @@ public class AppDbContext(DbContextOptions options) : DbContext(options)
                 .HasForeignKey(p => p.StatusId)
                 .OnDelete(DeleteBehavior.Restrict);
             
+            entity.Property(p => p.StatusId)
+                .HasColumnName("status_id");
+            
             entity.OwnsOne(p => p.Budget, budget =>
             {
                 budget.Property(b => b.Amount)
@@ -385,6 +390,22 @@ public class AppDbContext(DbContextOptions options) : DbContext(options)
         builder.Entity<ProjectStatus>(entity =>
         {
             entity.ToTable("project_statuses");
+
+            entity.HasKey(i => i.Id);
+
+            entity.Property(i => i.Id)
+                .HasColumnName("id")
+                .ValueGeneratedOnAdd();
+
+            entity.Property(i => i.Name)
+                .HasColumnName("name")
+                .HasConversion<string>()
+                .IsRequired();
+        });
+        
+        builder.Entity<Role>(entity =>
+        {
+            entity.ToTable("roles");
 
             entity.HasKey(i => i.Id);
 
@@ -425,6 +446,7 @@ public class AppDbContext(DbContextOptions options) : DbContext(options)
                 .WithMany()
                 .HasForeignKey(m => m.SpecialtyId)
                 .OnDelete(DeleteBehavior.Restrict);
+            
             
             entity.OwnsOne(ptm => ptm.OrganizationMemberId, member =>
             {
@@ -519,6 +541,89 @@ public class AppDbContext(DbContextOptions options) : DbContext(options)
             });
         });
         
+        // TASK
+        builder.Entity<Task>(entity =>
+        {
+            entity.ToTable("tasks");
+
+            entity.HasKey(p => p.Id);
+
+            entity.Property(p => p.Id)
+                .HasColumnName("id")
+                .ValueGeneratedOnAdd();
+
+            entity.OwnsOne(p => p.Name, name =>
+            {
+                name.Property(n => n.Value)
+                    .HasColumnName("name")
+                    .IsRequired();
+            });
+
+            entity.OwnsOne(p => p.Description, desc =>
+            {
+                desc.Property(d => d.Value)
+                    .HasColumnName("description");
+            });
+            
+            entity.OwnsOne(p => p.DateRange, range =>
+            {
+                range.Property(r => r.StartDate)
+                    .HasColumnName("starting_date")
+                    .IsRequired();
+                range.Property(r => r.EndDate)
+                    .HasColumnName("ending_date")
+                    .IsRequired();
+            });
+            
+            entity.OwnsOne(p => p.MilestoneId, owned =>
+            {
+                owned.Property(o => o.Value)
+                    .HasColumnName("milestone_id")
+                    .IsRequired();
+            });
+            
+            entity.OwnsOne(p => p.PersonId, person =>
+            {
+                person.Property(p => p.personId)
+                    .HasColumnName("person_id")
+                    .IsRequired();
+            });
+            
+            entity.HasOne(p => p.Status)
+                .WithMany()
+                .HasForeignKey(p => p.StatusId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            entity.HasOne(p => p.Specialty)
+                .WithMany()
+                .HasForeignKey(p => p.SpecialtyId)
+                .OnDelete(DeleteBehavior.Restrict);
+            
+            entity.Property(p => p.StatusId)
+                .HasColumnName("status_id");
+
+            entity.Property(p => p.SpecialtyId)
+                .HasColumnName("specialty_id");
+
+        });
+        
+        //TASK STATUS
+        builder.Entity<TaskStatus>(entity =>
+        {
+            entity.ToTable("task_statuses");
+
+            entity.HasKey(i => i.Id);
+
+            entity.Property(i => i.Id)
+                .HasColumnName("id")
+                .ValueGeneratedOnAdd();
+
+            entity.Property(i => i.Name)
+                .HasColumnName("name")
+                .HasConversion<string>()
+                .IsRequired();
+        });
+        
         //SETTEO DE DATA
         builder.Entity<OrganizationStatus>().HasData(
             new { Id = 1L, Name = OrganizationStatuses.ACTIVE },
@@ -554,6 +659,19 @@ public class AppDbContext(DbContextOptions options) : DbContext(options)
             new { Id = 6L, Name = Specialties.ELECTRICITY },
             new { Id = 7L, Name = Specialties.COMMUNICATIONS },
             new { Id = 8L, Name = Specialties.NON_APPLICABLE }
+        );
+       
+       builder.Entity<TaskStatus>().HasData(
+           new { Id = 1L, Name = TaskStatuses.DRAFT },
+           new { Id = 2L, Name = TaskStatuses.PENDING },
+           new { Id = 3L, Name = TaskStatuses.SUBMITTED },
+           new { Id = 4L, Name = TaskStatuses.APPROVED },
+           new { Id = 5L, Name = TaskStatuses.REJECTED }
+        );
+       
+       builder.Entity<Role>().HasData(
+           new { Id = 1L, Name = Roles.COORDINATOR },
+            new { Id = 2L, Name = Roles.SPECIALIST }
         );
 
     }

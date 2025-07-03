@@ -3,6 +3,7 @@ using Platform.API.Projects.Domain.Model.Commands;
 using Platform.API.Projects.Domain.Repositories;
 using Platform.API.Projects.Domain.Services;
 using Platform.API.Shared.Domain.Repositories;
+using Task = System.Threading.Tasks.Task;
 
 namespace Platform.API.Projects.Application.Internal.CommandServices;
 

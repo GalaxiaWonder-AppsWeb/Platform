@@ -7,6 +7,7 @@ using Platform.API.Projects.Domain.Services;
 using Platform.API.Projects.Interfaces.REST.Assemblers;
 using Platform.API.Projects.Interfaces.REST.Resources;
 using Swashbuckle.AspNetCore.Annotations;
+using Task = System.Threading.Tasks.Task;
 
 namespace Platform.API.Projects.Interfaces.REST.Controllers;
 

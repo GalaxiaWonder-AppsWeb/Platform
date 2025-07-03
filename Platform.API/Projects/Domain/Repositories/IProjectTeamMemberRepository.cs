@@ -18,4 +18,6 @@ public interface IProjectTeamMemberRepository: IBaseRepository<ProjectTeamMember
     /// Project team member if found, otherwise null.
     /// </returns>
     Task<ProjectTeamMember?> FindById(long id);
+    
+    Task<IEnumerable<ProjectTeamMember>> FindAllProjectTeamMembersByProjectId(long projectId);
 }

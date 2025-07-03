@@ -15,6 +15,10 @@ public class ProjectQueryService(
     IProjectRepository projectRepository
     ): IProjectQueryService
 {
+    public async Task<Project?> Handle(GetProjectByIdQuery query)
+    {
+        return await projectRepository.FindById(query.Id);
+    }
     public async Task<IEnumerable<Project>> Handle(GetAllProjectsByTeamMemberPersonIdQuery command)
     {
         return await projectRepository.FindAllProjectsByTeamMemberPersonIdAsync(command.PersonId, command.OrganizationId);
