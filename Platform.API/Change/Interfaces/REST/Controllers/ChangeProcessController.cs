@@ -56,4 +56,23 @@ public class ChangeProcessController(
         var response = await ChangeProcessResourceFromEntityAssembler.ToResourceFromEntity(changeProcess);
         return Ok(response);
     }
+    
+    [HttpGet("by-project-id/{projectId}")]
+    [SwaggerOperation(
+        Summary = "Get Change Process by Project ID",
+        Description = "Retrieve the change process associated with a specific project ID",
+        OperationId = "change-process-get-by-project-id")]
+    [SwaggerResponse(StatusCodes.Status200OK, "Change process retrieved successfully", typeof(ChangeProcessResource))]
+    [SwaggerResponse(StatusCodes.Status404NotFound, "Change process not found for the given project ID")]
+    public async Task<IActionResult> GetChangeProcessByProjectId(long projectId)
+    {
+        var query = GetChangeProcessByProjectIdQueryAssembler.ToQueryFromProjectId(projectId);
+        var changeProcess = await changeProcessQueryService.Handle(query);
+        if (changeProcess is null)
+        {
+            return NotFound($"Change process for project ID {projectId} not found.");
+        }
+        var response = await ChangeProcessResourceFromEntityAssembler.ToResourceFromEntity(changeProcess);
+        return Ok(response);
+    }
 }
