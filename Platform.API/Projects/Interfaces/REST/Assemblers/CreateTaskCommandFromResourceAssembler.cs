@@ -3,6 +3,7 @@ using Platform.API.Projects.Domain.Model.Commands;
 using Platform.API.Projects.Domain.Model.Entities;
 using Platform.API.Projects.Domain.Model.ValueObjects;
 using Platform.API.Projects.Interfaces.REST.Resources;
+using Platform.API.Shared.Domain.Model.ValueObjects;
 using TaskStatus = Platform.API.Projects.Domain.Model.Entities.TaskStatus;
 
 namespace Platform.API.Projects.Interfaces.REST.Assemblers;
@@ -23,7 +24,9 @@ public class CreateTaskCommandFromResourceAssembler
             new MilestoneId(resource.MilestoneId),
             new Specialty(Enum.Parse<Specialties>(resource.Specialty)),
             resource.Status is not null ? new TaskStatus(Enum.Parse<TaskStatuses>(resource.Status)) : null,
-            resource.PersonId is not null ? new PersonId(resource.PersonId.Value) : null
+            resource.PersonId is not null ? new PersonId(resource.PersonId.Value) : null,
+            new Money(resource.Amount,
+                "USD")
             );
     }
 }

@@ -3,6 +3,13 @@ using Platform.API.Shared.Infrastructure.Persistence.EFC.Configuration;
 using Platform.API.Shared.Infrastructure.Persistence.EFC.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
+using Platform.API.Billings.Application.ACL;
+using Platform.API.Billings.Application.Internal.CommandServices;
+using Platform.API.Billings.Application.Internal.QueryServices;
+using Platform.API.Billings.Domain.Repositories;
+using Platform.API.Billings.Domain.Services;
+using Platform.API.Billings.Infrastructure.Persistence.EFC.Repositories;
+using Platform.API.Billings.Interfaces.ACL;
 using Platform.API.Change.Application.Internal.CommandServices;
 using Platform.API.Change.Application.Internal.QueryServices;
 using Platform.API.Change.Domain.Repositories;
@@ -28,12 +35,14 @@ using Platform.API.Organizations.Domain.Repositories;
 using Platform.API.Organizations.Domain.Services;
 using Platform.API.Organizations.Infrastructure.Persistence.EFC.Repositories;
 using Platform.API.Organizations.Interfaces.ACL;
+using Platform.API.Projects.Application.ACL;
 using Platform.API.Projects.Application.Internal.CommandServices;
 using Platform.API.Projects.Application.Internal.EventHandlers;
 using Platform.API.Projects.Application.Internal.QueryServices;
 using Platform.API.Projects.Domain.Repositories;
 using Platform.API.Projects.Domain.Services;
 using Platform.API.Projects.Infrastructure.Persistence.EFC.Repositories;
+using Platform.API.Projects.Interfaces.ACL;
 using Platform.API.Projects.Interfaces.REST.Assemblers;
 using Platform.API.Shared.Domain.Repositories;
 
@@ -157,6 +166,8 @@ builder.Services.AddScoped<ProjectResourceFromEntityAssembler>();
 builder.Services.AddScoped<ProjectCreatedDomainEventHandler>();
 builder.Services.AddScoped<IRoleRepository, RoleRepository>();
 builder.Services.AddScoped<IProjectTeamMemberQueryService, ProjectTeamMemberQueryService>();
+builder.Services.AddScoped<IProjectFacade, ProjectFacade>();
+builder.Services.AddScoped<ITaskFacade, TaskFacade>();
 
 // Milestone Configuration
 builder.Services.AddScoped<IMilestoneRepository, MilestoneRepository>();
@@ -175,6 +186,12 @@ builder.Services.AddScoped<IChangeProcessCommandService, ChangeProcessCommandSer
 builder.Services.AddScoped<IChangeProcessQueryService, ChangeProcessQueryService>();
 builder.Services.AddScoped<IChangeOriginRepository, ChangeOriginRepository>();
 builder.Services.AddScoped<IChangeProcessStatusRepository, ChangeProcessStatusRepository>();
+
+// Task Budget Configuration
+builder.Services.AddScoped<ITaskBudgetRepository, TaskBudgetRepository>();
+builder.Services.AddScoped<ITaskBudgetQueryService, TaskBudgetQueryService>();
+builder.Services.AddScoped<ITaskBudgetCommandService, TaskBudgetCommandService>();
+builder.Services.AddScoped<ITaskBudgetFacade, TaskBudgetFacade>();
 
 // Add CORS Policy
 builder.Services.AddCors(options =>
