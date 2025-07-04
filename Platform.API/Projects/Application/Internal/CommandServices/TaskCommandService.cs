@@ -1,4 +1,5 @@
-﻿using Platform.API.IAM.Interfaces.ACL;
+﻿using Platform.API.Billings.Interfaces.ACL;
+using Platform.API.IAM.Interfaces.ACL;
 using Platform.API.Projects.Domain.Model.Commands;
 using Platform.API.Projects.Domain.Repositories;
 using Platform.API.Projects.Domain.Services;
@@ -13,6 +14,7 @@ public class TaskCommandService(
     IMilestoneRepository milestoneRepository,
     ISpecialtyRepository specialtyRepository,
     IIAMContextFacade iamFacade,
+    ITaskBudgetFacade taskBudgetFacade,
     IUnitOfWork unitOfWork) : ITaskCommandService
 {
     public async Task<Task?> Handle(CreateTaskCommand command)
@@ -56,9 +58,19 @@ public class TaskCommandService(
             }
             task.ReassignStatus(status);
         }
-
+        
+        if (command.Money.Amount <= 0)
+        {
+            throw new Exception("Task budget must be greater than zero");
+        }
+        
+        
         await taskRepository.AddAsync(task);
+        
         await unitOfWork.CompleteAsync();
+        
+        await taskBudgetFacade.CreateTaskBudget(task.Id, command.Money.Amount, command.Money.Currency);
+        
         return task;
     }
     
@@ -122,6 +134,8 @@ public class TaskCommandService(
             }
             task.ReassignPerson(command.PersonId);
         }
+        
+        
         taskRepository.Update(task);
         await unitOfWork.CompleteAsync();
         return task;

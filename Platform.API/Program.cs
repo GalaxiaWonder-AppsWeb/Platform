@@ -3,11 +3,13 @@ using Platform.API.Shared.Infrastructure.Persistence.EFC.Configuration;
 using Platform.API.Shared.Infrastructure.Persistence.EFC.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
+using Platform.API.Billings.Application.ACL;
 using Platform.API.Billings.Application.Internal.CommandServices;
 using Platform.API.Billings.Application.Internal.QueryServices;
 using Platform.API.Billings.Domain.Repositories;
 using Platform.API.Billings.Domain.Services;
 using Platform.API.Billings.Infrastructure.Persistence.EFC.Repositories;
+using Platform.API.Billings.Interfaces.ACL;
 using Platform.API.Change.Application.Internal.CommandServices;
 using Platform.API.Change.Application.Internal.QueryServices;
 using Platform.API.Change.Domain.Repositories;
@@ -189,6 +191,7 @@ builder.Services.AddScoped<IChangeProcessStatusRepository, ChangeProcessStatusRe
 builder.Services.AddScoped<ITaskBudgetRepository, TaskBudgetRepository>();
 builder.Services.AddScoped<ITaskBudgetQueryService, TaskBudgetQueryService>();
 builder.Services.AddScoped<ITaskBudgetCommandService, TaskBudgetCommandService>();
+builder.Services.AddScoped<ITaskBudgetFacade, TaskBudgetFacade>();
 
 // Add CORS Policy
 builder.Services.AddCors(options =>
