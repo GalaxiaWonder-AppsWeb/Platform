@@ -13,6 +13,7 @@ public class TaskRepository(AppDbContext context) : BaseRepository<Task>(context
         return await Context.Set<Task>()
             .Include(t => t.PersonId)
             .Include(t => t.Status)
+            .Include(t => t.Specialty)
             .FirstOrDefaultAsync(t => t.Id == id);
     }
 
@@ -21,6 +22,7 @@ public class TaskRepository(AppDbContext context) : BaseRepository<Task>(context
         return await Context.Set<Task>()
             .Include(t => t.PersonId)
             .Include(t => t.Status)
+            .Include(t => t.Specialty)
             .Where(t => t.MilestoneId.Value == milestoneId)
             .ToListAsync();
     }
@@ -30,6 +32,7 @@ public class TaskRepository(AppDbContext context) : BaseRepository<Task>(context
         return await Context.Set<Task>()
             .Include(t => t.PersonId)
             .Include(t => t.Status)
+            .Include(t => t.Specialty)
             .Where(t => t.PersonId.personId == personId && t.MilestoneId.Value == milestoneId)
             .ToListAsync();
     }
@@ -38,6 +41,7 @@ public class TaskRepository(AppDbContext context) : BaseRepository<Task>(context
         return await Context.Set<Task>()
             .Include(t => t.PersonId)
             .Include(t => t.Status)
+            .Include(t => t.Specialty)
             .Where(t => milestoneIds.Contains(t.MilestoneId.Value))
             .ToListAsync();
     }

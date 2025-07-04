@@ -16,7 +16,7 @@ public class Task : MilestoneItem
     /// <summary>
     /// Specialty of the task.
     /// </summary>
-    public Specialty? Specialty { get; set; }
+    public Specialty Specialty { get; set; }
     
     public long SpecialtyId { get; set; }
     

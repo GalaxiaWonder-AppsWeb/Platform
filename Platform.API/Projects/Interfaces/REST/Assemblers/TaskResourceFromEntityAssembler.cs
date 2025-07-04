@@ -19,7 +19,7 @@ public class TaskResourceFromEntityAssembler
             task.DateRange.StartDate.Date,
             task.DateRange.EndDate.Date,
             task.MilestoneId.Value,
-            task.Specialty?.Name.ToString(),
+            task.Specialty.Name.ToString(),
             task.Status?.Name.ToString(),    
             task.PersonId?.personId);
     }
