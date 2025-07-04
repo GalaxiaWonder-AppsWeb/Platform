@@ -4,6 +4,7 @@ using Platform.API.Projects.Interfaces.ACL;
 namespace Platform.API.Projects.Application.ACL;
 
 public class ProjectFacade(
+    IProjectRepository projectRepository,
     IMilestoneRepository milestoneRepository,
     ITaskRepository taskRepository) : IProjectFacade
 {
@@ -18,5 +19,10 @@ public class ProjectFacade(
 
         var tasks = await taskRepository.FindAllTasksByMilestoneIds(milestoneIds);
         return tasks.Select(t => t.Id);
+    }
+    
+    public async Task<bool> ProjectExists(long projectId)
+    {
+        return await projectRepository.ExistsById(projectId);
     }
 }

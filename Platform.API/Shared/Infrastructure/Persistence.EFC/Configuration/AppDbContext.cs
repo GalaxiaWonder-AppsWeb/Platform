@@ -1,5 +1,6 @@
 ﻿using EntityFrameworkCore.CreatedUpdatedDate.Extensions;
 using Microsoft.EntityFrameworkCore;
+using Platform.API.Billings.Domain.Model.Aggregates;
 using Platform.API.Change.Domain.Model.Aggregates;
 using Platform.API.Change.Domain.Model.Entities;
 using Platform.API.Change.Domain.Model.ValueObjects;
@@ -738,6 +739,36 @@ public class AppDbContext(DbContextOptions options) : DbContext(options)
                 .HasColumnName("name")
                 .HasConversion<string>()
                 .IsRequired();
+        });
+        
+        // TASK BUDGET
+        builder.Entity<TaskBudget>(entity =>
+        {
+            entity.ToTable("task_budgets");
+            
+            entity.HasKey(cp => cp.Id);
+            
+            entity.Property(i => i.Id)
+                .HasColumnName("id")
+                .ValueGeneratedOnAdd();
+            
+            entity.OwnsOne(p => p.TaskId, owned =>
+            {
+                owned.Property(o => o.taskId)
+                    .HasColumnName("task_id")
+                    .IsRequired();
+            });
+            
+            entity.OwnsOne(p => p.Money, money =>
+            {
+                money.Property(m => m.Amount)
+                    .HasColumnName("amount")
+                    .IsRequired();
+                money.Property(m => m.Currency)
+                    .HasColumnName("currency")
+                    .HasMaxLength(3)
+                    .IsRequired();
+            });
         });
         
         //SETTEO DE DATA

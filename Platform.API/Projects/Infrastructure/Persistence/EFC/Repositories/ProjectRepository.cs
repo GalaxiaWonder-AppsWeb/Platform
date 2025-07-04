@@ -18,6 +18,11 @@ public class ProjectRepository(AppDbContext context) : BaseRepository<Project>(c
             .FirstOrDefaultAsync(p => p.Id == id);
     }
     
+    public async Task<bool> ExistsById(long id)
+    {
+        return await context.Projects.AnyAsync(p => p.Id == id);
+    }
+    
     public async Task<IEnumerable<Project>> FindAllProjectsByTeamMemberPersonIdAsync(long personId, long organizationId)
     {
         var projects = await context.Projects

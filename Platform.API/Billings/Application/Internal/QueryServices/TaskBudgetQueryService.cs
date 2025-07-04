@@ -11,6 +11,11 @@ public class TaskBudgetQueryService(
 {
     public async Task<decimal> Handle(GetTotalTasksBudgetByProjectIdQuery query)
     {
+        var project = await projectFacade.ProjectExists(query.ProjectId);
+        if (!project)
+        {
+            throw new ArgumentException($"Project with ID {query.ProjectId} does not exist.");
+        }
         var taskIds = await projectFacade.GetTaskIdsByProjectId(query.ProjectId);
         if (!taskIds.Any())
         {
