@@ -18,6 +18,12 @@ public class TaskBudgetController(
 {
     
     [HttpGet("projects/{projectId}/total-task-budget")]
+    [SwaggerOperation(
+        Summary = "Get Total Task Budget by Project ID",
+        Description = "Retrieve the total task budget for a specific project",
+        OperationId = "task-budget-get-total-by-project-id")]
+    [SwaggerResponse(StatusCodes.Status200OK, "Total task budget retrieved successfully")]
+    [SwaggerResponse(StatusCodes.Status404NotFound, "Project not found")]
     public async Task<IActionResult> GetTotalTaskBudget(long projectId)
     {
         var query = new GetTotalTasksBudgetByProjectIdQuery(projectId);

@@ -8,7 +8,6 @@ public class MoneyResourceFromEntityAssembler
     public static MoneyResource ToResourceFromEntity(decimal amount)
     {
 
-        return new MoneyResource(
-            amount);
+        return new MoneyResource(amount, "USD");
     }
 }
