@@ -1,11 +1,22 @@
 ﻿using EntityFrameworkCore.CreatedUpdatedDate.Extensions;
 using Microsoft.EntityFrameworkCore;
+using Platform.API.Billings.Domain.Model.Aggregates;
+using Platform.API.Change.Domain.Model.Aggregates;
+using Platform.API.Change.Domain.Model.Entities;
+using Platform.API.Change.Domain.Model.ValueObjects;
 using Platform.API.IAM.Domain.Model.Aggregates;
 using Platform.API.IAM.Domain.Model.Entities;
 using Platform.API.IAM.Domain.Model.ValueObjects;
 using Platform.API.Organizations.Domain.Model.Aggregates;
 using Platform.API.Organizations.Domain.Model.Entities;
 using Platform.API.Organizations.Domain.Model.ValueObjects;
+using Platform.API.Projects.Domain.Model.Aggregates;
+using Platform.API.Projects.Domain.Model.Entities;
+using Platform.API.Projects.Domain.Model.ValueObjects;
+using Platform.API.Shared.Domain.Model.Events;
+using Platform.API.Shared.Infrastructure.Persistence.EFC.Configuration.Extensions;
+using Task = Platform.API.Projects.Domain.Model.Aggregates.Task;
+using TaskStatus = Platform.API.Projects.Domain.Model.Entities.TaskStatus;
 
 namespace Platform.API.Shared.Infrastructure.Persistence.EFC.Configuration;
 
@@ -22,7 +33,11 @@ public class AppDbContext(DbContextOptions options) : DbContext(options)
     public DbSet<Organization> Organizations { get; set; }
     public DbSet<OrganizationMember> OrganizationMembers { get; set; }
     public DbSet<OrganizationInvitation> OrganizationInvitations { get; set; }
-
+    
+    //PROJECT CONTEXT
+    public DbSet<Project> Projects { get; set; } = null!;
+    public DbSet<ProjectStatus> ProjectStatuss { get; set; } = null!;
+    public DbSet<ProjectTeamMember> ProjectTeamMembers { get; set; }
     protected override void OnConfiguring(DbContextOptionsBuilder builder)
     {
         // Add the created and updated interceptor
@@ -32,6 +47,12 @@ public class AppDbContext(DbContextOptions options) : DbContext(options)
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
+        
+        base.OnModelCreating(builder);
+        
+        //PARA IGNORAR EVENTOS DE DOMINIO
+        builder.Ignore<DomainEvent>();
+
         // PERSON
         builder.Entity<Person>(person =>
         {
@@ -299,6 +320,457 @@ public class AppDbContext(DbContextOptions options) : DbContext(options)
                 .IsRequired();
         });
         
+        // PROJECT
+        builder.Entity<Project>(entity =>
+        {
+            entity.ToTable("projects");
+
+            entity.HasKey(p => p.Id);
+
+            entity.Property(p => p.Id)
+                .HasColumnName("id")
+                .ValueGeneratedOnAdd();
+
+            entity.OwnsOne(p => p.ProjectName, name =>
+            {
+                name.Property(n => n.Value)
+                    .HasColumnName("name")
+                    .IsRequired();
+            });
+
+            entity.OwnsOne(p => p.Description, desc =>
+            {
+                desc.Property(d => d.Value)
+                    .HasColumnName("description");
+            });
+            
+            entity.OwnsOne(p => p.DateRange, range =>
+            {
+                range.Property(r => r.StartDate)
+                    .HasColumnName("starting_date")
+                    .IsRequired();
+                range.Property(r => r.EndDate)
+                    .HasColumnName("ending_date")
+                    .IsRequired();
+            });
+            
+
+            entity.OwnsOne(p => p.OrganizationId, owned =>
+            {
+                owned.Property(o => o.organizationId)
+                    .HasColumnName("organization_id")
+                    .IsRequired();
+            });
+            
+
+            entity.OwnsOne(p => p.ContractingEntityId, owned =>
+            {
+                owned.Property(o => o.personId)
+                    .HasColumnName("contracting_entity_id")
+                    .IsRequired();
+            });
+
+            entity.HasOne(p => p.Status)
+                .WithMany()
+                .HasForeignKey(p => p.StatusId)
+                .OnDelete(DeleteBehavior.Restrict);
+            
+            entity.Property(p => p.StatusId)
+                .HasColumnName("status_id");
+            
+            entity.OwnsOne(p => p.Budget, budget =>
+            {
+                budget.Property(b => b.Amount)
+                    .HasColumnName("budget")
+                    .IsRequired();
+                budget.Property(b => b.Currency)
+                    .HasColumnName("budget_currency")
+                    .HasMaxLength(3)
+                    .IsRequired();
+            });
+        });
+        
+        //PROJECT STATUS
+        builder.Entity<ProjectStatus>(entity =>
+        {
+            entity.ToTable("project_statuses");
+
+            entity.HasKey(i => i.Id);
+
+            entity.Property(i => i.Id)
+                .HasColumnName("id")
+                .ValueGeneratedOnAdd();
+
+            entity.Property(i => i.Name)
+                .HasColumnName("name")
+                .HasConversion<string>()
+                .IsRequired();
+        });
+        
+        builder.Entity<Role>(entity =>
+        {
+            entity.ToTable("roles");
+
+            entity.HasKey(i => i.Id);
+
+            entity.Property(i => i.Id)
+                .HasColumnName("id")
+                .ValueGeneratedOnAdd();
+
+            entity.Property(i => i.Name)
+                .HasColumnName("name")
+                .HasConversion<string>()
+                .IsRequired();
+        });
+        
+        //PROJECT TEAM MEMBER
+        builder.Entity<ProjectTeamMember>(entity =>
+        {
+            entity.ToTable("project_team_members");
+
+            entity.HasKey(ptm => ptm.Id);
+
+            entity.Property(ptm => ptm.Id)
+                .HasColumnName("id")
+                .ValueGeneratedOnAdd();
+
+            entity.OwnsOne(ptm => ptm.ProjectId, proj =>
+            {
+                proj.Property(p => p.Value)
+                    .HasColumnName("project_id")
+                    .IsRequired();
+            });
+            
+            // FK: MemberType
+            entity.Property(m => m.SpecialtyId)
+                .HasColumnName("specialty_id")
+                .IsRequired();
+
+            entity.HasOne(m => m.Specialty)
+                .WithMany()
+                .HasForeignKey(m => m.SpecialtyId)
+                .OnDelete(DeleteBehavior.Restrict);
+            
+            
+            entity.OwnsOne(ptm => ptm.OrganizationMemberId, member =>
+            {
+                member.Property(m => m.organizationMemberId)
+                    .HasColumnName("organization_member_id")
+                    .IsRequired();
+            });
+            
+            entity.OwnsOne(ptm => ptm.PersonId, member =>
+            {
+                member.Property(m => m.personId)
+                    .HasColumnName("person_id")
+                    .IsRequired();
+            });
+            
+            entity.OwnsOne(p => p.PersonName, desc =>
+            {
+                desc.Property(d => d.FirstName)
+                    .HasColumnName("first_name");
+            });
+            
+            entity.OwnsOne(p => p.PersonName, desc =>
+            {
+                desc.Property(d => d.LastName)
+                    .HasColumnName("last_name");
+            });
+            
+            
+            entity.OwnsOne(p => p.EmailAddress, desc =>
+            {
+                desc.Property(d => d.Address)
+                    .HasColumnName("email_address");
+            });
+        });
+        
+        //SPECIALTY
+        builder.Entity<Specialty>(entity =>
+        {
+            entity.ToTable("specialties");
+
+            entity.HasKey(i => i.Id);
+
+            entity.Property(i => i.Id)
+                .HasColumnName("id")
+                .ValueGeneratedOnAdd();
+
+            entity.Property(i => i.Name)
+                .HasColumnName("name")
+                .HasConversion<string>()
+                .IsRequired();
+        });
+        
+        // MILESTONE
+        builder.Entity<Milestone>(entity =>
+        {
+            entity.ToTable("milestones");
+
+            entity.HasKey(p => p.Id);
+
+            entity.Property(p => p.Id)
+                .HasColumnName("id")
+                .ValueGeneratedOnAdd();
+
+            entity.OwnsOne(p => p.Name, name =>
+            {
+                name.Property(n => n.Value)
+                    .HasColumnName("name")
+                    .IsRequired();
+            });
+
+            entity.OwnsOne(p => p.Description, desc =>
+            {
+                desc.Property(d => d.Value)
+                    .HasColumnName("description");
+            });
+
+            entity.OwnsOne(p => p.ProjectId, owned =>
+            {
+                owned.Property(o => o.Value)
+                    .HasColumnName("project_id")
+                    .IsRequired();
+            });
+            
+            entity.OwnsOne(p => p.DateRange, range =>
+            {
+                range.Property(r => r.StartDate)
+                    .HasColumnName("starting_date")
+                    .IsRequired();
+                range.Property(r => r.EndDate)
+                    .HasColumnName("ending_date")
+                    .IsRequired();
+            });
+        });
+        
+        // TASK
+        builder.Entity<Task>(entity =>
+        {
+            entity.ToTable("tasks");
+
+            entity.HasKey(p => p.Id);
+
+            entity.Property(p => p.Id)
+                .HasColumnName("id")
+                .ValueGeneratedOnAdd();
+
+            entity.OwnsOne(p => p.Name, name =>
+            {
+                name.Property(n => n.Value)
+                    .HasColumnName("name")
+                    .IsRequired();
+            });
+
+            entity.OwnsOne(p => p.Description, desc =>
+            {
+                desc.Property(d => d.Value)
+                    .HasColumnName("description");
+            });
+            
+            entity.OwnsOne(p => p.DateRange, range =>
+            {
+                range.Property(r => r.StartDate)
+                    .HasColumnName("starting_date")
+                    .IsRequired();
+                range.Property(r => r.EndDate)
+                    .HasColumnName("ending_date")
+                    .IsRequired();
+            });
+            
+            entity.OwnsOne(p => p.MilestoneId, owned =>
+            {
+                owned.Property(o => o.Value)
+                    .HasColumnName("milestone_id")
+                    .IsRequired();
+            });
+            
+            entity.OwnsOne(p => p.PersonId, person =>
+            {
+                person.Property(p => p.personId)
+                    .HasColumnName("person_id")
+                    .IsRequired();
+            });
+            
+            entity.HasOne(p => p.Status)
+                .WithMany()
+                .HasForeignKey(p => p.StatusId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            entity.HasOne(p => p.Specialty)
+                .WithMany()
+                .HasForeignKey(p => p.SpecialtyId)
+                .OnDelete(DeleteBehavior.Restrict);
+            
+            entity.Property(p => p.StatusId)
+                .HasColumnName("status_id");
+
+            entity.Property(p => p.SpecialtyId)
+                .HasColumnName("specialty_id");
+
+        });
+        
+        //TASK STATUS
+        builder.Entity<TaskStatus>(entity =>
+        {
+            entity.ToTable("task_statuses");
+
+            entity.HasKey(i => i.Id);
+
+            entity.Property(i => i.Id)
+                .HasColumnName("id")
+                .ValueGeneratedOnAdd();
+
+            entity.Property(i => i.Name)
+                .HasColumnName("name")
+                .HasConversion<string>()
+                .IsRequired();
+        });
+        
+        // CHANGE PROCESS
+        builder.Entity<ChangeProcess>(entity =>
+        {
+            entity.ToTable("change_processes");
+            
+            entity.HasKey(cp => cp.Id);
+            
+            entity.Property(i => i.Id)
+                .HasColumnName("id")
+                .ValueGeneratedOnAdd();
+            
+            entity.HasOne(p => p.Origin)
+                .WithMany()
+                .HasForeignKey(p => p.OriginId)
+                .OnDelete(DeleteBehavior.Restrict);
+            
+            entity.Property(p => p.OriginId)
+                .HasColumnName("origin_id");
+            
+            entity.HasOne(p => p.Status)
+                .WithMany()
+                .HasForeignKey(p => p.StatusId)
+                .OnDelete(DeleteBehavior.Restrict);
+            
+            entity.Property(p => p.StatusId)
+                .HasColumnName("status_id");
+
+            entity.OwnsOne(p => p.Justification, desc =>
+            {
+                desc.Property(d => d.Value)
+                    .HasColumnName("justification");
+            });
+            
+            entity.OwnsOne(p => p.Response, resp =>
+            {
+                resp.Property(r => r.Value)
+                    .HasColumnName("response");
+            });
+            
+            entity.OwnsOne(p => p.ProjectId, owned =>
+            {
+                owned.Property(o => o.Value)
+                    .HasColumnName("project_id")
+                    .IsRequired();
+            });
+        });
+        
+        //CHANGE ORDER
+        builder.Entity<ChangeOrder>(entity =>
+        {
+            entity.ToTable("change_orders");
+            
+            entity.HasKey(cp => cp.Id);
+            
+            entity.Property(i => i.Id)
+                .HasColumnName("id")
+                .ValueGeneratedOnAdd();
+            
+            entity.OwnsOne(p => p.MilestoneId, owned =>
+            {
+                owned.Property(o => o.Value)
+                    .HasColumnName("milestone_id")
+                    .IsRequired();
+            });
+            
+            entity.OwnsOne(p => p.Description, desc =>
+            {
+                desc.Property(d => d.Value)
+                    .HasColumnName("description");
+            });
+            
+            entity.OwnsOne(p => p.ChangeProcessId, owned =>
+            {
+                owned.Property(o => o.Value)
+                    .HasColumnName("change_process_id")
+                    .IsRequired();
+            });
+        });
+        
+        // CHANGE ORIGIN
+        builder.Entity<ChangeOrigin>(entity =>
+        {
+            entity.ToTable("change_origins");
+
+            entity.HasKey(i => i.Id);
+
+            entity.Property(i => i.Id)
+                .HasColumnName("id")
+                .ValueGeneratedOnAdd();
+
+            entity.Property(i => i.Name)
+                .HasColumnName("name")
+                .HasConversion<string>()
+                .IsRequired();
+        });
+
+        // CHANGE PROCESS STATUS
+        builder.Entity<ChangeProcessStatus>(entity =>
+        {
+            entity.ToTable("change_process_statuses");
+
+            entity.HasKey(i => i.Id);
+
+            entity.Property(i => i.Id)
+                .HasColumnName("id")
+                .ValueGeneratedOnAdd();
+
+            entity.Property(i => i.Name)
+                .HasColumnName("name")
+                .HasConversion<string>()
+                .IsRequired();
+        });
+        
+        // TASK BUDGET
+        builder.Entity<TaskBudget>(entity =>
+        {
+            entity.ToTable("task_budgets");
+            
+            entity.HasKey(cp => cp.Id);
+            
+            entity.Property(i => i.Id)
+                .HasColumnName("id")
+                .ValueGeneratedOnAdd();
+            
+            entity.OwnsOne(p => p.TaskId, owned =>
+            {
+                owned.Property(o => o.taskId)
+                    .HasColumnName("task_id")
+                    .IsRequired();
+            });
+            
+            entity.OwnsOne(p => p.Money, money =>
+            {
+                money.Property(m => m.Amount)
+                    .HasColumnName("amount")
+                    .IsRequired();
+                money.Property(m => m.Currency)
+                    .HasColumnName("currency")
+                    .HasMaxLength(3)
+                    .IsRequired();
+            });
+        });
+        
         //SETTEO DE DATA
         builder.Entity<OrganizationStatus>().HasData(
             new { Id = 1L, Name = OrganizationStatuses.ACTIVE },
@@ -311,13 +783,55 @@ public class AppDbContext(DbContextOptions options) : DbContext(options)
         );
 
        builder.Entity<OrganizationInvitationStatus>().HasData(
-            new { Id = 1L, Name = OrganizationInvitationStatuses.PENDING },
+            new { Id = 1L, Name = OrganizationInvitationStatuses.PENDING},
             new { Id = 2L, Name = OrganizationInvitationStatuses.ACCEPTED },
             new { Id = 3L, Name = OrganizationInvitationStatuses.REJECTED }
         );
+       
+       builder.Entity<ProjectStatus>().HasData(
+            new { Id = 1L, Name = ProjectStatuses.BASIC_STUDIES },
+            new { Id = 2L, Name = ProjectStatuses.DESIGN_IN_PROCESS },
+            new { Id = 3L, Name = ProjectStatuses.UNDER_REVIEW },
+            new { Id = 4L, Name = ProjectStatuses.CHANGE_REQUESTED },
+            new { Id = 5L, Name = ProjectStatuses.CHANGE_PENDING },
+            new { Id = 6L, Name = ProjectStatuses.APPROVED }
+        );
+       
+       builder.Entity<Specialty>().HasData(
+            new { Id = 1L, Name = Specialties.ARCHITECTURE },
+            new { Id = 2L, Name = Specialties.STRUCTURES },
+            new { Id = 3L, Name = Specialties.HSA },
+            new { Id = 4L, Name = Specialties.TOPOGRAPHY },
+            new { Id = 5L, Name = Specialties.SANITATION },
+            new { Id = 6L, Name = Specialties.ELECTRICITY },
+            new { Id = 7L, Name = Specialties.COMMUNICATIONS },
+            new { Id = 8L, Name = Specialties.NON_APPLICABLE }
+        );
+       
+       builder.Entity<TaskStatus>().HasData(
+           new { Id = 1L, Name = TaskStatuses.DRAFT },
+           new { Id = 2L, Name = TaskStatuses.PENDING },
+           new { Id = 3L, Name = TaskStatuses.SUBMITTED },
+           new { Id = 4L, Name = TaskStatuses.APPROVED },
+           new { Id = 5L, Name = TaskStatuses.REJECTED }
+        );
+       
+       builder.Entity<Role>().HasData(
+           new { Id = 1L, Name = Roles.COORDINATOR },
+            new { Id = 2L, Name = Roles.SPECIALIST }
+        );
+       
+       builder.Entity<ChangeOrigin>().HasData(
+           new { Id = 1L, Name = ChangeOrigins.CHANGE_REQUEST },
+            new { Id = 2L, Name = ChangeOrigins.TECHNICAL_QUERY }
+        );
+       
+         builder.Entity<ChangeProcessStatus>().HasData(
+              new { Id = 1L, Name = ChangeProcessStatuses.PENDING },
+                new { Id = 2L, Name = ChangeProcessStatuses.APPROVED },
+                new { Id = 3L, Name = ChangeProcessStatuses.REJECTED }
+          );
 
-        
-        base.OnModelCreating(builder);
     }
 
 }

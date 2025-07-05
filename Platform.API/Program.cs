@@ -3,6 +3,18 @@ using Platform.API.Shared.Infrastructure.Persistence.EFC.Configuration;
 using Platform.API.Shared.Infrastructure.Persistence.EFC.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
+using Platform.API.Billings.Application.ACL;
+using Platform.API.Billings.Application.Internal.CommandServices;
+using Platform.API.Billings.Application.Internal.QueryServices;
+using Platform.API.Billings.Domain.Repositories;
+using Platform.API.Billings.Domain.Services;
+using Platform.API.Billings.Infrastructure.Persistence.EFC.Repositories;
+using Platform.API.Billings.Interfaces.ACL;
+using Platform.API.Change.Application.Internal.CommandServices;
+using Platform.API.Change.Application.Internal.QueryServices;
+using Platform.API.Change.Domain.Repositories;
+using Platform.API.Change.Domain.Services;
+using Platform.API.Change.Infrastructure.Persistence.EFC.Repositories;
 using Platform.API.IAM.Application.ACL;
 using Platform.API.IAM.Application.Internal.CommandServices;
 using Platform.API.IAM.Application.Internal.OutboundServices;
@@ -16,11 +28,22 @@ using Platform.API.IAM.Infrastructure.Pipeline.Middleware.Extensions;
 using Platform.API.IAM.Infrastructure.Tokens.JWT.Configuration;
 using Platform.API.IAM.Infrastructure.Tokens.JWT.Services;
 using Platform.API.IAM.Interfaces.ACL;
+using Platform.API.Organizations.Application.ACL;
 using Platform.API.Organizations.Application.Internal.CommandServices;
 using Platform.API.Organizations.Application.Internal.QueryServices;
 using Platform.API.Organizations.Domain.Repositories;
 using Platform.API.Organizations.Domain.Services;
 using Platform.API.Organizations.Infrastructure.Persistence.EFC.Repositories;
+using Platform.API.Organizations.Interfaces.ACL;
+using Platform.API.Projects.Application.ACL;
+using Platform.API.Projects.Application.Internal.CommandServices;
+using Platform.API.Projects.Application.Internal.EventHandlers;
+using Platform.API.Projects.Application.Internal.QueryServices;
+using Platform.API.Projects.Domain.Repositories;
+using Platform.API.Projects.Domain.Services;
+using Platform.API.Projects.Infrastructure.Persistence.EFC.Repositories;
+using Platform.API.Projects.Interfaces.ACL;
+using Platform.API.Projects.Interfaces.REST.Assemblers;
 using Platform.API.Shared.Domain.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -55,13 +78,13 @@ builder.Services.AddSwaggerGen(options =>
         new OpenApiInfo
         {
             Title = "PropGMS.Platform.API",
-            Version = "v1",
+            Version = "v2",
             Description = "PropGMS Platform API",
             TermsOfService = new Uri("https://propgms.com/tos"),
             Contact = new OpenApiContact
             {
                 Name = "PropGMS",
-                Email = "contact@acme.com"
+                Email = "propgmscontact@galaxiawonder.com"
             },
             License = new OpenApiLicense
             {
@@ -127,6 +150,48 @@ builder.Services.AddScoped<IOrganizationMemberRepository, OrganizationMemberRepo
 builder.Services.AddScoped<IOrganizationMemberTypeRepository, OrganizationMemberTypeRepository>();
 builder.Services.AddScoped<IOrganizationInvitationRepository, OrganizationInvitationRepository>();
 builder.Services.AddScoped<IOrganizationInvitationStatusRepository, OrganizationInvitationStatusRepository>();
+builder.Services.AddScoped<IOrganizationMemberQueryService, OrganizationMemberQueryService>();
+builder.Services.AddScoped<IOrganizationMemberFacade, OrganizationMemberFacade>();
+builder.Services.AddScoped<IOrganizationFacade, OrganizationFacade>();
+
+//Project Configuration
+builder.Services.AddScoped<IProjectRepository, ProjectRepository>();
+builder.Services.AddScoped<IProjectTeamMemberRepository, ProjectTeamMemberRepository>();
+builder.Services.AddScoped<IProjectStatusRepository, ProjectStatusRepository>();
+builder.Services.AddScoped<ISpecialtyRepository, SpecialtyRepository>();
+builder.Services.AddScoped<IProjectTeamMemberCommandService, ProjectTeamMemberCommandService>();
+builder.Services.AddScoped<IProjectCommandService, ProjectCommandService>();
+builder.Services.AddScoped<IProjectQueryService, ProjectQueryService>();
+builder.Services.AddScoped<ProjectResourceFromEntityAssembler>();
+builder.Services.AddScoped<ProjectCreatedDomainEventHandler>();
+builder.Services.AddScoped<IRoleRepository, RoleRepository>();
+builder.Services.AddScoped<IProjectTeamMemberQueryService, ProjectTeamMemberQueryService>();
+builder.Services.AddScoped<IProjectFacade, ProjectFacade>();
+builder.Services.AddScoped<ITaskFacade, TaskFacade>();
+
+// Milestone Configuration
+builder.Services.AddScoped<IMilestoneRepository, MilestoneRepository>();
+builder.Services.AddScoped<IMilestoneCommandService, MilestoneCommandService>();
+builder.Services.AddScoped<IMilestoneQueryService, MilestoneQueryService>();
+
+// Task Configuration
+builder.Services.AddScoped<ITaskRepository, TaskRepository>();
+builder.Services.AddScoped<ITaskCommandService, TaskCommandService>();
+builder.Services.AddScoped<ITaskQueryService, TaskQueryService>();
+builder.Services.AddScoped<ITaskStatusRepository, TaskStatusRepository>();
+
+// Change Process Configuration
+builder.Services.AddScoped<IChangeProcessRepository, ChangeProcessRepository>();
+builder.Services.AddScoped<IChangeProcessCommandService, ChangeProcessCommandService>();
+builder.Services.AddScoped<IChangeProcessQueryService, ChangeProcessQueryService>();
+builder.Services.AddScoped<IChangeOriginRepository, ChangeOriginRepository>();
+builder.Services.AddScoped<IChangeProcessStatusRepository, ChangeProcessStatusRepository>();
+
+// Task Budget Configuration
+builder.Services.AddScoped<ITaskBudgetRepository, TaskBudgetRepository>();
+builder.Services.AddScoped<ITaskBudgetQueryService, TaskBudgetQueryService>();
+builder.Services.AddScoped<ITaskBudgetCommandService, TaskBudgetCommandService>();
+builder.Services.AddScoped<ITaskBudgetFacade, TaskBudgetFacade>();
 
 // Add CORS Policy
 builder.Services.AddCors(options =>
@@ -154,10 +219,9 @@ using (var scope = app.Services.CreateScope())
 app.UseSwagger();
 app.UseSwaggerUI(c =>
 {
-    c.SwaggerEndpoint("/swagger/v1/swagger.json", "PropGMS.Platform.API v1");
+    c.SwaggerEndpoint("/swagger/v1/swagger.json", "PropGMS.Platform.API v2");
     c.RoutePrefix = "swagger";
 });
-
 
 app.UseCors("AllowAllPolicy");
 

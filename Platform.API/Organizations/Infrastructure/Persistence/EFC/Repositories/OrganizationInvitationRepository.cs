@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using Platform.API.IAM.Domain.Model.Aggregates;
 using Platform.API.IAM.Domain.Model.ValueObjects;
 using Platform.API.Organizations.Domain.Model.Aggregates;
-using Platform.API.Shared.Domain.Repositories.Model.ValueObjects;
+using Platform.API.Shared.Domain.Model.ValueObjects;
 
 namespace Platform.API.Organizations.Infrastructure.Persistence.EFC.Repositories;
 

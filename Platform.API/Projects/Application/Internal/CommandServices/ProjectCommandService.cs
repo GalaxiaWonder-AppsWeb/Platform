@@ -1,0 +1,180 @@
+﻿using Platform.API.IAM.Domain.Model.ValueObjects;
+using Platform.API.IAM.Interfaces.ACL;
+using Platform.API.Projects.Application.Internal.EventHandlers;
+using Platform.API.Projects.Domain.Model.Aggregates;
+using Platform.API.Projects.Domain.Model.Commands;
+using Platform.API.Projects.Domain.Model.Events;
+using Platform.API.Projects.Domain.Repositories;
+using Platform.API.Projects.Domain.Services;
+using Platform.API.Shared.Domain.Repositories;
+using Task = System.Threading.Tasks.Task;
+
+namespace Platform.API.Projects.Application.Internal.CommandServices;
+
+/// <summary>
+/// Service responsible for handling project commands.
+/// </summary>
+/// <param name="projectRepository">
+/// project repository to interact with project data.
+/// </param>
+/// <param name="projectStatusRepository">
+/// project status repository to interact with project status data.
+/// </param>
+/// <param name="unitOfWork">
+/// unit of work to manage transactions.
+/// </param>
+public class ProjectCommandService(
+    IProjectRepository projectRepository,
+    IProjectStatusRepository projectStatusRepository,
+    IIAMContextFacade iamFacade,
+    ProjectCreatedDomainEventHandler projectCreatedDomainEventHandler,
+    IUnitOfWork unitOfWork) : IProjectCommandService
+{
+    /// <summary>
+    /// Handles the creation of a new project.
+    /// </summary>
+    /// <param name="command">
+    /// the command containing project creation details.
+    /// </param>
+    /// <returns>
+    /// the newly created project or null if creation failed.
+    /// </returns>
+    /// <exception cref="Exception">
+    /// thows an exception if the project status is not found in the repository.
+    /// </exception>
+    public async Task<Project?> Handle(CreateProjectCommand command)
+    {
+        var project = new Project(command);
+        var existingStatus = command.Status.Name.ToString();
+        var status = await projectStatusRepository.FindByName(existingStatus);
+        if (status == null)
+        {
+            throw new Exception($"Project status {command.Status.GetName()} not found");
+        }
+
+        var contractingEntity = await iamFacade.GetProfileDetailsByEmailAsync(command.ContractingEntityEmail.Address);
+        if (contractingEntity == null)
+        {
+            throw new Exception($"Contracting entity with email {command.ContractingEntityEmail.Address} not found");
+        }
+
+        var contractingEntityId = new PersonId(contractingEntity.Id);
+        project.ReassignStatus(status);
+        project.SetContractingEntityId(contractingEntityId);
+        await projectRepository.AddAsync(project);
+        await unitOfWork.CompleteAsync();
+
+        // Publish the project created event
+        var projectCreatedEvent = new ProjectCreatedDomainEvent(
+            project.Id,
+            project.OrganizationId.organizationId
+        );
+        await projectCreatedDomainEventHandler.Handle(projectCreatedEvent);
+        return project;
+    }
+
+    /// <summary>
+    /// Handles the update of a project's name.
+    /// </summary>
+    /// <param name="command">
+    /// The command containing the project ID and new name.
+    /// </param>
+    /// <returns>
+    /// The updated project or null if the project was not found.
+    /// </returns>
+    /// <exception cref="Exception">
+    /// Throws an exception if the project with the specified ID is not found.
+    /// </exception>
+    public async Task<Project?> Handle(UpdateProjectNameCommand command)
+    {
+        var project = await projectRepository.FindById(command.Id);
+        if (project == null) throw new Exception($"Project with ID {command.Id} not found");
+
+        project.UpdateProjectName(command.ProjectName);
+        projectRepository.Update(project);
+        await unitOfWork.CompleteAsync();
+        return project;
+    }
+
+    /// <summary>
+    /// Handles the update of a project's description.
+    /// </summary>
+    /// <param name="command">
+    /// The command containing the project ID and new description.
+    /// </param>
+    /// <returns>
+    /// The updated project or null if the project was not found.
+    /// </returns>
+    /// <exception cref="Exception">
+    /// Throws an exception if the project with the specified ID is not found.
+    /// </exception>
+    public async Task<Project?> Handle(UpdateProjectDescriptionCommand command)
+    {
+        var project = await projectRepository.FindById(command.Id);
+        if (project == null) throw new Exception($"Project with ID {command.Id} not found");
+
+        project.UpdateDescription(command.ProjectDescription);
+        projectRepository.Update(project);
+        await unitOfWork.CompleteAsync();
+        return project;
+    }
+
+    /// <summary>
+    /// Handles the update of a project's milestone date range.
+    /// </summary>
+    /// <param name="command">
+    /// The command containing the project ID and new date range.
+    /// </param>
+    /// <returns>
+    /// The updated project or null if the project was not found.
+    /// </returns>
+    /// <exception cref="Exception">
+    /// Throws an exception if the project with the specified ID is not found.
+    /// </exception>
+    public async Task<Project?> Handle(UpdateProjectDateRangeCommand command)
+    {
+        var project = await projectRepository.FindById(command.Id);
+        if (project == null) throw new Exception($"Project with ID {command.Id} not found");
+        
+        project.ReassignDate(command.DateRange);
+        projectRepository.Update(project);
+        await unitOfWork.CompleteAsync();
+        return project;
+    }
+
+    /// <summary>
+    /// Handles the deletion of a project.
+    /// </summary>
+    /// <param name="command">
+    /// The command containing the project ID to delete.
+    /// </param>
+    /// <exception cref="Exception">
+    /// Throws an exception if the project with the specified ID is not found.
+    /// </exception>
+    public async Task Handle(DeleteProjectCommand command)
+    {
+        var project = await projectRepository.FindById(command.Id);
+        if (project == null) throw new Exception($"Project with ID {command.Id} not found");
+        projectRepository.Remove(project);
+        await unitOfWork.CompleteAsync();
+    }
+
+    public async Task<Project?> Handle(UpdateProjectStatusCommand command)
+    {
+        var project = await projectRepository.FindById(command.Id);
+        if (project == null) throw new Exception($"Project with ID {command.Id} not found");
+
+        var existingStatus = command.Status.Name.ToString();
+        var status = await projectStatusRepository.FindByName(existingStatus);
+        if (status == null)
+        {
+            throw new Exception($"Project status {command.Status.GetName()} not found");
+        }
+
+        project.ReassignStatus(status);
+        projectRepository.Update(project);
+        await unitOfWork.CompleteAsync();
+        return project;
+    }
+
+}
