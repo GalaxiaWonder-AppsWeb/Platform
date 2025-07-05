@@ -38,10 +38,10 @@ public class ChangeProcessRepository(AppDbContext context) : BaseRepository<Chan
     public async Task<ChangeProcess?> FindByProjectId(long projectId)
     {
         return await Context.Set<ChangeProcess>()
-            .Include(cp => cp.Origin)
-            .Include(cp => cp.Status)
             .Where(cp => cp.ProjectId.Value == projectId)
             .OrderByDescending(cp => cp.CreatedDate)
+            .Include(cp => cp.Origin)
+            .Include(cp => cp.Status)
             .FirstOrDefaultAsync();
     }
 
