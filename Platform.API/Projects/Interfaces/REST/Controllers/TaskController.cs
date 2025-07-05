@@ -100,4 +100,18 @@ public class TaskController(
         
         return Ok(resources);
     }
+
+    [HttpDelete("{id}")]
+    [SwaggerOperation(
+        Summary = "Delete a Task",
+        Description = "Delete a existing task",
+        OperationId = "task-delete")]
+    [SwaggerResponse(StatusCodes.Status200OK, "Task deleted successfully")]
+    [SwaggerResponse(StatusCodes.Status400BadRequest, "Task deletion failed")]
+    public async Task<IActionResult> DeleteTask(long id)
+    {
+        var command = DeleteTaskCommandFromResourceAssembler.ToCommandFromResource(id);
+        await taskCommandService.Handle(command);
+        return Ok("Task deleted successfully");
+    }
 }

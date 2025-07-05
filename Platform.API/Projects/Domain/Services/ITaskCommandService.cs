@@ -1,11 +1,13 @@
 ﻿using Platform.API.Projects.Domain.Model.Commands;
-using Task = Platform.API.Projects.Domain.Model.Aggregates.Task;
+using TaskD = Platform.API.Projects.Domain.Model.Aggregates.Task;
 
 namespace Platform.API.Projects.Domain.Services;
 
 public interface ITaskCommandService
 {
-    Task<Task?> Handle(CreateTaskCommand command);
+    Task<TaskD?> Handle(CreateTaskCommand command);
     
-    Task<Task?> Handle(UpdateTaskCommand command);
+    Task<TaskD?> Handle(UpdateTaskCommand command);
+    
+    Task Handle (DeleteTaskCommand command);
 }

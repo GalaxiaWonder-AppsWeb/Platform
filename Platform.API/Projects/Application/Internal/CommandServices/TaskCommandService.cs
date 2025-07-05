@@ -4,7 +4,7 @@ using Platform.API.Projects.Domain.Model.Commands;
 using Platform.API.Projects.Domain.Repositories;
 using Platform.API.Projects.Domain.Services;
 using Platform.API.Shared.Domain.Repositories;
-using Task = Platform.API.Projects.Domain.Model.Aggregates.Task;
+using TaskD = Platform.API.Projects.Domain.Model.Aggregates.Task;
 
 namespace Platform.API.Projects.Application.Internal.CommandServices;
 
@@ -17,7 +17,7 @@ public class TaskCommandService(
     ITaskBudgetFacade taskBudgetFacade,
     IUnitOfWork unitOfWork) : ITaskCommandService
 {
-    public async Task<Task?> Handle(CreateTaskCommand command)
+    public async Task<TaskD?> Handle(CreateTaskCommand command)
     {
         var milestone = await milestoneRepository.FindById(command.MilestoneId.Value);
         if (milestone is null)
@@ -31,7 +31,7 @@ public class TaskCommandService(
             throw new Exception($"Task date range {command.DateRange} is outside of milestone date range {milestone.DateRange}");
         }
 
-        var task = new Task(command);
+        var task = new TaskD(command);
 
         var specialty = await specialtyRepository.FindByName(command.Specialty.Name.ToString());
         if (specialty is null)
@@ -74,7 +74,7 @@ public class TaskCommandService(
         return task;
     }
     
-    public async Task<Task?> Handle(UpdateTaskCommand command)
+    public async Task<TaskD?> Handle(UpdateTaskCommand command)
     {
         
         var task = await taskRepository.FindById(command.Id);
@@ -139,5 +139,17 @@ public class TaskCommandService(
         taskRepository.Update(task);
         await unitOfWork.CompleteAsync();
         return task;
+    }
+
+    public async Task Handle(DeleteTaskCommand command)
+    {
+        var task = await taskRepository.FindById(command.TaskId);
+        if (task is null) 
+        {
+            throw new Exception($"Task {command.TaskId} not found");
+        }
+        
+        taskRepository.Remove(task);
+        await unitOfWork.CompleteAsync();
     }
 }
