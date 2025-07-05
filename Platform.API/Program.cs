@@ -78,13 +78,13 @@ builder.Services.AddSwaggerGen(options =>
         new OpenApiInfo
         {
             Title = "PropGMS.Platform.API",
-            Version = "v1",
+            Version = "v2",
             Description = "PropGMS Platform API",
             TermsOfService = new Uri("https://propgms.com/tos"),
             Contact = new OpenApiContact
             {
                 Name = "PropGMS",
-                Email = "contact@acme.com"
+                Email = "propgmscontact@galaxiawonder.com"
             },
             License = new OpenApiLicense
             {
@@ -216,11 +216,12 @@ using (var scope = app.Services.CreateScope())
 
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
+app.UseSwagger();
+app.UseSwaggerUI(c =>
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+    c.SwaggerEndpoint("/swagger/v1/swagger.json", "PropGMS.Platform.API v2");
+    c.RoutePrefix = "swagger";
+});
 
 app.UseCors("AllowAllPolicy");
 
