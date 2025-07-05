@@ -40,7 +40,9 @@ public class ChangeProcessRepository(AppDbContext context) : BaseRepository<Chan
         return await Context.Set<ChangeProcess>()
             .Include(cp => cp.Origin)
             .Include(cp => cp.Status)
-            .Include(cp => cp.ProjectId)
-            .FirstOrDefaultAsync(cp => cp.ProjectId.Value == projectId);
+            .Where(cp => cp.ProjectId.Value == projectId)
+            .OrderByDescending(cp => cp.CreatedDate)
+            .FirstOrDefaultAsync();
     }
+
 }

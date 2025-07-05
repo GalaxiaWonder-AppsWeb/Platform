@@ -27,9 +27,10 @@ public class ChangeProcessCommandService(
         }
 
         var existingChangeProcess = await changeProcessRepository.FindByProjectId(command.ProjectId.Value);
-        if (existingChangeProcess != null)
+
+        if (existingChangeProcess != null && !existingChangeProcess.StatusId.Equals(3))
         {
-            throw new Exception($"A Change process for project with id {command.ProjectId.Value} is in progress");
+            throw new Exception($"Project with ID {command.ProjectId.Value} is not in a valid state to create a change process");
         }
         
         var originName = project.Status.Name is ProjectStatuses.APPROVED
